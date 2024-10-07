@@ -7,4 +7,5 @@ public class ScriptableTiles : ScriptableObject
 {
     public GameObject tileModel;
     //public tileType tileType;
+
 }

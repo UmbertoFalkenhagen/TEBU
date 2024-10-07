@@ -8,6 +8,7 @@ public class gridTester : MonoBehaviour
     public int rows;
     public int columns;
     public float cellSize;
+    public List<ScriptableTiles> tileListScriptable;
 
     private ScriptableTiles currentTile;
     // Start is called before the first frame update
@@ -18,7 +19,7 @@ public class gridTester : MonoBehaviour
 
     void generateGrid()
     {
-        //GridMap grid = new GridMap(rows, columns, gridBlock, cellSize);
+        GridMap grid = new GridMap(rows, columns, tileListScriptable, cellSize);
 
     }
 

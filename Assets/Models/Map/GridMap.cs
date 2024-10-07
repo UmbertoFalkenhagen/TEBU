@@ -7,18 +7,19 @@ using UnityEngine.Tilemaps;
 public class GridMap : MonoBehaviour
 {
     private GameObject gridBlock;
-    private int width;
-    private int height;
+    private int rows;
+    private int columns;
     private float cellSize;
     private int[,] gridArray;
+    private List<ScriptableTiles> tileListScriptable;
 
-    public GridMap(int width, int height, GameObject gridBlock, float cellSize) {
-        this.width = width;
-        this.height = height;
-        this.gridBlock = gridBlock;
-        this.cellSize = cellSize;
+    public GridMap(int _rows, int _columns, List<ScriptableTiles> _tileListScriptable, float _cellSize) {
+        this.rows = _rows;
+        this.columns = _columns;
+        this.tileListScriptable = _tileListScriptable;
+        this.cellSize = _cellSize;
 
-        gridArray = new int [width, height];
+        gridArray = new int [rows, columns];
 
         for (int x = 0; x<gridArray.GetLength(0); x++)
         {
@@ -26,7 +27,7 @@ public class GridMap : MonoBehaviour
             {
 
                 Debug.Log(GetHexWorldPostition(new Vector2Int(x,y)));
-                Instantiate(gridBlock, GetHexWorldPostition(new Vector2Int(x, y)), Quaternion.identity);
+                Instantiate(RandomTiles(), GetHexWorldPostition(new Vector2Int(x, y)), Quaternion.identity);
             }
         }
     }
@@ -61,6 +62,14 @@ public class GridMap : MonoBehaviour
 
 
         return new Vector3(xPosition, 0, -yPosition);
+    }
+
+    private GameObject RandomTiles()
+    {
+
+
+        return tileListScriptable[Random.Range(0, 2)].tileModel;
+
     }
 
 }
