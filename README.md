@@ -1,3 +1,4 @@
+```
 Assets/
 │
 ├── Core/                 # Zentrale Elemente des Spiels
@@ -58,3 +59,4 @@ Assets/
 └── Tests/                # Unit-Tests, Integrationstests
     ├── UnitTests/        # Tests für einzelne Systemkomponenten (z.B. Model-Tests)
     └── IntegrationTests/ # Tests für die Interaktion zwischen Systemen (z.B. Controller und View)
+```
