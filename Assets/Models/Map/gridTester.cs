@@ -4,30 +4,27 @@ using UnityEngine;
 
 public class gridTester : MonoBehaviour
 {
-    public List<ScriptableTiles> gridBlock;
-    public int rows;
-    public int columns;
-    public float cellSize;
-    public List<ScriptableTiles> tileListScriptable;
+    public int rows;                         // Number of rows in the hex grid
+    public int columns;                      // Number of columns in the hex grid
+    public float cellSize;                   // Size of each hex cell
+    public List<ScriptableTile> tileListScriptable;  // List of ScriptableTile objects
 
-    private ScriptableTiles currentTile;
     // Start is called before the first frame update
     void Start()
     {
-        generateGrid();
+        GenerateGrid();  // Generate the hex grid on startup
     }
 
-    void generateGrid()
+    // Generates the grid using the GridMap class
+    void GenerateGrid()
     {
+        // Create a new instance of the GridMap using the public parameters
         GridMap grid = new GridMap(rows, columns, tileListScriptable, cellSize);
-
     }
 
-    // Update is called once per frame
+    // Update is called once per frame (if needed for further interactions)
     void Update()
     {
-        
+
     }
-
-
 }
