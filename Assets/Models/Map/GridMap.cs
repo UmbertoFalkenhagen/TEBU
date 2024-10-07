@@ -27,6 +27,8 @@ public class GridMap : MonoBehaviour
             {
 
                 Debug.Log(GetHexWorldPostition(new Vector2Int(x,y)));
+
+                //save instantiated tile and save to list -> GetTile 
                 Instantiate(RandomTiles(), GetHexWorldPostition(new Vector2Int(x, y)), Quaternion.identity);
             }
         }
@@ -48,7 +50,6 @@ public class GridMap : MonoBehaviour
         float offset;
         float size = cellSize;
 
-        ///
         shouldOffset = (row % 2) == 0;
         width = Mathf.Sqrt(3) * size;
         height = 2f * size;
