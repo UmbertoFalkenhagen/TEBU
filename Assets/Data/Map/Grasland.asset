@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bc98343c7637d674a8cdbf7434fff40c, type: 3}
-  m_Name: Woodland
+  m_Name: Grasland
   m_EditorClassIdentifier: 
-  tileType: 1
-  prefab: {fileID: 4375486808293262297, guid: cf535dcb7a833444f95ae6d75ad23812, type: 3}
+  tileType: 0
+  prefab: {fileID: 3023954715332156990, guid: bad0b8f9bcaba764db734ab87122811b, type: 3}
   resources: []
