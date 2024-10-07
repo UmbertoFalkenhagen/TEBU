@@ -4,10 +4,12 @@ using UnityEngine;
 
 public class gridTester : MonoBehaviour
 {
-    public GameObject gridBlock;
+    public List<ScriptableTiles> gridBlock;
     public int rows;
     public int columns;
     public float cellSize;
+
+    private ScriptableTiles currentTile;
     // Start is called before the first frame update
     void Start()
     {
@@ -16,7 +18,7 @@ public class gridTester : MonoBehaviour
 
     void generateGrid()
     {
-        GridMap grid = new GridMap(rows, columns, gridBlock, cellSize);
+        //GridMap grid = new GridMap(rows, columns, gridBlock, cellSize);
 
     }
 
@@ -25,4 +27,6 @@ public class gridTester : MonoBehaviour
     {
         
     }
+
+
 }
