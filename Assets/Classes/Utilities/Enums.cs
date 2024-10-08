@@ -15,6 +15,7 @@ public enum TileType
 
 public enum Resource
 {
+    None,
     Rice,
     Herbs
 }
