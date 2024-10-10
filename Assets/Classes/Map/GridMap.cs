@@ -44,40 +44,22 @@ public class GridMap : MonoBehaviour
                     continue;
                 }
 
-                // Check if the chosen tile has a prefab assigned
-                if (chosenTile.prefab == null)
+                // Instantiate the tile using the TileFactory
+                GameObject hexTileObject = TileFactory.Instance.CreateElement(chosenTile, hexPosition, Quaternion.identity, transform);
+                if (hexTileObject == null)
                 {
-                    Debug.LogError($"Prefab is missing for tile type {chosenTile.tileType} at position ({x}, {y})");
+                    Debug.LogError($"Failed to create tile at position ({x}, {y}).");
                     continue;
                 }
 
-                // Instantiate the tile's prefab at the calculated position
-                GameObject hexTileObject = Instantiate(chosenTile.prefab, hexPosition, Quaternion.identity);
-                hexTileObject.name = $"{chosenTile.tileType}_Hex_{x}_{y}";  // Set a unique name for the tile
+                // Get the initial object to place on the tile using the TileFactory
+                GameObject initialObject = TileFactory.Instance.GetInitialObjectForTile(chosenTile); // Correct method call
 
-                // Set up the HexTile component with the chosen properties
-                HexTile hexTileComponent = hexTileObject.GetComponent<HexTile>();
-                if (hexTileComponent != null)
+                // Place the initial object on the tile
+                if (initialObject != null)
                 {
-                    hexTileComponent.HexCoords = new Vector2Int(x, y);
-                    hexTileComponent.TileType = chosenTile.tileType;
-
-                    // Determine the initial object to place on the tile (resource or default object)
-                    GameObject initialObject = chosenTile.GetInitialTileObject();
-
-                    // Place the initial object on the tile
-                    if (initialObject != null)
-                    {
-                        hexTileComponent.PlaceResourceOnTile(initialObject);
-                    }
+                    hexTileObject.GetComponent<HexTile>().PlaceResourceOnTile(initialObject);
                 }
-                else
-                {
-                    Debug.LogError($"HexTile component missing on the instantiated prefab at position ({x}, {y}).");
-                }
-
-                // Parent the tile to the grid for better organization in the hierarchy
-                hexTileObject.transform.parent = this.transform;
             }
         }
     }
