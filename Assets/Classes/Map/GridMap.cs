@@ -53,7 +53,10 @@ public class GridMap : MonoBehaviour
                 }
 
                 // Get the initial object to place on the tile using the TileFactory
-                GameObject initialObject = TileFactory.Instance.GetInitialObjectForTile(chosenTile); // Correct method call
+                GameObject initialObject = TileFactory.Instance.GetInitialObjectForTile(chosenTile, out Resource assignedResource); // Correct method call with out parameter
+
+                // Store the assigned resource in the HexTile component
+                hexTileObject.GetComponent<HexTile>().resource = assignedResource;
 
                 // Place the initial object on the tile
                 if (initialObject != null)

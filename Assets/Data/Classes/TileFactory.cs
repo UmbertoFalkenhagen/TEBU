@@ -21,9 +21,17 @@ public class TileFactory : MonoBehaviour, IFactory<ScriptableTile>
         }
     }
 
-    /// <summary>
-    /// Creates a tile GameObject using the provided ScriptableTile data.
-    /// </summary>
+    // CreateInstance method
+    protected GameObject CreateInstance(GameObject prefab, Vector3 position, Quaternion rotation, Transform parent = null)
+    {
+        if (prefab == null)
+        {
+            Debug.LogError("Prefab is null! Cannot instantiate object.");
+            return null;
+        }
+        return Object.Instantiate(prefab, position, rotation, parent);
+    }
+
     public GameObject CreateElement(ScriptableTile tileData, Vector3 position, Quaternion rotation, Transform parent = null)
     {
         if (tileData == null)
@@ -33,14 +41,25 @@ public class TileFactory : MonoBehaviour, IFactory<ScriptableTile>
         }
 
         // Instantiate the tile prefab at the specified position and rotation
-        GameObject hexTileObject = Instantiate(tileData.prefab, position, rotation, parent);
+        GameObject hexTileObject = CreateInstance(tileData.prefab, position, rotation, parent);
 
         // Set up the HexTile component with the chosen properties
         HexTile hexTileComponent = hexTileObject.GetComponent<HexTile>();
         if (hexTileComponent != null)
         {
             hexTileComponent.TileType = tileData.tileType;  // Set the tile type from the ScriptableTile
-            hexTileComponent.resource = tileData.resource;
+
+            // Get the initial object to place on the tile and the assigned resource
+            GameObject initialObject = GetInitialObjectForTile(tileData, out Resource assignedResource);
+
+            // Store the resource in the HexTile component
+            hexTileComponent.resource = assignedResource;
+
+            // Place the initial object on the tile
+            if (initialObject != null)
+            {
+                hexTileComponent.PlaceResourceOnTile(initialObject);
+            }
         }
         else
         {
@@ -53,8 +72,13 @@ public class TileFactory : MonoBehaviour, IFactory<ScriptableTile>
     /// <summary>
     /// Retrieves the initial object to place on the tile based on the ScriptableTile resource probabilities.
     /// </summary>
-    public GameObject GetInitialObjectForTile(ScriptableTile tileData)
+    /// <param name="tileData">The ScriptableTile to evaluate.</param>
+    /// <param name="out Resource">The determined resource to assign to the HexTile.</param>
+    /// <returns>The initial GameObject to be placed on the tile.</returns>
+    public GameObject GetInitialObjectForTile(ScriptableTile tileData, out Resource assignedResource)
     {
+        assignedResource = Resource.None; // Default to None
+
         if (tileData == null)
         {
             Debug.LogError("TileData is null! Cannot determine the initial object.");
@@ -66,6 +90,7 @@ public class TileFactory : MonoBehaviour, IFactory<ScriptableTile>
         {
             if (Random.value <= resourceProbability.spawnProbability)
             {
+                assignedResource = resourceProbability.resourceName; // Assign the resource
                 return resourceProbability.resourcePrefab; // Return the prefab of the resource if it spawns
             }
         }
