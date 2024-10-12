@@ -5,7 +5,7 @@ public class HexTile : MonoBehaviour
     public Vector2Int HexCoords;    // The coordinates of this hex in the grid
     public TileType TileType;         // Type of tile (e.g., "Grassland", "Forest", etc.)
     public GameObject heldObject;   // The GameObject currently held on this tile (resource, building, etc.)
-    public Resource resource;
+    public ResourceType resource;
 
     // Method to place an object on the tile, replacing any existing one
     public void PlaceResourceOnTile(GameObject newObject)
