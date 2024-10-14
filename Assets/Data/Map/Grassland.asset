@@ -9,7 +9,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 13a66140adf38e44f9f9fc77e9e4d85a, type: 3}
+  m_Script: {fileID: 0}
   m_Name: Grassland
-  m_EditorClassIdentifier: 
-  tileModel: {fileID: 3023954715332156990, guid: bad0b8f9bcaba764db734ab87122811b, type: 3}
+  m_EditorClassIdentifier: Assembly-CSharp::ScriptableTile
+  tileType: 0
+  prefab: {fileID: 3023954715332156990, guid: bad0b8f9bcaba764db734ab87122811b, type: 3}
+  resources:
+  - resourceName: 1
+    resourcePrefab: {fileID: 7322811874412895695, guid: 8e9be178fa677b246ab1a3f8a9366250, type: 3}
+    spawnProbability: 0.5
+  defaultPrefab: {fileID: 0}

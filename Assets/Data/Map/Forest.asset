@@ -9,7 +9,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 13a66140adf38e44f9f9fc77e9e4d85a, type: 3}
+  m_Script: {fileID: 0}
   m_Name: Forest
-  m_EditorClassIdentifier: 
-  tileModel: {fileID: 4375486808293262297, guid: cf535dcb7a833444f95ae6d75ad23812, type: 3}
+  m_EditorClassIdentifier: Assembly-CSharp::ScriptableTile
+  tileType: 1
+  prefab: {fileID: 4375486808293262297, guid: cf535dcb7a833444f95ae6d75ad23812, type: 3}
+  resources:
+  - resourceName: 2
+    resourcePrefab: {fileID: 0}
+    spawnProbability: 0.2
+  defaultPrefab: {fileID: 7740590973213523301, guid: b4f983a4180e3cc43bcc23b263b8d931, type: 3}
