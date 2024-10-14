@@ -266,7 +266,7 @@ MonoBehaviour:
   cellSize: 1.15
   tileListScriptable:
   - {fileID: 11400000, guid: 65a49095838a88844a0c861f9c28e3e1, type: 2}
-  - {fileID: 11400000, guid: da5147ea4d642da43a5be07293eeb7b4, type: 2}
+  - {fileID: 11400000, guid: 07eade2962b490c4993d86fdf3938c77, type: 2}
 --- !u!4 &352452916
 Transform:
   m_ObjectHideFlags: 0

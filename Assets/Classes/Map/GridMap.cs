@@ -35,7 +35,7 @@ public class GridMap : MonoBehaviour
                 Vector3 hexPosition = GetHexWorldPostition(new Vector2Int(x, y));
 
                 // Choose a random ScriptableTile for this position
-                ScriptableTile chosenTile = ChooseRandomTile();
+                ScriptableTile chosenTile = ChooseRandomScriptableTile();
 
                 // Check if the chosen tile is valid
                 if (chosenTile == null)
@@ -45,23 +45,11 @@ public class GridMap : MonoBehaviour
                 }
 
                 // Instantiate the tile using the TileFactory
-                GameObject hexTileObject = TileFactory.Instance.CreateElement(chosenTile, hexPosition, Quaternion.identity, transform);
+                GameObject hexTileObject = TileFactory.Instance.CreateObject(chosenTile, hexPosition, Quaternion.identity, transform);
                 if (hexTileObject == null)
                 {
                     Debug.LogError($"Failed to create tile at position ({x}, {y}).");
                     continue;
-                }
-
-                // Get the initial object to place on the tile using the TileFactory
-                GameObject initialObject = TileFactory.Instance.GetInitialObjectForTile(chosenTile, out ResourceType assignedResource); // Correct method call with out parameter
-
-                // Store the assigned resource in the HexTile component
-                hexTileObject.GetComponent<HexTile>().resource = assignedResource;
-
-                // Place the initial object on the tile
-                if (initialObject != null)
-                {
-                    hexTileObject.GetComponent<HexTile>().PlaceResourceOnTile(initialObject);
                 }
             }
         }
@@ -88,7 +76,7 @@ public class GridMap : MonoBehaviour
     }
 
     // Choose a random ScriptableTile from the available list
-    private ScriptableTile ChooseRandomTile()
+    private ScriptableTile ChooseRandomScriptableTile()
     {
         if (tileListScriptable == null || tileListScriptable.Count == 0)
         {

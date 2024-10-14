@@ -22,7 +22,7 @@ public class TileFactory : MonoBehaviour, IFactory<ScriptableTile>
     }
 
     // CreateInstance method
-    protected GameObject CreateInstance(GameObject prefab, Vector3 position, Quaternion rotation, Transform parent = null)
+    protected GameObject InstantiatePrefab(GameObject prefab, Vector3 position, Quaternion rotation, Transform parent = null)
     {
         if (prefab == null)
         {
@@ -32,7 +32,7 @@ public class TileFactory : MonoBehaviour, IFactory<ScriptableTile>
         return Object.Instantiate(prefab, position, rotation, parent);
     }
 
-    public GameObject CreateElement(ScriptableTile tileData, Vector3 position, Quaternion rotation, Transform parent = null)
+    public GameObject CreateObject(ScriptableTile tileData, Vector3 position, Quaternion rotation, Transform parent = null)
     {
         if (tileData == null)
         {
@@ -41,10 +41,10 @@ public class TileFactory : MonoBehaviour, IFactory<ScriptableTile>
         }
 
         // Instantiate the tile prefab at the specified position and rotation
-        GameObject hexTileObject = CreateInstance(tileData.prefab, position, rotation, parent);
+        GameObject hexTileObject = InstantiatePrefab(tileData.prefab, position, rotation, parent);
 
         // Set up the HexTile component with the chosen properties
-        HexTile hexTileComponent = hexTileObject.GetComponent<HexTile>();
+        HexTile hexTileComponent = hexTileObject.AddComponent<HexTile>();
         if (hexTileComponent != null)
         {
             hexTileComponent.TileType = tileData.tileType;  // Set the tile type from the ScriptableTile
