@@ -10,17 +10,24 @@ public class ActiveTileController : MonoBehaviour
     // Setzt das neue aktive Tile, wenn ein anderes angeklickt wird
     public void SetActiveTile(GameObject newTile)
     {
-        if (activeTile != null)
-        {
-            // Hier kannst du das alte activeTile deaktivieren oder seine Outline entfernen
-            Debug.Log("Deaktiviere altes Tile: " + activeTile.name);
-        }
 
-        // Setze das neue aktive Tile
-        activeTile = newTile;
-        Debug.Log("Neues aktives Tile: " + activeTile.name);
+            if (activeTile != null)
+            {
+                // Hier kannst du das alte activeTile deaktivieren 
 
-        // Hier kannst du das neue activeTile hervorheben oder seine Outline hinzufügen
+                //Debug.Log("Deaktiviere altes Tile: " + activeTile.name);
+                activeTile.transform.position = new Vector3(activeTile.transform.position.x, activeTile.transform.position.y - 1, activeTile.transform.position.z);
+            }
+
+            // Setze das neue aktive Tile
+            activeTile = newTile;
+            activeTile.transform.position = new Vector3(activeTile.transform.position.x, activeTile.transform.position.y + 1, activeTile.transform.position.z);
+
+           // Debug.Log("Neues aktives Tile: " + activeTile.name);
+
+            // Hier kannst du das neue activeTile hervorheben
+        
+
     }
 
 }

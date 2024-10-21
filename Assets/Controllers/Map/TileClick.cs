@@ -16,7 +16,6 @@ public class TileClick : MonoBehaviour, IClickable, IRightClickable
     public void OnClick()
     {
         // Verhalten für linken Mausklick
-        Debug.Log("Gameobject: " + gameObject);
         activeTileController.SetActiveTile(gameObject);
     }      
 
