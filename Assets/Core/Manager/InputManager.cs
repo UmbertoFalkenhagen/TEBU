@@ -1,11 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro.Examples;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class InputManager : MonoBehaviour
 {
     public LayerMask clickableLayerTile;
+    public LayerMask clickableLayerUI;
 
+
+    public GraphicRaycaster raycaster;
+    public EventSystem eventSystem;
     void Start()
     {
     }
@@ -24,7 +31,7 @@ public class InputManager : MonoBehaviour
 
         }
     }
-
+    
     void HandleMouseClick()
     {
         // Raycasting, um herauszufinden, was angeklickt wurde
@@ -32,7 +39,23 @@ public class InputManager : MonoBehaviour
         RaycastHit hit;
 
 
-        if (Physics.Raycast(ray, out hit, Mathf.Infinity, clickableLayerTile))
+        //check for UI
+        PointerEventData pointerData = new PointerEventData(eventSystem);
+        pointerData.position = Input.mousePosition;
+
+        List<RaycastResult> results = new List<RaycastResult>();
+        raycaster.Raycast(pointerData, results);
+
+        if (results.Count > 0)
+        {
+            // Prüfen, ob das angeklickte Objekt ein IClickable-Interface implementiert
+            IClickable clickable = results[0].gameObject.GetComponent<IClickable>();
+            if (clickable != null)
+            {
+                clickable.OnClick();
+            }
+        }
+        else if (Physics.Raycast(ray, out hit, Mathf.Infinity, clickableLayerTile))
         {
             // Prüfen, ob das angeklickte Objekt ein IClickable-Interface implementiert
             IClickable clickable = hit.collider.GetComponent<IClickable>();
@@ -41,6 +64,8 @@ public class InputManager : MonoBehaviour
                 clickable.OnClick();
             }
         }
+
+
     }
 
     void HandleRightMouseClick()

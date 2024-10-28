@@ -13,21 +13,35 @@ public class ActiveTileController : MonoBehaviour
 
             if (activeTile != null)
             {
-                // Hier kannst du das alte activeTile deaktivieren 
-
+            // Hier kannst du das alte activeTile deaktivieren 
+            activte();
                 //Debug.Log("Deaktiviere altes Tile: " + activeTile.name);
-                activeTile.transform.position = new Vector3(activeTile.transform.position.x, activeTile.transform.position.y - 1, activeTile.transform.position.z);
             }
 
             // Setze das neue aktive Tile
             activeTile = newTile;
-            activeTile.transform.position = new Vector3(activeTile.transform.position.x, activeTile.transform.position.y + 1, activeTile.transform.position.z);
 
+        deactivate();
            //Debug.Log("Neues aktives Tile: " + activeTile.name);
 
-            // Hier kannst du das neue activeTile hervorheben
-        
+        // Hier kannst du das neue activeTile hervorheben
 
+
+    }
+    private void activte()
+    {
+        //Debug.Log("Deaktiviere altes Tile: " + activeTile.name);
+        activeTile.transform.position = new Vector3(activeTile.transform.position.x, activeTile.transform.position.y - 1, activeTile.transform.position.z);
+    }
+    private void deactivate()
+    {
+        activeTile.transform.position = new Vector3(activeTile.transform.position.x, activeTile.transform.position.y + 1, activeTile.transform.position.z);
+
+    }
+    public void forceDeactivte()
+    {
+        deactivate();
+        activeTile = null;
     }
 
 
