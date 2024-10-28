@@ -43,8 +43,24 @@ public class TileFactory : MonoBehaviour, IFactory<ScriptableTile>
         // Instantiate the tile prefab at the specified position and rotation
         GameObject hexTileObject = InstantiatePrefab(tileData.prefab, position, rotation, parent);
 
-        // Set up the HexTile component with the chosen properties
-        HexTile hexTileComponent = hexTileObject.AddComponent<HexTile>();
+        HexTile hexTileComponent = hexTileObject.GetComponent<HexTile>();
+        if (hexTileComponent == null) {
+
+            // Set up the HexTile component with the chosen properties
+            hexTileComponent = hexTileObject.AddComponent<HexTile>();
+        }
+
+        TileClick tileClickComponent = hexTileObject.GetComponent<TileClick>();
+        if (tileClickComponent == null)
+        {
+            //Add TileClick script
+            tileClickComponent = hexTileObject.AddComponent<TileClick>();
+
+
+        }
+
+        //add tile to layer "Tile"
+        hexTileObject.layer = 6;
         if (hexTileComponent != null)
         {
             hexTileComponent.TileType = tileData.tileType;  // Set the tile type from the ScriptableTile
