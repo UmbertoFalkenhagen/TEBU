@@ -7,6 +7,11 @@ public class HexTile : MonoBehaviour
     public GameObject heldObject;   // The GameObject currently held on this tile (resource, building, etc.)
     public ResourceType resource;
 
+
+    public void Update()
+    {
+
+    }
     // Method to place an object on the tile, replacing any existing one
     public void PlaceResourceOnTile(GameObject newObject)
     {
@@ -31,6 +36,8 @@ public class HexTile : MonoBehaviour
             Destroy(heldObject);
             heldObject = null;
         }
+    }
+    public void isActive() { 
     }
 }
 
