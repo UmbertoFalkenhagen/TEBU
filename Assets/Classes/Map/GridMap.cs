@@ -3,13 +3,46 @@ using System.Collections.Generic;
 
 public class GridMap : MonoBehaviour
 {
-    private int rows;
-    private int columns;
-    private float cellSize;
-    private int[,] gridArray;
-    private List<ScriptableTile> tileListScriptable;
+    #region Singleton
+    public static GridMap Instance;
 
-    // Initialization method to set up the grid map
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject); // Destroy any duplicate GridMap instances
+            return; // Prevents further initialization in this instance
+        }
+    }
+    #endregion
+
+    public int rows;
+    public int columns;
+    public float cellSize;
+    public Dictionary<(int, int), GameObject> tileDictionary = new Dictionary<(int, int), GameObject>();
+    public List<ScriptableTile> tileListScriptable;
+
+    private void Start()
+    {
+        InitializePathfinder(); // Ensure Pathfinder exists
+        if (tileDictionary.Count == 0) // Only initialize the grid if it hasn't been populated yet
+        {
+            InitializeGrid(rows, columns, tileListScriptable, cellSize);
+        }
+    }
+
+    private void InitializePathfinder()
+    {
+        if (Pathfinder.Instance == null)
+        {
+            gameObject.AddComponent<Pathfinder>();
+        }
+    }
+
     public void InitializeGrid(int _rows, int _columns, List<ScriptableTile> _tileListScriptable, float _cellSize)
     {
         this.rows = _rows;
@@ -17,65 +50,59 @@ public class GridMap : MonoBehaviour
         this.tileListScriptable = _tileListScriptable;
         this.cellSize = _cellSize;
 
-        // Check if tileListScriptable is properly assigned
         if (tileListScriptable == null || tileListScriptable.Count == 0)
         {
             Debug.LogError("Tile list is null or empty! Please assign a valid list of ScriptableTile assets.");
             return;
         }
 
-        gridArray = new int[rows, columns];
+        tileDictionary.Clear(); // Clear any existing entries in the dictionary
 
-        // Loop through each coordinate to create the grid
-        for (int x = 0; x < gridArray.GetLength(0); x++)
+        for (int x = 0; x < rows; x++)
         {
-            for (int y = 0; y < gridArray.GetLength(1); y++)
+            for (int y = 0; y < columns; y++)
             {
-                // Get the hex position for the current coordinates
-                Vector3 hexPosition = GetHexWorldPostition(new Vector2Int(x, y));
-
-                // Choose a random ScriptableTile for this position
+                Vector3 hexPosition = GetHexWorldPosition(new Vector2Int(x, y));
                 ScriptableTile chosenTile = ChooseRandomScriptableTile();
 
-                // Check if the chosen tile is valid
                 if (chosenTile == null)
                 {
-                    Debug.LogError($"Chosen tile at position ({x}, {y}) is null!");
+                    Debug.LogError($"No valid tile for position ({x}, {y}).");
                     continue;
                 }
 
-                // Instantiate the tile using the TileFactory
                 GameObject hexTileObject = TileFactory.Instance.CreateObject(chosenTile, hexPosition, Quaternion.identity, transform);
                 if (hexTileObject == null)
                 {
                     Debug.LogError($"Failed to create tile at position ({x}, {y}).");
                     continue;
                 }
+
+                hexTileObject.GetComponent<HexTile>().HexCoords = new Vector2Int(x, y);
+                tileDictionary[(x, y)] = hexTileObject;
             }
         }
     }
 
-    // Calculate the world position for hexagonal grid coordinates
-    private Vector3 GetHexWorldPostition(Vector2Int coordinate)
+    private Vector3 GetHexWorldPosition(Vector2Int coordinate)
     {
         int column = coordinate.x;
         int row = coordinate.y;
 
-        float size = cellSize;   // Hexagon size (radius)
-        bool shouldOffset = (row % 2) == 0;  // Determine if this row should be offset
-        float width = Mathf.Sqrt(3) * size;  // Width of a hexagon
-        float height = 2f * size;            // Height of a hexagon
-        float horizontalDistance = width;    // Horizontal distance between hexagons
-        float verticalDistance = height * (3f / 4f);  // Vertical distance between hexagons (3/4 height)
-        float offset = (shouldOffset) ? width / 2 : 0; // Offset every second row for pointy-topped hexagons
+        float size = cellSize;
+        bool shouldOffset = (row % 2) == 0;
+        float width = Mathf.Sqrt(3) * size;
+        float height = 2f * size;
+        float horizontalDistance = width;
+        float verticalDistance = height * (3f / 4f);
+        float offset = (shouldOffset) ? width / 2 : 0;
 
-        float xPosition = (column * horizontalDistance) + offset;  // X position of the hex
-        float yPosition = row * verticalDistance;                  // Y position of the hex
+        float xPosition = (column * horizontalDistance) + offset;
+        float yPosition = row * verticalDistance;
 
-        return new Vector3(xPosition, 0, -yPosition);  // Return the calculated position
+        return new Vector3(xPosition, 0, -yPosition);
     }
 
-    // Choose a random ScriptableTile from the available list
     private ScriptableTile ChooseRandomScriptableTile()
     {
         if (tileListScriptable == null || tileListScriptable.Count == 0)
@@ -85,5 +112,11 @@ public class GridMap : MonoBehaviour
         }
 
         return tileListScriptable[Random.Range(0, tileListScriptable.Count)];
+    }
+
+    public GameObject GetTile(int x, int y)
+    {
+        tileDictionary.TryGetValue((x, y), out GameObject tile);
+        return tile;
     }
 }
