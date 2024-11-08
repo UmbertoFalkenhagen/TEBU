@@ -167,17 +167,8 @@ public class GridMap : MonoBehaviour
         foreach (Collider collider3D in colliderArray)
         {
             HexTile tile = collider3D.GetComponentInParent<HexTile>();
-
-            if (tile != null && tile.gameObject != originTile)
-            {
-                float distanceToTile = Vector3.Distance(originPosition, tile.transform.position);
-
-                // Check if the tile is at the edge of the range (within a small margin)
-                if (Mathf.Approximately(distanceToTile, range))
-                {
-                    edgeTiles.Add(tile.gameObject);
-                }
-            }
+            edgeTiles.Add(tile.gameObject);
+            
         }
 
         return edgeTiles;
