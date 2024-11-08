@@ -114,9 +114,11 @@ public class GridMap : MonoBehaviour
         return tileListScriptable[Random.Range(0, tileListScriptable.Count)];
     }
 
-    public GameObject GetTile(int x, int y)
+    public GameObject GetTileByIndex(int x, int y)
     {
         tileDictionary.TryGetValue((x, y), out GameObject tile);
         return tile;
     }
+
+
 }

@@ -98,7 +98,7 @@ public class Pathfinder : MonoBehaviour
         foreach (Vector2Int direction in directions)
         {
             Vector2Int neighborCoords = tile.HexCoords + direction;
-            GameObject neighborObj = GridMap.Instance.GetTile(neighborCoords.x, neighborCoords.y);
+            GameObject neighborObj = GridMap.Instance.GetTileByIndex(neighborCoords.x, neighborCoords.y);
             if (neighborObj != null)
             {
                 neighbors.Add(neighborObj.GetComponent<HexTile>());

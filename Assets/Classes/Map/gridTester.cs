@@ -81,8 +81,8 @@ public class gridTester : MonoBehaviour
         (int, int) startCoordinates = tileCoordinates[startTileIndex];
         (int, int) endCoordinates = tileCoordinates[endTileIndex];
 
-        GameObject startTile = grid.GetTile(startCoordinates.Item1, startCoordinates.Item2);
-        GameObject endTile = grid.GetTile(endCoordinates.Item1, endCoordinates.Item2);
+        GameObject startTile = grid.GetTileByIndex(startCoordinates.Item1, startCoordinates.Item2);
+        GameObject endTile = grid.GetTileByIndex(endCoordinates.Item1, endCoordinates.Item2);
 
         if (startTile == null || endTile == null)
         {
