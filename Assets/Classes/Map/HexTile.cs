@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 public class HexTile : MonoBehaviour
 {
@@ -6,6 +7,8 @@ public class HexTile : MonoBehaviour
     public TileType TileType;    // Type of tile (e.g., Grassland, Forest, etc.)
     public GameObject heldObject;
     public ResourceType resource;
+    public List<GameObject> adjacentTiles = new List<GameObject>(); // Initialize adjacentTiles
+
 
     public void PlaceResourceOnTile(GameObject newObject)
     {
@@ -31,5 +34,18 @@ public class HexTile : MonoBehaviour
     public Vector3 GetTileCoordinates()
     {
         return transform.position;
+    }
+
+    public void FindNeighbors(float range)
+    {
+        Collider[] colliderArray = Physics.OverlapSphere(transform.position, range);
+        foreach (Collider collider3D in colliderArray)
+        {
+            HexTile tile = collider3D.GetComponentInParent<HexTile>();
+            if (tile != null && tile != this)
+            {
+                adjacentTiles.Add(tile.gameObject);
+            }
+        }
     }
 }
