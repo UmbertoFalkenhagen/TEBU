@@ -17,7 +17,7 @@ public class UIClick : MonoBehaviour, IClickable, IRightClickable
     public void OnClick()
     {
         // Verhalten für linken Mausklick
-        Debug.Log("ONCLICK UI");
+        Debug.Log("ONCLICddK UI");
     }      
 
     public void OnRightClick()

@@ -15,6 +15,7 @@ public class gridTester : MonoBehaviour
     void Start()
     {
         GenerateGrid();  // Generate the hex grid on startup
+
         Invoke(nameof(TestPathfinding), 1f);  // Call TestPathfinding with a slight delay to ensure grid is initialized
         Invoke(nameof(TestFindTilesAtEdgeDistance), 1f);  // Call TestFindTilesAtEdgeDistance after grid initialization
     }
@@ -105,7 +106,7 @@ public class gridTester : MonoBehaviour
                 HexTile hexTile = tile.GetComponent<HexTile>();
                 if (hexTile != null)
                 {
-                    Debug.Log($"Tile at: {hexTile.HexCoords}");  // Log each tile’s HexCoords in the path
+                    Debug.Log($"Tile at: {hexTile.HexCoords}");  // Log each tileâ€™s HexCoords in the path
                 }
             }
 
