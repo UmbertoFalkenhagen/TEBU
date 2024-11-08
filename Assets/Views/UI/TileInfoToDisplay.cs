@@ -8,18 +8,17 @@ public class TileInfoToDisplay : MonoBehaviour
     public ActiveTileController activeTileController;  // Referenz zum ActiveTileController
     //
     public string tileType;                          // UI-Text-Element für den Typ des Tiles
-
-
     private GameObject lastActiveTile;
-
+    private SpawnUIButton spawnUIButton;
+    private GameObject inventoryPanel;
     // The UI Elements that need to be changed
     public TextMeshProUGUI resourceTypeText;
     // Speichert das zuletzt aktive Tile
     // Start is called before the first frame update
     void Start()
     {
-        Debug.Log("Typ: ");
-
+        spawnUIButton = FindObjectOfType<SpawnUIButton>();
+        inventoryPanel = GameObject.Find("UICanvas/InventoryPanel");
         // Wenn ActiveTileController nicht zugewiesen ist, versuche, ihn automatisch zu finden
         if (activeTileController == null)
         {
@@ -37,7 +36,7 @@ public class TileInfoToDisplay : MonoBehaviour
             // Wenn ein aktives Tile vorhanden ist, zeige die Infos an
             if (lastActiveTile != null)
             {
-                UpdateTileInfo(lastActiveTile);
+                UpdateTileInfo();
             }
             else
             {
@@ -47,24 +46,40 @@ public class TileInfoToDisplay : MonoBehaviour
         }
     }
     // Methode zum Aktualisieren der UI-Informationen basierend auf dem Tile
-    private void UpdateTileInfo(GameObject tile)
+    private void UpdateTileInfo()
     {
         // Beispiel: Annahme, dass das Tile über ein Script `HexTile` mit den gewünschten Daten verfügt
-        HexTile hexTile = tile.GetComponent<HexTile>();
+        HexTile hexTile = lastActiveTile.GetComponent<HexTile>();
 
         if (hexTile != null)
         {
+            if (hexTile.heldBuilding == null)
+            {
+               //if(stadt in distanc = 1) {show build options }
+               //else if(stadt in distance 2 oder 3) { show you cant build here city to close}
+                if (true)//keine stadt in distance < 4)
+                {
 
+                    spawnUIButton.SpawnButtonBuildCity(inventoryPanel.transform, new Vector2(0, -75)); // Beispiel-Position
+                }
 
-            tileType = "Typ: " + hexTile.resource;
-            resourceTypeText = GameObject.Find("ResourceTypeText").GetComponent<TextMeshProUGUI>();
-            resourceTypeText.text = tileType;
+                //show build Options
+                // }else if(hexTile.heldBuilding == CityCenter) {}
+                //else if(hexTile.heldBuilding == XX) {}
 
-            Debug.Log(tileType);
+                tileType = "Typ: " + hexTile.resource;
+                resourceTypeText = GameObject.Find("ResourceTypeText").GetComponent<TextMeshProUGUI>();
+                resourceTypeText.text = tileType;
+
+                Debug.Log(tileType);
+            }
 
         }
     }
     private void ClearTileInfo() {
         Debug.Log("dd");
     }
+
+
+
 }

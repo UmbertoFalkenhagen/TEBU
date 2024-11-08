@@ -43,6 +43,10 @@ public class ActiveTileController : MonoBehaviour
         deactivate();
         activeTile = null;
     }
+    public GameObject getActiveTileGameObject()
+    {
+        return activeTile;
+    }
 
 
 }

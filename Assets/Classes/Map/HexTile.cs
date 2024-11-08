@@ -4,26 +4,27 @@ public class HexTile : MonoBehaviour
 {
     public Vector2Int HexCoords; // Coordinates in the grid
     public TileType TileType;    // Type of tile (e.g., Grassland, Forest, etc.)
-    public GameObject heldObject;
+    public GameObject heldResource;
+    public GameObject heldBuilding;
     public ResourceType resource;
 
     public void PlaceResourceOnTile(GameObject newObject)
     {
-        if (heldObject != null)
+        if (heldResource != null)
         {
-            Destroy(heldObject);
+            Destroy(heldResource);
         }
 
         Quaternion randomYRotation = Quaternion.Euler(0, Random.Range(0f, 360f), 0);
-        heldObject = Instantiate(newObject, transform.position, randomYRotation, this.transform);
+        heldResource = Instantiate(newObject, transform.position, randomYRotation, this.transform);
     }
 
     public void ClearTile()
     {
-        if (heldObject != null)
+        if (heldResource != null)
         {
-            Destroy(heldObject);
-            heldObject = null;
+            Destroy(heldResource);
+            heldResource = null;
         }
     }
 

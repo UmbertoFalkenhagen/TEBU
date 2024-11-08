@@ -66,15 +66,15 @@ public class TileFactory : MonoBehaviour, IFactory<ScriptableTile>
             hexTileComponent.TileType = tileData.tileType;  // Set the tile type from the ScriptableTile
 
             // Get the initial object to place on the tile and the assigned resource
-            GameObject initialObject = GetInitialObjectForTile(tileData, out ResourceType assignedResource);
+            GameObject initialResource = GetInitialObjectForTile(tileData, out ResourceType assignedResource);
 
             // Store the resource in the HexTile component
             hexTileComponent.resource = assignedResource;
 
             // Place the initial object on the tile
-            if (initialObject != null)
+            if (initialResource != null)
             {
-                hexTileComponent.PlaceResourceOnTile(initialObject);
+                hexTileComponent.PlaceResourceOnTile(initialResource);
             }
         }
         else

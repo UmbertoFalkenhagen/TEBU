@@ -15,7 +15,7 @@ public class gridTester : MonoBehaviour
     void Start()
     {
         GenerateGrid();  // Generate the hex grid on startup
-        Invoke(nameof(TestPathfinding), 1f);  // Call TestPathfinding with a slight delay to ensure grid is initialized
+       // Invoke(nameof(TestPathfinding), 1f);  // Call TestPathfinding with a slight delay to ensure grid is initialized
     }
 
     // Generates the grid using the GridMap class
