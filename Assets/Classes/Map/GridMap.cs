@@ -58,6 +58,7 @@ public class GridMap : MonoBehaviour
 
         tileDictionary.Clear(); // Clear any existing entries in the dictionary
 
+        // Initialize each tile and add it to the dictionary
         for (int x = 0; x < rows; x++)
         {
             for (int y = 0; y < columns; y++)
@@ -82,7 +83,18 @@ public class GridMap : MonoBehaviour
                 tileDictionary[(x, y)] = hexTileObject;
             }
         }
+
+        // After all tiles are initialized, find neighbors for each tile
+        foreach (var tile in tileDictionary.Values)
+        {
+            HexTile hexTileComponent = tile.GetComponent<HexTile>();
+            if (hexTileComponent != null)
+            {
+                hexTileComponent.FindNeighbors(1.5f * cellSize); // Use a range to capture immediate neighbors
+            }
+        }
     }
+
 
     private Vector3 GetHexWorldPosition(Vector2Int coordinate)
     {
@@ -119,6 +131,62 @@ public class GridMap : MonoBehaviour
         tileDictionary.TryGetValue((x, y), out GameObject tile);
         return tile;
     }
+
+    // Get tile by world position
+    public GameObject GetTileByCoordinates(Vector3 worldPosition)
+    {
+        foreach (var tile in tileDictionary)
+        {
+            if (Vector3.Distance(tile.Value.transform.position, worldPosition) < cellSize / 2)
+            {
+                return tile.Value;
+            }
+        }
+        return null;
+    }
+
+    // Get index by tile GameObject
+    public (int, int)? GetIndexByTile(GameObject tile)
+    {
+        foreach (var kvp in tileDictionary)
+        {
+            if (kvp.Value == tile)
+            {
+                return kvp.Key;
+            }
+        }
+        return null;
+    }
+
+    public List<GameObject> FindTilesAtEdgeDistance(GameObject originTile, float range)
+    {
+        List<GameObject> edgeTiles = new List<GameObject>();
+        Vector3 originPosition = originTile.transform.position;
+
+        Collider[] colliderArray = Physics.OverlapSphere(originPosition, cellSize * range *1.5f);
+        foreach (Collider collider3D in colliderArray)
+        {
+            HexTile tile = collider3D.GetComponentInParent<HexTile>();
+
+            if (tile != null && tile.gameObject != originTile)
+            {
+                float distanceToTile = Vector3.Distance(originPosition, tile.transform.position);
+
+                // Check if the tile is at the edge of the range (within a small margin)
+                if (Mathf.Approximately(distanceToTile, range))
+                {
+                    edgeTiles.Add(tile.gameObject);
+                }
+            }
+        }
+
+        return edgeTiles;
+    }
+
+    //GetIndexByCoordinates
+    //GetCoordinatesByTile
+    //GetCoordinatesByIndex
+
 
 
 }

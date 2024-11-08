@@ -63,8 +63,12 @@ public class Pathfinder : MonoBehaviour
                 return path;
             }
 
-            foreach (HexTile neighbor in GetNeighbors(current))
+            // Access the precomputed adjacentTiles list for neighbors
+            foreach (GameObject neighborObj in current.adjacentTiles)
             {
+                HexTile neighbor = neighborObj.GetComponent<HexTile>();
+                if (neighbor == null) continue;
+
                 float newCost = costSoFar[current] + Vector3.Distance(current.GetTileCoordinates(), neighbor.GetTileCoordinates());
 
                 if (!costSoFar.ContainsKey(neighbor) || newCost < costSoFar[neighbor])
@@ -79,34 +83,14 @@ public class Pathfinder : MonoBehaviour
         return new List<GameObject>(); // Return empty if no path found
     }
 
+
+
     // Heuristic function using Euclidean distance
     private float Heuristic(HexTile a, HexTile b)
     {
         return Vector3.Distance(a.GetTileCoordinates(), b.GetTileCoordinates());
     }
 
-    // Retrieves neighboring tiles for a given tile
-    private List<HexTile> GetNeighbors(HexTile tile)
-    {
-        List<HexTile> neighbors = new List<HexTile>();
-        Vector2Int[] directions = {
-            new Vector2Int(1, 0), new Vector2Int(-1, 0),
-            new Vector2Int(0, 1), new Vector2Int(0, -1),
-            new Vector2Int(1, -1), new Vector2Int(-1, 1)
-        };
-
-        foreach (Vector2Int direction in directions)
-        {
-            Vector2Int neighborCoords = tile.HexCoords + direction;
-            GameObject neighborObj = GridMap.Instance.GetTileByIndex(neighborCoords.x, neighborCoords.y);
-            if (neighborObj != null)
-            {
-                neighbors.Add(neighborObj.GetComponent<HexTile>());
-            }
-        }
-
-        return neighbors;
-    }
 
     // Reconstruct the path by tracing back from the goal
     private List<GameObject> ReconstructPath(Dictionary<HexTile, HexTile> cameFrom, HexTile current)
