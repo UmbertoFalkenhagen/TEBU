@@ -120,5 +120,36 @@ public class GridMap : MonoBehaviour
         return tile;
     }
 
+    // Get tile by world position
+    public GameObject GetTileByCoordinates(Vector3 worldPosition)
+    {
+        foreach (var tile in tileDictionary)
+        {
+            if (Vector3.Distance(tile.Value.transform.position, worldPosition) < cellSize / 2)
+            {
+                return tile.Value;
+            }
+        }
+        return null;
+    }
+
+    // Get index by tile GameObject
+    public (int, int)? GetIndexByTile(GameObject tile)
+    {
+        foreach (var kvp in tileDictionary)
+        {
+            if (kvp.Value == tile)
+            {
+                return kvp.Key;
+            }
+        }
+        return null;
+    }
+
+    //GetIndexByCoordinates
+    //GetCoordinatesByTile
+    //GetCoordinatesByIndex
+
+
 
 }
