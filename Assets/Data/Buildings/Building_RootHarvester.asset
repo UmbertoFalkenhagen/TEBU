@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ed1f6ac7ce48cd4c8149d17d48f76aa, type: 3}
+  m_Name: Building_RootHarvester
+  m_EditorClassIdentifier: 
+  buildingName: 5
+  basicPrefab: {fileID: 4600272459109475472, guid: fb36a05429d277941812d0c6694e16e1, type: 3}
+  product: 4
+  productionPerWorker: 2
+  isMaxWorkersFixed: 0
+  maxWorkers: 0
+  inputProducts: []

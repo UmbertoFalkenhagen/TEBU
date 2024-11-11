@@ -9,9 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: Brickhut
-  m_EditorClassIdentifier: Assembly-CSharp::ScriptableBuilding
+  m_Script: {fileID: 11500000, guid: 4ed1f6ac7ce48cd4c8149d17d48f76aa, type: 3}
+  m_Name: Building_Brickhut
+  m_EditorClassIdentifier: 
   buildingName: 0
   basicPrefab: {fileID: 4973773096736976616, guid: 12be831f35f69724aa549062269af57a, type: 3}
   product: 0
