@@ -8,6 +8,7 @@ public class gridTester : MonoBehaviour
     public int columns;                      // Number of columns in the hex grid
     public float cellSize;                   // Size of each hex cell
     public List<ScriptableTile> tileListScriptable;  // List of ScriptableTile objects
+    public List<ScriptableCityCenter> cityCenterScriptables;
 
     private GridMap grid;  // Reference to the GridMap component
 
@@ -17,7 +18,8 @@ public class gridTester : MonoBehaviour
         GenerateGrid();  // Generate the hex grid on startup
 
         //Invoke(nameof(TestPathfinding), 1f);  // Call TestPathfinding with a slight delay to ensure grid is initialized
-        Invoke(nameof(TestFindTilesAtEdgeDistance), 1f);  // Call TestFindTilesAtEdgeDistance after grid initialization
+        //Invoke(nameof(TestFindTilesAtEdgeDistance), 1f);  // Call TestFindTilesAtEdgeDistance after grid initialization
+        Invoke(nameof(TestCityCenterPlacement), 1f);  // Call TestCityCenterPlacement with a delay to ensure grid is initialized
     }
 
     // Generates the grid using the GridMap class
@@ -48,7 +50,7 @@ public class gridTester : MonoBehaviour
         // Only initialize the grid if it hasn't been initialized already
         if (grid.tileDictionary == null || grid.tileDictionary.Count == 0)
         {
-            grid.InitializeGrid(rows, columns, tileListScriptable, cellSize);
+            grid.InitializeGrid(rows, columns, tileListScriptable, cityCenterScriptables, cellSize);
         }
         else
         {
@@ -138,6 +140,52 @@ public class gridTester : MonoBehaviour
         if (edgeTiles.Count > 0)
         {
             Pathfinder.Instance.VisualizePath(edgeTiles);
+        }
+    }
+
+    // Test function to place a city center on a randomly selected tile
+    void TestCityCenterPlacement()
+    {
+        // Get a random tile from the grid
+        (GameObject randomTile, (int, int) tileIndex) = grid.GetRandomTile();
+        if (randomTile == null)
+        {
+            Debug.LogError("Failed to retrieve a random tile.");
+            return;
+        }
+
+        // Get the HexTile component to check the tile's type
+        HexTile hexTile = randomTile.GetComponent<HexTile>();
+        if (hexTile == null)
+        {
+            Debug.LogError("HexTile component missing on the selected random tile.");
+            return;
+        }
+
+        TileType tileType = hexTile.TileType;
+
+        // Find a ScriptableCityCenter that can be constructed on this tile type
+        ScriptableCityCenter matchingCityCenter = cityCenterScriptables.Find(center => center.cityLocation == tileType);
+
+        if (matchingCityCenter != null)
+        {
+            Debug.Log($"Placing city center of type '{matchingCityCenter.name}' on tile at index {tileIndex} of type '{tileType}'.");
+
+            // Use the CityCenterFactory to create the city center on this tile
+            GameObject cityCenterObject = CityCenterFactory.Instance.CreateObject(matchingCityCenter, randomTile, Quaternion.identity, randomTile);
+            if (cityCenterObject != null)
+            {
+                hexTile.heldBuilding = cityCenterObject;  // Store the city center in the tile's held building
+                hexTile.ClearTileResource();  // Deactivate any existing resource on the tile
+            }
+            else
+            {
+                Debug.LogError("Failed to instantiate city center on the selected tile.");
+            }
+        }
+        else
+        {
+            Debug.LogWarning($"No matching city center found for tile of type '{tileType}' at index {tileIndex}.");
         }
     }
 

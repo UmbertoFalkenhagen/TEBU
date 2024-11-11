@@ -3,7 +3,7 @@ using UnityEngine;
 /// <summary>
 /// Factory class for creating tile GameObjects from ScriptableTile data.
 /// </summary>
-public class TileFactory : MonoBehaviour, IFactory<ScriptableTile>
+public class TileFactory : MonoBehaviour
 {
     // Singleton pattern for global access (optional)
     public static TileFactory Instance;
