@@ -204,7 +204,7 @@ public class GridMap : MonoBehaviour
         {
             HexTile tile = collider3D.GetComponentInParent<HexTile>();
 
-            if (tile != null && tile.gameObject != originTile)
+            if (tile != null)
             {
                 tilesWithinRange.Add(tile.gameObject);
             }

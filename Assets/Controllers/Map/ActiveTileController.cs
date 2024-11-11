@@ -4,6 +4,22 @@ using UnityEngine;
 
 public class ActiveTileController : MonoBehaviour
 {
+    #region Singleton
+    public static ActiveTileController Instance;
+
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject); // Destroy any duplicate GridMap instances
+            return; // Prevents further initialization in this instance
+        }
+    }
+    #endregion
     // Das aktuell aktive Tile
     public GameObject activeTile;
 
