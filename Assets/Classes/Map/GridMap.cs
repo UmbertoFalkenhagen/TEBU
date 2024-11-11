@@ -163,16 +163,72 @@ public class GridMap : MonoBehaviour
         List<GameObject> edgeTiles = new List<GameObject>();
         Vector3 originPosition = originTile.transform.position;
 
-        Collider[] colliderArray = Physics.OverlapSphere(originPosition, cellSize * range *1.5f);
+        // Define the overlap sphere radius based on the specified range and cell size
+        float sphereRadius = cellSize * range * 1.5f;
+
+        // Use OverlapSphere to find all potential tiles in the specified range
+        Collider[] colliderArray = Physics.OverlapSphere(originPosition, sphereRadius);
         foreach (Collider collider3D in colliderArray)
         {
             HexTile tile = collider3D.GetComponentInParent<HexTile>();
-            edgeTiles.Add(tile.gameObject);
-            
+
+            if (tile != null && tile.gameObject != originTile)
+            {
+                // Use CalculatePath to determine if the tile is exactly "range" steps away
+                List<GameObject> path = Pathfinder.Instance.CalculatePath(originTile, tile.gameObject);
+
+                // Check if the path length is exactly "range + 1" (including origin and destination)
+                if (path != null && path.Count == range + 1)
+                {
+                    edgeTiles.Add(tile.gameObject);
+                }
+            }
         }
 
         return edgeTiles;
     }
+
+    public List<GameObject> FindTilesWithinRange(GameObject originTile, float range)
+    {
+        List<GameObject> tilesWithinRange = new List<GameObject>();
+        Vector3 originPosition = originTile.transform.position;
+
+        // Define the overlap sphere radius based on the specified range and cell size
+        float sphereRadius = cellSize * range;
+
+        // Use OverlapSphere to find all potential tiles within the specified range
+        Collider[] colliderArray = Physics.OverlapSphere(originPosition, sphereRadius);
+        foreach (Collider collider3D in colliderArray)
+        {
+            HexTile tile = collider3D.GetComponentInParent<HexTile>();
+
+            if (tile != null && tile.gameObject != originTile)
+            {
+                tilesWithinRange.Add(tile.gameObject);
+            }
+        }
+
+        return tilesWithinRange;
+    }
+
+
+    public (GameObject, (int, int)) GetRandomTile()
+    {
+        if (tileDictionary == null || tileDictionary.Count == 0)
+        {
+            Debug.LogWarning("Tile dictionary is empty. Cannot return a random tile.");
+            return (null, (-1, -1));
+        }
+
+        // Get a random key from the dictionary
+        List<(int, int)> keys = new List<(int, int)>(tileDictionary.Keys);
+        (int, int) randomKey = keys[Random.Range(0, keys.Count)];
+
+        return (tileDictionary[randomKey], randomKey);
+    }
+
+
+
 
     //GetIndexByCoordinates
     //GetCoordinatesByTile

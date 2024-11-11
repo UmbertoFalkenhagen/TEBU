@@ -16,7 +16,7 @@ public class gridTester : MonoBehaviour
     {
         GenerateGrid();  // Generate the hex grid on startup
 
-        Invoke(nameof(TestPathfinding), 1f);  // Call TestPathfinding with a slight delay to ensure grid is initialized
+        //Invoke(nameof(TestPathfinding), 1f);  // Call TestPathfinding with a slight delay to ensure grid is initialized
         Invoke(nameof(TestFindTilesAtEdgeDistance), 1f);  // Call TestFindTilesAtEdgeDistance after grid initialization
     }
 
@@ -59,40 +59,22 @@ public class gridTester : MonoBehaviour
     // Test the pathfinding between two randomly selected tiles from the GridMap's dictionary
     void TestPathfinding()
     {
-        // Ensure the grid and tileDictionary are initialized
         if (grid == null || grid.tileDictionary == null || grid.tileDictionary.Count < 2)
         {
             Debug.LogError("GridMap is not fully initialized or tileDictionary has fewer than 2 tiles.");
             return;
         }
 
-        // Convert the tile dictionary keys (coordinates) to a list
-        List<(int, int)> tileCoordinates = new List<(int, int)>(grid.tileDictionary.Keys);
+        // Get two distinct random tiles and their indexes from the grid
+        (GameObject startTile, (int, int) startIndex) = grid.GetRandomTile();
+        (GameObject endTile, (int, int) endIndex) = grid.GetRandomTile();
 
-        // Randomly select two tiles from the list
-        int startTileIndex = Random.Range(0, tileCoordinates.Count);
-        int endTileIndex = Random.Range(0, tileCoordinates.Count);
-
-        // Ensure that start and end tiles are different
-        while (startTileIndex == endTileIndex)
+        while (endTile == startTile) // Ensure start and end tiles are different
         {
-            endTileIndex = Random.Range(0, tileCoordinates.Count);
+            (endTile, endIndex) = grid.GetRandomTile();
         }
 
-        // Get the corresponding GameObjects for the randomly selected start and end tiles
-        (int, int) startCoordinates = tileCoordinates[startTileIndex];
-        (int, int) endCoordinates = tileCoordinates[endTileIndex];
-
-        GameObject startTile = grid.GetTileByIndex(startCoordinates.Item1, startCoordinates.Item2);
-        GameObject endTile = grid.GetTileByIndex(endCoordinates.Item1, endCoordinates.Item2);
-
-        if (startTile == null || endTile == null)
-        {
-            Debug.LogError("Start or End tile not found. Pathfinding test aborted.");
-            return;
-        }
-
-        Debug.Log($"Pathfinding Test: Start Tile at {startCoordinates}, End Tile at {endCoordinates}");
+        Debug.Log($"Pathfinding Test: Start Tile at {startIndex}, End Tile at {endIndex}");
 
         // Calculate the path between the start and end tiles
         List<GameObject> path = Pathfinder.Instance.CalculatePath(startTile, endTile);
@@ -119,7 +101,6 @@ public class gridTester : MonoBehaviour
         }
     }
 
-    // Test the FindTilesAtEdgeDistance function
     void TestFindTilesAtEdgeDistance()
     {
         if (grid == null || grid.tileDictionary == null || grid.tileDictionary.Count == 0)
@@ -128,23 +109,22 @@ public class gridTester : MonoBehaviour
             return;
         }
 
-        // Select a random tile from the grid
-        List<(int, int)> tileCoordinates = new List<(int, int)>(grid.tileDictionary.Keys);
-        (int, int) randomTileIndex = tileCoordinates[Random.Range(0, tileCoordinates.Count)];
-        GameObject randomTile = grid.GetTileByIndex(randomTileIndex.Item1, randomTileIndex.Item2);
-
+        // Select a random tile from the grid and get its index
+        (GameObject randomTile, (int, int) randomTileIndex) = grid.GetRandomTile();
         if (randomTile == null)
         {
-            Debug.LogError("Random tile not found in the dictionary.");
+            Debug.LogError("Failed to retrieve a random tile.");
             return;
         }
 
-        // Find tiles exactly at the edge distance of 2f from the selected tile
-        List<GameObject> edgeTiles = grid.FindTilesAtEdgeDistance(randomTile, 2f);
-        Debug.Log(edgeTiles.Count);
+        float range = 3f;
+
+        // Find tiles exactly at the edge distance of 3f from the selected tile
+        List<GameObject> edgeTiles = grid.FindTilesAtEdgeDistance(randomTile, range);
 
         // Log the results
-        Debug.Log($"Tiles exactly at distance 2f from tile at index {randomTileIndex}:");
+        Debug.Log("Number of tiles at edge distance: " + edgeTiles.Count);
+        Debug.Log($"Tiles exactly at distance {range} from tile at index {randomTileIndex}:");
         foreach (GameObject tile in edgeTiles)
         {
             HexTile hexTile = tile.GetComponent<HexTile>();
@@ -160,6 +140,7 @@ public class gridTester : MonoBehaviour
             Pathfinder.Instance.VisualizePath(edgeTiles);
         }
     }
+
 
     // Update is called once per frame (if needed for further interactions)
     void Update()
