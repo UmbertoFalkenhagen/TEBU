@@ -7,8 +7,9 @@ public class SpawnUIButton : MonoBehaviour
     private GameObject buttonInstance; // Die Instanz des Buttons
 
     // Diese Methode erstellt und platziert den Button zur Laufzeit
-    public void SpawnButtonBuildCity(Transform parentTransform, Vector2 position)
+    public void SpawnButtonBuildCity(Transform parentTransform)
     {
+
         // Vergewissere dich, dass das Prefab zugewiesen ist
         if (buttonPrefab == null)
         {
@@ -27,7 +28,6 @@ public class SpawnUIButton : MonoBehaviour
 
         // Setze die Position des Buttons (als RectTransform)
         RectTransform rectTransform = buttonInstance.GetComponent<RectTransform>();
-        rectTransform.anchoredPosition = position;
 
         // Optional: Setze eine Funktion für den Button-Click
         Button button = buttonInstance.GetComponent<Button>();
