@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ffc9f0b09238cb84a9e48649a9f8aa8e, type: 3}
+  m_Name: CityCenter_Forest
+  m_EditorClassIdentifier: 
+  cityLocation: 1
+  basicPrefab: {fileID: 1034066600723307010, guid: 86dcc28ed5d6e4e4a8c24e5c09d32cec, type: 3}
+  upgradedPrefab: {fileID: 0}
