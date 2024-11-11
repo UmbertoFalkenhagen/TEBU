@@ -75,12 +75,17 @@ public class TileInfoToDisplay : MonoBehaviour
 
                 uiElementGenerator.CreateText(new Vector2(100, 100), "Typ: " + hexTile.resource );
 
-            }else
-            {
-                //TODO: ADD behaviour when city is clicked
             }
+            else
+            {
+            //TODO: ADD behaviour when city is clicked
+                ClearTileInfo();
+                uiElementGenerator.CreateText(new Vector2(100, 100), "Hello, im a Building");
 
-        
+             }
+
+
+
     }
     private void ClearTileInfo() {
         uiElementGenerator.DestroyAllUIElements();
