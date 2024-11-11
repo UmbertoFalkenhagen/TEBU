@@ -25,13 +25,14 @@ public class GridMap : MonoBehaviour
     public float cellSize;
     public Dictionary<(int, int), GameObject> tileDictionary = new Dictionary<(int, int), GameObject>();
     public List<ScriptableTile> tileListScriptable;
+    public List<ScriptableCityCenter> scriptableCityCenters;
 
     private void Start()
     {
         InitializePathfinder(); // Ensure Pathfinder exists
         if (tileDictionary.Count == 0) // Only initialize the grid if it hasn't been populated yet
         {
-            InitializeGrid(rows, columns, tileListScriptable, cellSize);
+            InitializeGrid(rows, columns, tileListScriptable, scriptableCityCenters, cellSize);
         }
     }
 
@@ -43,11 +44,12 @@ public class GridMap : MonoBehaviour
         }
     }
 
-    public void InitializeGrid(int _rows, int _columns, List<ScriptableTile> _tileListScriptable, float _cellSize)
+    public void InitializeGrid(int _rows, int _columns, List<ScriptableTile> _tileListScriptable, List<ScriptableCityCenter> _scriptableCityCenters, float _cellSize)
     {
         this.rows = _rows;
         this.columns = _columns;
         this.tileListScriptable = _tileListScriptable;
+        this.scriptableCityCenters = _scriptableCityCenters;
         this.cellSize = _cellSize;
 
         if (tileListScriptable == null || tileListScriptable.Count == 0)

@@ -10,8 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 0}
-  m_Name: CC_Grassland
-  m_EditorClassIdentifier: Assembly-CSharp::ScriptableCityCenter
-  cityLocation: 0
-  basicPrefab: {fileID: 1034066600723307010, guid: 86dcc28ed5d6e4e4a8c24e5c09d32cec, type: 3}
-  upgradedPrefab: {fileID: 0}
+  m_Name: Brickhut
+  m_EditorClassIdentifier: Assembly-CSharp::ScriptableBuilding
+  buildingName: 0
+  basicPrefab: {fileID: 4973773096736976616, guid: 12be831f35f69724aa549062269af57a, type: 3}
+  product: 0
+  productionPerWorker: 2
+  isMaxWorkersFixed: 0
+  maxWorkers: 0
+  inputProducts: []

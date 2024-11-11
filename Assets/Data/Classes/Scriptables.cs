@@ -102,6 +102,9 @@ public class ScriptableBuilding : ScriptableObject
     [Tooltip("The type of building (e.g., WheatFarm, Brickhut, etc.). If the building you're looking for, you might have to add it to the Buildings enum.")]
     public BuildingType buildingName;
 
+    [Tooltip("The prefab representing the initial version of the building.")]
+    public GameObject basicPrefab;
+
     [Tooltip("The type of product this building produces.")]
     public ProductType product;
 

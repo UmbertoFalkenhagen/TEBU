@@ -22,12 +22,12 @@ public class HexTile : MonoBehaviour
         heldResource = Instantiate(newObject, transform.position, randomYRotation, this.transform);
     }
 
-    public void ClearTile()
+    public void ClearTileResource()
     {
         if (heldResource != null)
         {
-            Destroy(heldResource);
-            heldResource = null;
+            heldResource.SetActive(false);
+            //heldResource = null;
         }
     }
 
