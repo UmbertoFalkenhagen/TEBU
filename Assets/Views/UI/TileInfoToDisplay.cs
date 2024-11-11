@@ -3,24 +3,21 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using TMPro.Examples;  // Namespace für TextMeshPro
+using UnityEngine.UI;
 public class TileInfoToDisplay : MonoBehaviour
 {
     //
     public string tileType;                          // UI-Text-Element für den Typ des Tiles
     private GameObject lastActiveTile;
-    private SpawnUIButton spawnUIButton;
-    private GameObject inventoryPanel;
+    private UIElementGenerator uiElementGenerator;
+    private ButtonActions buttonActions;
     // The UI Elements that need to be changed
-    public TextMeshProUGUI resourceTypeText;
     // Speichert das zuletzt aktive Tile
     // Start is called before the first frame update
     void Start()
     {
-        spawnUIButton = FindObjectOfType<SpawnUIButton>();
-        inventoryPanel = GameObject.Find("UICanvas/InventoryPanel/Grid");
-        Debug.Log(inventoryPanel);
-
-
+        uiElementGenerator = FindObjectOfType<UIElementGenerator>();
+        buttonActions = GameObject.FindObjectOfType<ButtonActions>();
     }
 
     // Update is called once per frame
@@ -42,29 +39,33 @@ public class TileInfoToDisplay : MonoBehaviour
             }
         }
     }
-    // Methode zum Aktualisieren der UI-Informationen basierend auf dem Tile
+    /* Methode zum Aktualisieren der UI-Informationen basierend auf dem Tile
+     * Updates UI Based on Clicked Tile
+     * 
+     * 
+    */
     private void UpdateTileInfo()
     {
         // Beispiel: Annahme, dass das Tile über ein Script `HexTile` mit den gewünschten Daten verfügt
         HexTile hexTile = lastActiveTile.GetComponent<HexTile>();
+        if (hexTile == null) return;
         List<GameObject> hexTileObjects = GridMap.Instance.FindTilesWithinRange(lastActiveTile, 3);
 
-
-        if (hexTile != null)
-        {
             if (hexTile.heldBuilding == null)
             {
-               if(!IsCityInHeldBuilding(hexTileObjects)) {
+               if(!IsCityInHeldBuilding(hexTileObjects)) 
+                {
+                Debug.Log("test");
+                    uiElementGenerator.CreateButton(new Vector2(100, 100), "BuildCC", buttonActions.BuildCity);
 
-                 spawnUIButton.SpawnButtonBuildCity(inventoryPanel.transform); // Beispiel-Position
-
-
-
+                }
+                else
+                {
+                    ClearTileInfo();
                 }
                 //else if(stadt in distance 2 oder 3) { show you cant build here city to close}
                 if (true)//keine stadt in distance < 4)
                 {
-                    Debug.Log("spawn: " + spawnUIButton);
 
                 }
 
@@ -72,17 +73,17 @@ public class TileInfoToDisplay : MonoBehaviour
                 // }else if(hexTile.heldBuilding == CityCenter) {}
                 //else if(hexTile.heldBuilding == XX) {}
 
-                tileType = "Typ: " + hexTile.resource;
-                resourceTypeText = GameObject.Find("ResourceTypeText").GetComponent<TextMeshProUGUI>();
-                resourceTypeText.text = tileType;
+                uiElementGenerator.CreateText(new Vector2(100, 100), "Typ: " + hexTile.resource );
 
-                Debug.Log(tileType);
+            }else
+            {
+                //TODO: ADD behaviour when city is clicked
             }
 
-        }
+        
     }
     private void ClearTileInfo() {
-        Debug.Log("dd");
+        uiElementGenerator.DestroyAllUIElements();
     }
 
 
@@ -100,9 +101,9 @@ public class TileInfoToDisplay : MonoBehaviour
             HexTile hexTile = hexTileObject.GetComponent<HexTile>();
 
             // Prüfen, ob das HexTile-Skript existiert und ob heldBuilding "city" ist
-            if (hexTile != null && hexTile.heldBuilding != null && hexTile.heldBuilding.name == "city")
+            if (hexTile != null && hexTile.heldBuilding != null && hexTile.heldBuilding.name == "CityCenter(Clone)")
             {
-                Debug.Log("CITY FOUND ON: " + hexTileObject.transform.position);
+
                 return true;  // Wenn ein HexTile-Objekt "city" enthält, gib true zurück
             }
         }
