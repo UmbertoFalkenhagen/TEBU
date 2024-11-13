@@ -3,7 +3,6 @@ using UnityEngine;
 
 public class ButtonActions : MonoBehaviour
 {
-    public List<ScriptableCityCenter> cityCenterScriptables;
     // Funktion zum Bauen einer Stadt
     public void BuildCity()
     {
@@ -20,6 +19,11 @@ public class ButtonActions : MonoBehaviour
         hexTile.PlaceCityCenterOnTile(matchingCityCenter);
 
         // Weitere Logik zum Bau einer Stadt
+    }
+
+    public void BuildBuilding()
+    {
+
     }
 
     // Funktion für den Angriff auf den Feind

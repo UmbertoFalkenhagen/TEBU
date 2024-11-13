@@ -3,7 +3,6 @@ using UnityEngine;
 
 public class CityCenter : MonoBehaviour
 {
-    public ScriptableCityCenter cityCenterData;
 
     // Inventory of products available in the city
     public Dictionary<ProductType, int> productInventory = new Dictionary<ProductType, int>();
@@ -11,8 +10,6 @@ public class CityCenter : MonoBehaviour
     // Initialize the city center with given data
     public void Initialize(ScriptableCityCenter data)
     {
-        cityCenterData = data;
-
         // Initialize product inventory (e.g., start with no products)
         foreach (ProductType product in System.Enum.GetValues(typeof(ProductType)))
         {

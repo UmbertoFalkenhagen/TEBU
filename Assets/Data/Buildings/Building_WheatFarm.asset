@@ -14,6 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   buildingName: 1
   basicPrefab: {fileID: 4512097725937966600, guid: 77b1592d658465a4d985aa1ddaf8f87a, type: 3}
+  suitableTileTypeLocations: 00000000
+  requiredResources: 00000000
   product: 2
   productionPerWorker: 3
   isMaxWorkersFixed: 0
