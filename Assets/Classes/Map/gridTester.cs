@@ -9,6 +9,7 @@ public class gridTester : MonoBehaviour
     public float cellSize;                   // Size of each hex cell
     public List<ScriptableTile> tileListScriptable;  // List of ScriptableTile objects
     public List<ScriptableCityCenter> cityCenterScriptables;
+    public List<ScriptableBuilding> buildingScriptables;
 
     private GridMap grid;  // Reference to the GridMap component
 
@@ -50,7 +51,7 @@ public class gridTester : MonoBehaviour
         // Only initialize the grid if it hasn't been initialized already
         if (grid.tileDictionary == null || grid.tileDictionary.Count == 0)
         {
-            grid.InitializeGrid(rows, columns, tileListScriptable, cityCenterScriptables, cellSize);
+            grid.InitializeGrid(rows, columns, tileListScriptable, cityCenterScriptables, buildingScriptables, cellSize);
         }
         else
         {
