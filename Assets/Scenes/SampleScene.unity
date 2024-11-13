@@ -510,6 +510,15 @@ MonoBehaviour:
   cityCenterScriptables:
   - {fileID: 11400000, guid: 4cba1db2efb9d0e439a0ddefed62790f, type: 2}
   - {fileID: 11400000, guid: c135fb0588b040748b5f1e651d45eeb2, type: 2}
+  buildingScriptables:
+  - {fileID: 11400000, guid: 15f54bdf47604834182af3c798d63881, type: 2}
+  - {fileID: 11400000, guid: d532f56aacbe79849b2a6cf90f8f7beb, type: 2}
+  - {fileID: 11400000, guid: f3c2676d87a651049bd9de08816f309e, type: 2}
+  - {fileID: 11400000, guid: ace7ef82736a9f548816435a2a98881c, type: 2}
+  - {fileID: 11400000, guid: 9d3fdd0c56c255e4ea474d26250a282f, type: 2}
+  - {fileID: 11400000, guid: 2e5ce3d352c59f644a3cd0184f110996, type: 2}
+  - {fileID: 11400000, guid: 92346a6ef4c560c4f80a69c39ec4db2a, type: 2}
+  - {fileID: 11400000, guid: 4a69c8b056fbf3d4494ce6d47c2ca5ff, type: 2}
 --- !u!4 &352452916
 Transform:
   m_ObjectHideFlags: 0
@@ -1026,7 +1035,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad17b5d2c2c0b5643a38eb7558cc2e24, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cityCenterScriptables: []
 --- !u!1 &1806474805
 GameObject:
   m_ObjectHideFlags: 0
