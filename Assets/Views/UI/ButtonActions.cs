@@ -17,7 +17,7 @@ public class ButtonActions : MonoBehaviour
         TileType tileType = hexTile.TileType;
         Debug.Log("City wird gebaut!");
         ScriptableCityCenter matchingCityCenter = GridMap.Instance.scriptableCityCenters.Find(center => center.cityLocation == tileType);
-        GameObject cityCenterObject = CityCenterFactory.Instance.CreateObject(matchingCityCenter, ActiveTileController.Instance.getActiveTileGameObject(), Quaternion.identity, ActiveTileController.Instance.getActiveTileGameObject());
+        hexTile.PlaceCityCenterOnTile(matchingCityCenter);
 
         // Weitere Logik zum Bau einer Stadt
     }
