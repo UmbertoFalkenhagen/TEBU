@@ -9,7 +9,7 @@ public class TileInfoToDisplay : MonoBehaviour
 {
     //
     public string tileType;                          // UI-Text-Element für den Typ des Tiles
-    private GameObject lastActiveTile;
+    private GameObject activeTile;
     private UIElementGenerator uiElementGenerator;
     private ButtonActions buttonActions;
     // The UI Elements that need to be changed
@@ -24,13 +24,18 @@ public class TileInfoToDisplay : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        GameObject currentActiveTile = ActiveTileController.Instance.getActiveTileGameObject();
+        getCurrentTile();
+    }
 
-        if (currentActiveTile != lastActiveTile)
+    public void getCurrentTile()
+    {
+        GameObject newTile = ActiveTileController.Instance.getActiveTileGameObject();
+
+        if (newTile != activeTile)
         {
-            lastActiveTile = currentActiveTile;
+            activeTile = newTile;
 
-            if (currentActiveTile != null)
+            if (activeTile != null)
             {
                 UpdateTileInfo();
             }
@@ -47,7 +52,7 @@ public class TileInfoToDisplay : MonoBehaviour
     */
     private void UpdateTileInfo()
     {
-        HexTile hexTile = lastActiveTile.GetComponent<HexTile>();
+        HexTile hexTile = activeTile.GetComponent<HexTile>();
         if (hexTile == null) return;
 
         float xPosition = 100; // Initial x position for placing UI buttons
@@ -56,21 +61,17 @@ public class TileInfoToDisplay : MonoBehaviour
         uiElementGenerator.DestroyAllUIElements();
 
         // Check if there is a city center adjacent to the selected tile
-        bool hasAdjacentCityCenter = IsCityInHeldBuilding(GridMap.Instance.FindTilesWithinRange(lastActiveTile, 1.5f));
-
+        bool hasAdjacentCityCenter = IsCityInHeldBuilding(GridMap.Instance.FindTilesWithinRange(activeTile, 1.5f));
         // Check if there is a city center within 3 tiles
-        bool cityCenterNearby = IsCityInHeldBuilding(GridMap.Instance.FindTilesWithinRange(lastActiveTile, 3f));
+        bool cityCenterNearby = IsCityInHeldBuilding(GridMap.Instance.FindTilesWithinRange(activeTile, 3f));
 
         // Show "Build City Center" button if no city center is within 3 tiles
-        if (hexTile.heldBuilding == null && !cityCenterNearby)
+        if (!cityCenterNearby)
         {
-            uiElementGenerator.CreateButton(new Vector2(xPosition, 100), "BuildCC", buttonActions.BuildCity);
+            uiElementGenerator.CreateButton(new Vector2(xPosition, 100), $"Construct CC", buttonActions.BuildCity);
         }
-
-        // If a city center is adjacent, check for all constructible buildings
-        else if (hexTile.heldBuilding == null && hasAdjacentCityCenter)
+        else if (hexTile.heldBuilding == null && hasAdjacentCityCenter) // if there is no city center close 
         {
-
             List<ScriptableBuilding> buildingOptions = hexTile.getAllowedBuildings();
             foreach (ScriptableBuilding buildingOption in buildingOptions)
             {
