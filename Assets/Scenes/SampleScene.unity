@@ -945,6 +945,7 @@ GameObject:
   - component: {fileID: 1565967421}
   - component: {fileID: 1565967422}
   - component: {fileID: 1565967423}
+  - component: {fileID: 1565967424}
   m_Layer: 0
   m_Name: Factories
   m_TagString: Untagged
@@ -989,6 +990,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5afff36f16787aa45946beed886dd941, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1565967424
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1565967420}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 095740ff51559d94bb8213b65aab7d67, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1788731008

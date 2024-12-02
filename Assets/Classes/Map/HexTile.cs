@@ -55,7 +55,20 @@ public class HexTile : MonoBehaviour
     // Placeholder for placing a generic building on the tile
     public void PlaceBuildingOnTile(ScriptableBuilding buildingData)
     {
-        // Empty for now, will be implemented later
+        ClearTileResource();
+
+        if (BuildingFactory.Instance == null)
+        {
+            Debug.LogError("BuildingFactory instance is null. Make sure CityCenterFactory is instantiated correctly.");
+            return;
+        }
+
+        // Use BuildingFactory to create the city center on this tile
+        heldBuilding = BuildingFactory.Instance.CreateObject(buildingData, this.gameObject, Quaternion.identity, this.gameObject);
+        if (heldBuilding == null)
+        {
+            Debug.LogError("Failed to instantiate building using BuildingFactory.");
+        }
     }
 
     // Method to remove the held building from the tile
