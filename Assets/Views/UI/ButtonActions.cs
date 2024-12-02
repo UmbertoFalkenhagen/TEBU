@@ -16,6 +16,7 @@ public class ButtonActions : MonoBehaviour
             hexTile.PlaceCityCenterOnTile(matchingCityCenter);
             Debug.Log("City Center built!");
 
+
     }
 
     // Function to build the specified building on the selected tile
@@ -36,8 +37,10 @@ public class ButtonActions : MonoBehaviour
         {
             Debug.Log("A building already exists on this tile.");
         }
-        
-        
+    }
+    public void CloseButton ()
+    {
+
 
     }
 }
