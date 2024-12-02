@@ -34,7 +34,9 @@ public class BuildingFactory : MonoBehaviour, IFactory<ScriptableBuilding>
             return null;
         }
 
-        // Add and initialize Building component
+        // Add and initialize CityCenter component
+        Building buildingComponent = buildingObject.AddComponent<Building>();
+        buildingComponent.Initialize(data);
 
         return buildingObject;
     }
