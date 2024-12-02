@@ -4,6 +4,7 @@ using UnityEngine;
 using TMPro;
 using TMPro.Examples;  // Namespace für TextMeshPro
 using UnityEngine.UI;
+using System.Runtime.InteropServices.WindowsRuntime;
 public class TileInfoToDisplay : MonoBehaviour
 {
     //
@@ -67,7 +68,7 @@ public class TileInfoToDisplay : MonoBehaviour
         }
 
         // If a city center is adjacent, check for all constructible buildings
-        else if (hasAdjacentCityCenter)
+        else if (hexTile.heldBuilding == null && hasAdjacentCityCenter)
         {
 
             List<ScriptableBuilding> buildingOptions = hexTile.getAllowedBuildings();
@@ -110,5 +111,6 @@ public class TileInfoToDisplay : MonoBehaviour
 
         return false;  // Falls keines der HexTiles "city" enthält
     }
+
 
 }
