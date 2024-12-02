@@ -69,61 +69,18 @@ public class TileInfoToDisplay : MonoBehaviour
         // If a city center is adjacent, check for all constructible buildings
         else if (hasAdjacentCityCenter)
         {
-            List<string> buildingOptions = new List<string>(); // To store building names for logging
 
-            foreach (var building in GridMap.Instance.scriptableBuildings)
+            List<ScriptableBuilding> buildingOptions = hexTile.getAllowedBuildings();
+            foreach (ScriptableBuilding buildingOption in buildingOptions)
             {
-                // Check if the building can be placed on this tile based on its type and required resources
-                if (building.suitableTileTypeLocations.Contains(hexTile.TileType) && HasRequiredResources(hexTile, building.requiredResources))
-                {
-                    // Log the building option and add its name to the list for debug logging
-                    buildingOptions.Add(building.buildingName.ToString());
-
-                    // Create a button for each eligible building with a unique action
-                    var buildingButton = uiElementGenerator.CreateButton(
-                        new Vector2(xPosition, 100),
-                        $"Construct {building.buildingName}",
-                        () => buttonActions.BuildBuilding(building) // Assign this building to the button’s action
-                    );
-
-                    if (buildingButton != null)
-                    {
-                        xPosition += 150; // Adjust x position for each new button to align them horizontally
-                    }
-                }
+                uiElementGenerator.CreateButton(new Vector2(xPosition, 100), $"Construct {buildingOption.buildingName.ToString()}",() => buttonActions.BuildBuilding(buildingOption));
             }
 
-            // Debug log for available building options on this tile
-            if (buildingOptions.Count > 0)
-            {
-                Debug.Log($"Available building options on selected tile: {string.Join(", ", buildingOptions)}");
-            }
-            else
-            {
-                Debug.Log("No available building options on the selected tile.");
-            }
         }
 
         // Display tile type information
         uiElementGenerator.CreateText(new Vector2(100, 100), "Tile Type: " + hexTile.resource);
     }
-
-    // Helper method to check for required resources on selected or adjacent tiles
-    private bool HasRequiredResources(HexTile hexTile, List<ResourceType> requiredResources)
-    {
-        if (requiredResources.Contains(hexTile.resource)) return true;
-
-        foreach (var adjacentTileObj in hexTile.adjacentTiles)
-        {
-            HexTile adjacentTile = adjacentTileObj.GetComponent<HexTile>();
-            if (adjacentTile != null && adjacentTile.heldBuilding == null && requiredResources.Contains(adjacentTile.resource))
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-
 
     private void ClearTileInfo() {
         uiElementGenerator.DestroyAllUIElements();

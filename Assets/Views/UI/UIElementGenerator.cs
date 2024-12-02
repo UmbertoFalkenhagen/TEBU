@@ -21,9 +21,6 @@ public class UIElementGenerator : MonoBehaviour
     // Methode zum Erstellen eines Buttons
     public GameObject CreateButton(Vector2 position, string buttonText, Action buttonAction)
     {
-        DestroyAllUIElements();
-
-
         GameObject buttonInstance = Instantiate(buttonPrefab, position, Quaternion.identity, uiParent);
         TextMeshProUGUI buttonTextComponent = buttonInstance.GetComponentInChildren<TextMeshProUGUI>();
         if (buttonTextComponent != null)
