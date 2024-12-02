@@ -28,8 +28,16 @@ public class ButtonActions : MonoBehaviour
             return;
         }
 
-        hexTile.PlaceBuildingOnTile(building);
-        Debug.Log($"{building.buildingName} constructed on tile!");
+        if (hexTile.heldBuilding == null) 
+        {
+            hexTile.PlaceBuildingOnTile(building);
+            Debug.Log($"{building.buildingName} constructed on tile!");
+        } else
+        {
+            Debug.Log("A building already exists on this tile.");
+        }
+        
+        
 
     }
 }
