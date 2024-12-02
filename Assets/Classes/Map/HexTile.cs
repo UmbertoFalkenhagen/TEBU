@@ -105,4 +105,40 @@ public class HexTile : MonoBehaviour
             }
         }
     }
+
+    public List<ScriptableBuilding> getAllowedBuildings()
+    {
+        List<ScriptableBuilding> buildingOptions = new List<ScriptableBuilding>();
+        foreach (var building in GridMap.Instance.scriptableBuildings)
+        {
+            if (building.suitableTileTypeLocations.Contains(this.TileType) && HasRequiredResources(this, building.requiredResources))
+            {
+                buildingOptions.Add(building);
+            }
+        }
+        if (buildingOptions.Count > 0)
+        {
+            Debug.Log($"Available building options on selected tile: {string.Join(", ", buildingOptions)}");
+        }
+        else
+        {
+            Debug.Log("No available building options on the selected tile.");
+        }
+
+        return buildingOptions;
+    }
+    private bool HasRequiredResources(HexTile hexTile, List<ResourceType> requiredResources)
+    {
+        if (requiredResources.Contains(hexTile.resource)) return true;
+
+        foreach (var adjacentTileObj in hexTile.adjacentTiles)
+        {
+            HexTile adjacentTile = adjacentTileObj.GetComponent<HexTile>();
+            if (adjacentTile != null && adjacentTile.heldBuilding == null && requiredResources.Contains(adjacentTile.resource))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 }

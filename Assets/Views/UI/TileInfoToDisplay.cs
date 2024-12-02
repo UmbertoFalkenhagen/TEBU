@@ -4,11 +4,12 @@ using UnityEngine;
 using TMPro;
 using TMPro.Examples;  // Namespace für TextMeshPro
 using UnityEngine.UI;
+using System.Runtime.InteropServices.WindowsRuntime;
 public class TileInfoToDisplay : MonoBehaviour
 {
     //
     public string tileType;                          // UI-Text-Element für den Typ des Tiles
-    private GameObject lastActiveTile;
+    private GameObject activeTile;
     private UIElementGenerator uiElementGenerator;
     private ButtonActions buttonActions;
     // The UI Elements that need to be changed
@@ -23,13 +24,18 @@ public class TileInfoToDisplay : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        GameObject currentActiveTile = ActiveTileController.Instance.getActiveTileGameObject();
+        getCurrentTile();
+    }
 
-        if (currentActiveTile != lastActiveTile)
+    public void getCurrentTile()
+    {
+        GameObject newTile = ActiveTileController.Instance.getActiveTileGameObject();
+
+        if (newTile != activeTile)
         {
-            lastActiveTile = currentActiveTile;
+            activeTile = newTile;
 
-            if (currentActiveTile != null)
+            if (activeTile != null)
             {
                 UpdateTileInfo();
             }
@@ -46,7 +52,7 @@ public class TileInfoToDisplay : MonoBehaviour
     */
     private void UpdateTileInfo()
     {
-        HexTile hexTile = lastActiveTile.GetComponent<HexTile>();
+        HexTile hexTile = activeTile.GetComponent<HexTile>();
         if (hexTile == null) return;
 
         float xPosition = 100; // Initial x position for placing UI buttons
@@ -55,75 +61,28 @@ public class TileInfoToDisplay : MonoBehaviour
         uiElementGenerator.DestroyAllUIElements();
 
         // Check if there is a city center adjacent to the selected tile
-        bool hasAdjacentCityCenter = IsCityInHeldBuilding(GridMap.Instance.FindTilesWithinRange(lastActiveTile, 1.5f));
-
+        bool hasAdjacentCityCenter = IsCityInHeldBuilding(GridMap.Instance.FindTilesWithinRange(activeTile, 1.5f));
         // Check if there is a city center within 3 tiles
-        bool cityCenterNearby = IsCityInHeldBuilding(GridMap.Instance.FindTilesWithinRange(lastActiveTile, 3f));
+        bool cityCenterNearby = IsCityInHeldBuilding(GridMap.Instance.FindTilesWithinRange(activeTile, 3f));
 
         // Show "Build City Center" button if no city center is within 3 tiles
-        if (hexTile.heldBuilding == null && !cityCenterNearby)
+        if (!cityCenterNearby)
         {
-            uiElementGenerator.CreateButton(new Vector2(xPosition, 100), "BuildCC", buttonActions.BuildCity);
+            uiElementGenerator.CreateButton(new Vector2(xPosition, 100), $"Construct CC", buttonActions.BuildCity);
         }
-
-        // If a city center is adjacent, check for all constructible buildings
-        else if (hasAdjacentCityCenter)
+        else if (hexTile.heldBuilding == null && hasAdjacentCityCenter) // if there is no city center close 
         {
-            List<string> buildingOptions = new List<string>(); // To store building names for logging
-
-            foreach (var building in GridMap.Instance.scriptableBuildings)
+            List<ScriptableBuilding> buildingOptions = hexTile.getAllowedBuildings();
+            foreach (ScriptableBuilding buildingOption in buildingOptions)
             {
-                // Check if the building can be placed on this tile based on its type and required resources
-                if (building.suitableTileTypeLocations.Contains(hexTile.TileType) && HasRequiredResources(hexTile, building.requiredResources))
-                {
-                    // Log the building option and add its name to the list for debug logging
-                    buildingOptions.Add(building.buildingName.ToString());
-
-                    // Create a button for each eligible building with a unique action
-                    var buildingButton = uiElementGenerator.CreateButton(
-                        new Vector2(xPosition, 100),
-                        $"Construct {building.buildingName}",
-                        () => buttonActions.BuildBuilding(building) // Assign this building to the button’s action
-                    );
-
-                    if (buildingButton != null)
-                    {
-                        xPosition += 150; // Adjust x position for each new button to align them horizontally
-                    }
-                }
+                uiElementGenerator.CreateButton(new Vector2(xPosition, 100), $"Construct {buildingOption.buildingName.ToString()}",() => buttonActions.BuildBuilding(buildingOption));
             }
 
-            // Debug log for available building options on this tile
-            if (buildingOptions.Count > 0)
-            {
-                Debug.Log($"Available building options on selected tile: {string.Join(", ", buildingOptions)}");
-            }
-            else
-            {
-                Debug.Log("No available building options on the selected tile.");
-            }
         }
 
         // Display tile type information
         uiElementGenerator.CreateText(new Vector2(100, 100), "Tile Type: " + hexTile.resource);
     }
-
-    // Helper method to check for required resources on selected or adjacent tiles
-    private bool HasRequiredResources(HexTile hexTile, List<ResourceType> requiredResources)
-    {
-        if (requiredResources.Contains(hexTile.resource)) return true;
-
-        foreach (var adjacentTileObj in hexTile.adjacentTiles)
-        {
-            HexTile adjacentTile = adjacentTileObj.GetComponent<HexTile>();
-            if (adjacentTile != null && adjacentTile.heldBuilding == null && requiredResources.Contains(adjacentTile.resource))
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-
 
     private void ClearTileInfo() {
         uiElementGenerator.DestroyAllUIElements();
@@ -153,5 +112,6 @@ public class TileInfoToDisplay : MonoBehaviour
 
         return false;  // Falls keines der HexTiles "city" enthält
     }
+
 
 }
