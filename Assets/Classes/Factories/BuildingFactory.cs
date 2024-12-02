@@ -22,19 +22,20 @@ public class BuildingFactory : MonoBehaviour, IFactory<ScriptableBuilding>
     {
         if (data == null)
         {
-            Debug.LogError("CityCenter data is null. Cannot create city center.");
+            Debug.LogError("Building data is null. Cannot create building.");
             return null;
         }
 
-        // Instantiate the basic city center prefab
-        GameObject buildingObject = Instantiate(data.basicPrefab, positionObject.transform.position, rotation, parentObject.transform);
+        // Instantiate the basic building prefab
+        GameObject buildingObject = Instantiate(data.basicPrefab, positionObject.transform.position, Quaternion.Euler(0, Random.Range(0f, 360f), 0), parentObject.transform); // Random rotation around y-axis
+
         if (buildingObject == null)
         {
-            Debug.LogError("Failed to instantiate CityCenter prefab.");
+            Debug.LogError("Failed to instantiate building prefab.");
             return null;
         }
 
-        // Add and initialize CityCenter component
+        // Add and initialize building component
         Building buildingComponent = buildingObject.AddComponent<Building>();
         buildingComponent.Initialize(data);
 
