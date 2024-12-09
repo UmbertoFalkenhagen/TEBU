@@ -12,6 +12,8 @@ public class UIElementGenerator : MonoBehaviour
     public GameObject buildingPanel;
     private GameObject buildingPanelGrid;
     private GameObject buildingPanelCloseButton;
+    public GameObject infoPanel;
+    private GameObject infoPanelGrid;
 
     // Das UI-Element, das als Container für andere Elemente dient (z. B. ein Grid oder Panel)
     private Transform uiParent;
@@ -20,14 +22,16 @@ public class UIElementGenerator : MonoBehaviour
         buildingPanel = GameObject.Find("UICanvas/BuildingPanel");
         buildingPanelGrid = GameObject.Find("UICanvas/BuildingPanel/Grid");
         buildingPanelCloseButton = GameObject.Find("UICanvas/BuildingPanel/CloseButton");
+        infoPanel = GameObject.Find("UICanvas/InfoPanel");
+        infoPanelGrid = GameObject.Find("UICanvas/InfoPanel/Grid");
 
         uiParent = buildingPanelGrid.transform;
 
     }
     // Methode zum Erstellen eines Buttons
-    public GameObject CreateButton(Vector2 position, string buttonText, Action buttonAction)
+    public GameObject CreateButton(Vector2 position, string buttonText, Action buttonAction, Transform parent)
     {
-        GameObject buttonInstance = Instantiate(buttonPrefab, position, Quaternion.identity, uiParent);
+        GameObject buttonInstance = Instantiate(buttonPrefab, position, Quaternion.identity, parent);
         TextMeshProUGUI buttonTextComponent = buttonInstance.GetComponentInChildren<TextMeshProUGUI>();
         if (buttonTextComponent != null)
         {
@@ -39,9 +43,9 @@ public class UIElementGenerator : MonoBehaviour
     } 
 
     // Methode zum Erstellen von Text
-    public GameObject CreateText(Vector2 position, string textContent)
+    public GameObject CreateText(Vector2 position, string textContent, Transform parent)
     {
-        GameObject textInstance = Instantiate(textPrefab, position, Quaternion.identity, uiParent);
+        GameObject textInstance = Instantiate(textPrefab, position, Quaternion.identity, parent);
         var textComponent = textInstance.GetComponent<TextMeshProUGUI>();
         if (textComponent != null)
         {
@@ -90,9 +94,9 @@ public class UIElementGenerator : MonoBehaviour
     }
 
     // Optional: Zerstört alle UI-Elemente im UI-Parent (z.B. beim Schließen eines Panels oder beim Zurücksetzen)
-    public void DestroyAllUIElements()
+    public void DestroyAllUIElements(Transform parent)
     {
-        foreach (Transform child in uiParent)
+        foreach (Transform child in parent)
         {
             Destroy(child.gameObject);
         }
