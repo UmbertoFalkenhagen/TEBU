@@ -21,6 +21,7 @@ public class gridTester : MonoBehaviour
         //Invoke(nameof(TestPathfinding), 1f);  // Call TestPathfinding with a slight delay to ensure grid is initialized
         //Invoke(nameof(TestFindTilesAtEdgeDistance), 1f);  // Call TestFindTilesAtEdgeDistance after grid initialization
         Invoke(nameof(TestCityCenterPlacement), 1f);  // Call TestCityCenterPlacement with a delay to ensure grid is initialized
+        SoundManager.Instance.PlaySoundForever("Main");
     }
 
     // Generates the grid using the GridMap class
