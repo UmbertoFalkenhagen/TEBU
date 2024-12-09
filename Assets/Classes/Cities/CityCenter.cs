@@ -6,6 +6,7 @@ public class CityCenter : MonoBehaviour
 
     // Inventory of products available in the city
     public Dictionary<ProductType, int> productInventory = new Dictionary<ProductType, int>();
+    public string oName;
     private List<Building> cityBuildings;
 
     // Initialize the city center with given data
@@ -17,6 +18,7 @@ public class CityCenter : MonoBehaviour
         {
             productInventory[product] = 0;
         }
+        oName = "City Center";
     }
 
     // Method to add products to the inventory

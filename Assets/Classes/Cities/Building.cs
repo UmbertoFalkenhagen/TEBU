@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Building : MonoBehaviour
 {
+    public string oName;
+
     [Tooltip("The selection of tile types on which the building can be constructed.")]
     public List<TileType> suitableTileTypeLocations;
 
@@ -29,6 +31,7 @@ public class Building : MonoBehaviour
 
     public void Initialize(ScriptableBuilding buildingData)
     {
+        oName = buildingData.buildingName.ToString();
         suitableTileTypeLocations = buildingData.suitableTileTypeLocations;
         requiredResources = buildingData.requiredResources;
         product = buildingData.product;
