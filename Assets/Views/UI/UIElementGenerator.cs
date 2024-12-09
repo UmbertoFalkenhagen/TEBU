@@ -9,13 +9,19 @@ public class UIElementGenerator : MonoBehaviour
     // Die Prefabs für die UI-Elemente, die erstellt werden sollen
     public GameObject buttonPrefab;
     public GameObject textPrefab;
-    public GameObject panelPrefab;
+    public GameObject buildingPanel;
+    private GameObject buildingPanelGrid;
+    private GameObject buildingPanelCloseButton;
 
     // Das UI-Element, das als Container für andere Elemente dient (z. B. ein Grid oder Panel)
-    public Transform uiParent;
+    private Transform uiParent;
     public void Start()
     {
-        uiParent = GameObject.Find("UICanvas/InventoryPanel/Grid").transform;
+        buildingPanel = GameObject.Find("UICanvas/BuildingPanel");
+        buildingPanelGrid = GameObject.Find("UICanvas/BuildingPanel/Grid");
+        buildingPanelCloseButton = GameObject.Find("UICanvas/BuildingPanel/CloseButton");
+
+        uiParent = buildingPanelGrid.transform;
 
     }
     // Methode zum Erstellen eines Buttons
@@ -47,7 +53,7 @@ public class UIElementGenerator : MonoBehaviour
     // Methode zum Erstellen eines Panels
     public GameObject CreatePanel(Vector2 size)
     {
-        GameObject panelInstance = Instantiate(panelPrefab, uiParent);
+        GameObject panelInstance = Instantiate(buildingPanelGrid, uiParent);
         RectTransform panelRect = panelInstance.GetComponent<RectTransform>();
         if (panelRect != null)
         {

@@ -19,6 +19,7 @@ public class TileInfoToDisplay : MonoBehaviour
     {
         uiElementGenerator = FindObjectOfType<UIElementGenerator>();
         buttonActions = GameObject.FindObjectOfType<ButtonActions>();
+
     }
 
     // Update is called once per frame
@@ -38,6 +39,7 @@ public class TileInfoToDisplay : MonoBehaviour
             if (activeTile != null)
             {
                 UpdateTileInfo();
+
             }
             else
             {
@@ -59,6 +61,7 @@ public class TileInfoToDisplay : MonoBehaviour
 
         // Clear previous UI elements to avoid overlap or overwrite issues
         uiElementGenerator.DestroyAllUIElements();
+        uiElementGenerator.buildingPanel.SetActive(false);
 
         // Check if there is a city center adjacent to the selected tile
         bool hasAdjacentCityCenter = IsCityInHeldBuilding(GridMap.Instance.FindTilesWithinRange(activeTile, 1.5f));
@@ -68,6 +71,7 @@ public class TileInfoToDisplay : MonoBehaviour
         // Show "Build City Center" button if no city center is within 3 tiles
         if (!cityCenterNearby)
         {
+            uiElementGenerator.buildingPanel.SetActive(true);
             uiElementGenerator.CreateButton(new Vector2(xPosition, 100), $"Construct CC", buttonActions.BuildCity);
         }
         else if (hexTile.heldBuilding == null && hasAdjacentCityCenter) // if there is no city center close 
@@ -75,13 +79,19 @@ public class TileInfoToDisplay : MonoBehaviour
             List<ScriptableBuilding> buildingOptions = hexTile.getAllowedBuildings();
             foreach (ScriptableBuilding buildingOption in buildingOptions)
             {
+                uiElementGenerator.buildingPanel.SetActive(true);
                 uiElementGenerator.CreateButton(new Vector2(xPosition, 100), $"Construct {buildingOption.buildingName.ToString()}",() => buttonActions.BuildBuilding(buildingOption));
             }
 
+
+        }
+        else
+        {
+            uiElementGenerator.buildingPanel.SetActive(false);
         }
 
         // Display tile type information
-        uiElementGenerator.CreateText(new Vector2(100, 100), "Tile Type: " + hexTile.resource);
+        uiElementGenerator.CreateText(new Vector2(100, 100), "Tile Resource: " + hexTile.resource);
     }
 
     private void ClearTileInfo() {
