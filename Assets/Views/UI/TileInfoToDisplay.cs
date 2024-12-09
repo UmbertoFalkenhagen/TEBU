@@ -8,10 +8,13 @@ using System.Runtime.InteropServices.WindowsRuntime;
 public class TileInfoToDisplay : MonoBehaviour
 {
     //
+    HexTile hexTile;
     public string tileType;                          // UI-Text-Element für den Typ des Tiles
     private GameObject activeTile;
     private UIElementGenerator uiElementGenerator;
     private ButtonActions buttonActions;
+    private Transform infoPanelGridTransform;
+    private Transform buildingPanelGridTransform;
     // The UI Elements that need to be changed
     // Speichert das zuletzt aktive Tile
     // Start is called before the first frame update
@@ -19,7 +22,8 @@ public class TileInfoToDisplay : MonoBehaviour
     {
         uiElementGenerator = FindObjectOfType<UIElementGenerator>();
         buttonActions = GameObject.FindObjectOfType<ButtonActions>();
-
+        infoPanelGridTransform = GameObject.Find("UICanvas/InfoPanel/Grid").transform;
+        buildingPanelGridTransform = GameObject.Find("UICanvas/BuildingPanel/Grid").transform;
     }
 
     // Update is called once per frame
@@ -38,30 +42,51 @@ public class TileInfoToDisplay : MonoBehaviour
 
             if (activeTile != null)
             {
-                UpdateTileInfo();
+                hexTile = activeTile.GetComponent<HexTile>();
+
+                UpdateBuildingMenu();
+                UpdateInfoMenu();
 
             }
             else
             {
-                ClearTileInfo();
+                ClearTileInfo(infoPanelGridTransform);
+                ClearTileInfo(buildingPanelGridTransform);
+
             }
         }
+    }
+    private void UpdateInfoMenu()
+    {
+        ClearTileInfo(infoPanelGridTransform);
+        // Display tile type information
+        uiElementGenerator.CreateText(new Vector2(100, 100), "Tile Resource: " + hexTile.resource, infoPanelGridTransform);
+        if (hexTile.heldBuilding != null)
+        {
+            Debug.Log(hexTile.heldBuilding.GetComponent<CityCenter>().name);
+            if(hexTile.heldBuilding.GetComponent<CityCenter>().name == "CityCenter")
+            {
+                uiElementGenerator.CreateText(new Vector2(100, 100), "Building: City Center", infoPanelGridTransform);
+
+            }
+
+        }
+
     }
     /* Methode zum Aktualisieren der UI-Informationen basierend auf dem Tile
      * Updates UI Based on Clicked Tile
      * 
      * 
     */
-    private void UpdateTileInfo()
+    private void UpdateBuildingMenu()
     {
-        HexTile hexTile = activeTile.GetComponent<HexTile>();
         if (hexTile == null) return;
 
         float xPosition = 100; // Initial x position for placing UI buttons
 
         // Clear previous UI elements to avoid overlap or overwrite issues
-        uiElementGenerator.DestroyAllUIElements();
-        uiElementGenerator.buildingPanel.SetActive(false);
+        //ClearTileInfo(GameObject.Find("UICanvas/BuildingPanel/Grid").transform);
+        //uiElementGenerator.buildingPanel.SetActive(false);
 
         // Check if there is a city center adjacent to the selected tile
         bool hasAdjacentCityCenter = IsCityInHeldBuilding(GridMap.Instance.FindTilesWithinRange(activeTile, 1.5f));
@@ -71,16 +96,22 @@ public class TileInfoToDisplay : MonoBehaviour
         // Show "Build City Center" button if no city center is within 3 tiles
         if (!cityCenterNearby)
         {
+
             uiElementGenerator.buildingPanel.SetActive(true);
-            uiElementGenerator.CreateButton(new Vector2(xPosition, 100), $"Construct CC", buttonActions.BuildCity);
+            ClearTileInfo(buildingPanelGridTransform);
+
+
+            uiElementGenerator.CreateButton(new Vector2(xPosition, 100), $"Construct CC", buttonActions.BuildCity, buildingPanelGridTransform);
         }
         else if (hexTile.heldBuilding == null && hasAdjacentCityCenter) // if there is no city center close 
         {
+            uiElementGenerator.buildingPanel.SetActive(true);
+            ClearTileInfo(buildingPanelGridTransform);
+
             List<ScriptableBuilding> buildingOptions = hexTile.getAllowedBuildings();
             foreach (ScriptableBuilding buildingOption in buildingOptions)
             {
-                uiElementGenerator.buildingPanel.SetActive(true);
-                uiElementGenerator.CreateButton(new Vector2(xPosition, 100), $"Construct {buildingOption.buildingName.ToString()}",() => buttonActions.BuildBuilding(buildingOption));
+                uiElementGenerator.CreateButton(new Vector2(xPosition, 100), $"Construct {buildingOption.buildingName.ToString()}",() => buttonActions.BuildBuilding(buildingOption), buildingPanelGridTransform);
             }
 
 
@@ -90,12 +121,11 @@ public class TileInfoToDisplay : MonoBehaviour
             uiElementGenerator.buildingPanel.SetActive(false);
         }
 
-        // Display tile type information
-        uiElementGenerator.CreateText(new Vector2(100, 100), "Tile Resource: " + hexTile.resource);
+
     }
 
-    private void ClearTileInfo() {
-        uiElementGenerator.DestroyAllUIElements();
+    private void ClearTileInfo(Transform parent) {
+        uiElementGenerator.DestroyAllUIElements(parent);
     }
 
 
