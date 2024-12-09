@@ -59,20 +59,20 @@ public class Building : MonoBehaviour
         Debug.Log("Found " + tiles.Count + " tiles at distance.");
         workableTiles = new List<GameObject>();
         workableTiles.Add(this.transform.parent.gameObject);
-        foreach (var tile in tiles)
+        foreach (var tileObject in tiles)
         {
-            HexTile hexTileComponent = tile.GetComponent<HexTile>();
+            HexTile hexTileComponent = tileObject.GetComponent<HexTile>();
             if (requiredResources[0] != ResourceType.None)
             {
                 if (requiredResources.Contains(hexTileComponent.resource) && hexTileComponent.heldBuilding == null && suitableTileTypeLocations.Contains(hexTileComponent.TileType))
                 {
-                    workableTiles.Add(tile);
+                    workableTiles.Add(tileObject);
                 }
 
             } else if (requiredResources[0] == ResourceType.None) {
                 if (hexTileComponent.heldBuilding == null && suitableTileTypeLocations.Contains(hexTileComponent.TileType))
                 {
-                    workableTiles.Add(tile);
+                    workableTiles.Add(tileObject);
                 }
             }
             

@@ -6,10 +6,12 @@ public class CityCenter : MonoBehaviour
 
     // Inventory of products available in the city
     public Dictionary<ProductType, int> productInventory = new Dictionary<ProductType, int>();
+    private List<Building> cityBuildings;
 
     // Initialize the city center with given data
     public void Initialize(ScriptableCityCenter data)
     {
+        cityBuildings = new List<Building>();
         // Initialize product inventory (e.g., start with no products)
         foreach (ProductType product in System.Enum.GetValues(typeof(ProductType)))
         {
@@ -28,5 +30,15 @@ public class CityCenter : MonoBehaviour
         {
             productInventory[product] = quantity;
         }
+    }
+
+    public void AddBuildingToCity(Building _building)
+    {
+        cityBuildings.Add(_building);
+    }
+
+    public void RemoveBuildingFromCity(Building _building)
+    {
+        cityBuildings.Remove(_building);
     }
 }
