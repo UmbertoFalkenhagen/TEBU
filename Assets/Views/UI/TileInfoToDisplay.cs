@@ -63,12 +63,16 @@ public class TileInfoToDisplay : MonoBehaviour
         uiElementGenerator.CreateText(new Vector2(100, 100), "Tile Resource: " + hexTile.resource, infoPanelGridTransform);
         if (hexTile.heldBuilding != null)
         {
-            Debug.Log(hexTile.heldBuilding.GetComponent<CityCenter>().name);
-            if(hexTile.heldBuilding.GetComponent<CityCenter>().name == "CityCenter")
+            if (hexTile.heldBuilding.GetComponent<CityCenter>() != null)
             {
-                uiElementGenerator.CreateText(new Vector2(100, 100), "Building: City Center", infoPanelGridTransform);
-
+                Debug.Log(hexTile.heldBuilding.GetComponent<CityCenter>().oName);
+                uiElementGenerator.CreateText(new Vector2(100, 100), hexTile.heldBuilding.GetComponent<CityCenter>().oName, infoPanelGridTransform);
+            }else if (hexTile.heldBuilding.GetComponent<Building>() != null)
+            {
+                uiElementGenerator.CreateText(new Vector2(100, 100), hexTile.heldBuilding.GetComponent<Building>().oName, infoPanelGridTransform);
             }
+
+
 
         }
 
