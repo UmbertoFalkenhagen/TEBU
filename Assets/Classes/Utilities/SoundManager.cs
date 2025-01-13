@@ -9,6 +9,7 @@ public class SoundManager : MonoBehaviour
     {
         public string name;
         public AudioClip clip;
+        public float volume;
         [HideInInspector]
         public AudioSource source; // Ensure this line is correctly defined
     }
@@ -36,6 +37,7 @@ public class SoundManager : MonoBehaviour
         {
             sound.source = gameObject.AddComponent<AudioSource>();
             sound.source.clip = sound.clip;
+            sound.source.volume = sound.volume;
             sound.source.spatialBlend = 0; // This makes the sound global
         }
     }
