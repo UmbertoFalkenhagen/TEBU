@@ -3,36 +3,44 @@ using UnityEngine;
 
 public class ButtonActions : MonoBehaviour
 {
-    public List<ScriptableCityCenter> cityCenterScriptables;
-    // Funktion zum Bauen einer Stadt
     public void BuildCity()
     {
         HexTile hexTile = ActiveTileController.Instance.getActiveTileGameObject().GetComponent<HexTile>();
         if (hexTile == null)
         {
-            Debug.LogError("HexTile component missing on the selected random tile.");
+            Debug.LogError("HexTile component missing on the selected tile.");
             return;
         }
 
-        TileType tileType = hexTile.TileType;
-        Debug.Log("City wird gebaut!");
-        ScriptableCityCenter matchingCityCenter = GridMap.Instance.scriptableCityCenters.Find(center => center.cityLocation == tileType);
-        GameObject cityCenterObject = CityCenterFactory.Instance.CreateObject(matchingCityCenter, ActiveTileController.Instance.getActiveTileGameObject(), Quaternion.identity, ActiveTileController.Instance.getActiveTileGameObject());
+            ScriptableCityCenter matchingCityCenter = GridMap.Instance.scriptableCityCenters.Find(center => center.cityLocation == hexTile.TileType);
+            hexTile.PlaceCityCenterOnTile(matchingCityCenter);
+            Debug.Log("City Center built!");
 
-        // Weitere Logik zum Bau einer Stadt
+
     }
 
-    // Funktion für den Angriff auf den Feind
-    public void OnAttackEnemy()
+    // Function to build the specified building on the selected tile
+    public void BuildBuilding(ScriptableBuilding building)
     {
-        Debug.Log("Angriff auf den Feind!");
-        // Weitere Logik zum Angriff auf einen Feind
-    }
+        HexTile hexTile = ActiveTileController.Instance.getActiveTileGameObject().GetComponent<HexTile>();
+        if (hexTile == null)
+        {
+            Debug.LogError("HexTile component missing on the selected tile.");
+            return;
+        }
 
-    // Funktion zum Öffnen des Inventars
-    public void OnOpenInventory()
+        if (hexTile.heldBuilding == null) 
+        {
+            hexTile.PlaceBuildingOnTile(building);
+            Debug.Log($"{building.buildingName} constructed on tile!");
+        } else
+        {
+            Debug.Log("A building already exists on this tile.");
+        }
+    }
+    public void CloseButton ()
     {
-        Debug.Log("Inventar wird geöffnet!");
-        // Weitere Logik zum Öffnen des Inventars
+
+
     }
 }

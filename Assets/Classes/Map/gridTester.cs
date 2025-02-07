@@ -9,6 +9,7 @@ public class gridTester : MonoBehaviour
     public float cellSize;                   // Size of each hex cell
     public List<ScriptableTile> tileListScriptable;  // List of ScriptableTile objects
     public List<ScriptableCityCenter> cityCenterScriptables;
+    public List<ScriptableBuilding> buildingScriptables;
 
     private GridMap grid;  // Reference to the GridMap component
 
@@ -20,6 +21,7 @@ public class gridTester : MonoBehaviour
         //Invoke(nameof(TestPathfinding), 1f);  // Call TestPathfinding with a slight delay to ensure grid is initialized
         //Invoke(nameof(TestFindTilesAtEdgeDistance), 1f);  // Call TestFindTilesAtEdgeDistance after grid initialization
         Invoke(nameof(TestCityCenterPlacement), 1f);  // Call TestCityCenterPlacement with a delay to ensure grid is initialized
+        SoundManager.Instance.PlaySoundForever("Main");
     }
 
     // Generates the grid using the GridMap class
@@ -50,7 +52,7 @@ public class gridTester : MonoBehaviour
         // Only initialize the grid if it hasn't been initialized already
         if (grid.tileDictionary == null || grid.tileDictionary.Count == 0)
         {
-            grid.InitializeGrid(rows, columns, tileListScriptable, cityCenterScriptables, cellSize);
+            grid.InitializeGrid(rows, columns, tileListScriptable, cityCenterScriptables, buildingScriptables, cellSize);
         }
         else
         {
