@@ -2,6 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum ObjectType
+{
+    Tile,       // Will correspond to prefix '$'
+    CityCenter, // Will correspond to prefix '#'
+    Building,   // Will correspond to prefix '+'
+    Animal      // Will correspond to prefix '~'
+}
+
 public enum TileType
 {
     Grassland,

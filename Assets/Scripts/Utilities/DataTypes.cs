@@ -1,0 +1,120 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using System.Linq;
+using System;
+//This class holds complex datatypes that are used across other scripts such as within the databasemanager
+
+public class GridPosition
+{
+    public int column;
+    public int row;
+}
+
+public class ObjectIdentifier
+{
+    // Lookup from enum -> prefix character
+    private static readonly Dictionary<ObjectType, char> TypeToPrefix =
+        new Dictionary<ObjectType, char>
+        {
+            { ObjectType.Tile,       '$' },
+            { ObjectType.CityCenter, '#' },
+            { ObjectType.Building,   '+' },
+            { ObjectType.Animal,     '~' }
+        };
+
+    // Reverse lookup from prefix -> enum
+    private static readonly Dictionary<char, ObjectType> PrefixToType =
+        TypeToPrefix.ToDictionary(kvp => kvp.Value, kvp => kvp.Key);
+
+    public ObjectType Type { get; }
+    public string UniqueId { get; }
+
+    public ObjectIdentifier(ObjectType type, string uniqueId)
+    {
+        Type = type;
+        UniqueId = uniqueId;
+    }
+
+    public override string ToString()
+    {
+        return $"{TypeToPrefix[Type]}{UniqueId}";
+    }
+
+    public static ObjectIdentifier FromString(string objectIdString)
+    {
+        if (string.IsNullOrWhiteSpace(objectIdString))
+            throw new ArgumentException("Object ID string cannot be null or empty.");
+
+        char prefix = objectIdString[0];
+        if (!PrefixToType.TryGetValue(prefix, out var type))
+        {
+            throw new ArgumentException($"Unrecognized prefix '{prefix}' in object ID.");
+        }
+
+        string uniqueId = objectIdString.Substring(1);
+        return new ObjectIdentifier(type, uniqueId);
+    }
+}
+
+public class DBTileValue
+{
+    public GridPosition _position;
+    public GameObject _object;
+    public TileType _type;
+    public ResourceType _resource;
+    public List<GridPosition> _adjacentTilesPosition;
+    public List<ObjectIdentifier> _constructionClaims;
+}
+
+public class DBCityCenterValue
+{
+    public ObjectIdentifier _parentTile;
+    public GameObject _object;
+    public Dictionary<ProductType, int> _inventory;
+    public int _housingLimit;
+    public string _cityName;
+}
+
+public class DBBuildingValue
+{
+    public ObjectIdentifier _parentTile;
+    public ObjectIdentifier _parentCityCenter;
+    public BuildingType _type;
+    public GameObject _object;
+}
+
+public class DBAnimalValue
+{
+    public ObjectIdentifier _parentCityCenter;
+    public ObjectIdentifier _parentBuilding;
+    public AnimalType _type;
+    public string _animalName;
+    public int priority;
+}
+
+public class SDBAnimalBlueprintValue
+{
+    public GameObject prefab;
+    public List<TileType> requiredTileTypes;
+    public ProductType basicFood;
+    public ProductType ability1UnlockProduct;
+    public ProductType ability2UnlockProduct;
+    public ProductType ability1ImprovProduct;
+    public ProductType ability2ImprovProduct;
+}
+
+public class SDBBuildingBlueprintValue
+{
+    public GameObject prefab;
+    public List<TileType> requiredTileTypes;
+    public List<ResourceType> requiredResources;
+    public ProductType outputProduct;
+    public List<ProductType> inputProducts;
+    public int productionPerWorker;
+    public bool isMaxWorkersFixed;
+    public int maxWorkers;
+}
+
+
+
