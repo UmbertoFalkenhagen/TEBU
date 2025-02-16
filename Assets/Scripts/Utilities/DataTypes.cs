@@ -7,8 +7,13 @@ using System;
 
 public class GridPosition
 {
-    public int column;
-    public int row;
+    private int column;
+    private int row;
+    public GridPosition(int column, int row)
+    {
+        this.column = column;
+        this.row = row;
+    }
 }
 
 public class ObjectIdentifier
@@ -59,12 +64,22 @@ public class ObjectIdentifier
 
 public class DBTileValue
 {
-    public GridPosition _position;
-    public GameObject _object;
-    public TileType _type;
-    public ResourceType _resource;
-    public List<GridPosition> _adjacentTilesPosition;
-    public List<ObjectIdentifier> _constructionClaims;
+    public GridPosition Position { get; set; } // GridPosition für die Position des Tiles
+    public GameObject TileObject { get; set; } // Referenz auf das GameObject des Tiles
+    public TileType Type { get; set; } // Typ des Tiles
+    public ResourceType Resource { get; set; } // Ressourcentyp des Tiles
+    public List<GridPosition> AdjacentTilesPosition { get; set; } // Liste von angrenzenden Tile-Positionen
+    public List<ObjectIdentifier> ConstructionClaims { get; set; } // Liste von Bauansprüchen
+    public DBTileValue(GridPosition position, GameObject tileObject, TileType type, ResourceType resource)
+    {
+        Position = position;
+        TileObject = tileObject;
+        Type = type;
+        Resource = resource;
+        AdjacentTilesPosition = new List<GridPosition>();
+        ConstructionClaims = new List<ObjectIdentifier>();
+    }
+
 }
 
 public class DBCityCenterValue
