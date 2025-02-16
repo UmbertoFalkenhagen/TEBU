@@ -14,15 +14,17 @@ public class HexMapGenerator : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        //Fill with data from SDBInitMapData
-       // seed = "abc";
-        rows = 0;
-        cols = 0;
+
 
         if (databaseManager == null)
         {
             databaseManager = FindObjectOfType<DatabaseManager>();
         }
+
+        //Fill with data from SDBInitMapData
+        // seed = "abc";
+        rows = 0;
+        cols = 0;
     }
 
     // Update is called once per frame

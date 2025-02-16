@@ -130,6 +130,18 @@ public class SDBBuildingBlueprintValue
     public bool isMaxWorkersFixed;
     public int maxWorkers;
 }
+public class SDBInitMapData
+{
+    public int Columns { get; set; } // Number of tile columns
+    public int Rows { get; set; } // Number of tile rows
+    public SDBInitMapData(int columns, int rows){
+        Columns = columns;
+        Rows = rows;
+    } 
+
+    
+
+}
 
 
 

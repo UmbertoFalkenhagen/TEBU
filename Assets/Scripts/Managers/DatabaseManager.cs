@@ -18,7 +18,7 @@ public class DatabaseManager : MonoBehaviour
     // TODO: ObjectIdentifier are only for runtime DB, not for blueprints! They got other types, add SBInitMapData
     public Dictionary<BuildingType, SDBBuildingBlueprintValue> buildingBlueprintDictionary = new Dictionary<BuildingType, SDBBuildingBlueprintValue>();
     public Dictionary<AnimalType, SDBAnimalBlueprintValue> animalBlueprintDictionary = new Dictionary<AnimalType, SDBAnimalBlueprintValue>();
-
+    public SDBInitMapData initMapData = new SDBInitMapData(11,11);
     //Singleton
     private void Awake()
     {
@@ -31,7 +31,7 @@ public class DatabaseManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
-    }
+     }
     // Start is called before the first frame update
     void Start()
     {
