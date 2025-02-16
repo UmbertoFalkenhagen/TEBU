@@ -15,8 +15,9 @@ public class DatabaseManager : MonoBehaviour
     public Dictionary<ObjectIdentifier, DBAnimalValue> animalDictionary = new Dictionary<ObjectIdentifier, DBAnimalValue>();
 
     //static databases for persistent blueprints
-    public Dictionary<ObjectIdentifier, SDBBuildingBlueprintValue> buildingBlueprintDictionary = new Dictionary<ObjectIdentifier, SDBBuildingBlueprintValue>();
-    public Dictionary<ObjectIdentifier, SDBAnimalBlueprintValue> animalBlueprintDictionary = new Dictionary<ObjectIdentifier, SDBAnimalBlueprintValue>();
+    // TODO: ObjectIdentifier are only for runtime DB, not for blueprints! They got other types, add SBInitMapData
+    public Dictionary<BuildingType, SDBBuildingBlueprintValue> buildingBlueprintDictionary = new Dictionary<BuildingType, SDBBuildingBlueprintValue>();
+    public Dictionary<AnimalType, SDBAnimalBlueprintValue> animalBlueprintDictionary = new Dictionary<AnimalType, SDBAnimalBlueprintValue>();
 
     //Singleton
     private void Awake()
@@ -24,6 +25,7 @@ public class DatabaseManager : MonoBehaviour
         if (Instance == null)
         {
             Instance = this;
+            DontDestroyOnLoad(gameObject);
         }
         else
         {
@@ -41,4 +43,33 @@ public class DatabaseManager : MonoBehaviour
     {
         
     }
+    #region tileDictionary
+    public void AddTile(GridPosition postition)
+    {
+        List<DBTileValue> tiles = new List<DBTileValue>();
+        string uniqueId ="232333";
+        ObjectIdentifier identifier = new ObjectIdentifier(ObjectType.Tile, uniqueId);
+
+        if (!tileDictionary.ContainsKey(identifier))
+        {
+
+            // Erstelle eine GridPosition für das Tile
+            GridPosition tilePosition = postition; // Beispielposition (x=0, y=0)
+            // Erstelle ein GameObject für das Tile (dies sollte in der tatsächlichen Implementierung ein echtes GameObject sein)
+            GameObject tileObject = new GameObject("TileObject");
+            // Erstelle ein DBTileValue mit den entsprechenden Werten
+            DBTileValue tileValue = new DBTileValue(tilePosition, tileObject, TileType.Grassland, ResourceType.Rice);
+
+
+
+            // Füge die Liste mit dem einzelnen DBTileValue dem Dictionary hinzu
+            tileDictionary[identifier] = tileValue;
+
+            // tileDictionary[identifier] = null; // Füge die Tiles zur Liste hinzu
+           // tileDictionary[identifier] = singleTileValue; // Neue Liste erstellen, wenn der Key nicht existiert
+        }
+        Debug.Log($"Tiles für {identifier} hinzugefügt. Gesamtanzahl: {tileDictionary.Count}");
+    }
+    #endregion
+
 }
