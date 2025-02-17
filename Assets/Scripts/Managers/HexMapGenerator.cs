@@ -7,21 +7,24 @@ public class HexMapGenerator : MonoBehaviour
 
     int rows;
     int cols;
-   // string seed;
+    // string seed;
     private DatabaseManager databaseManager;
 
     // float cellSize;
     // Start is called before the first frame update
     void Start()
     {
-        //Fill with data from SDBInitMapData
-       // seed = "abc";
-        rows = 0;
-        cols = 0;
-
+    }
+    private void Awake()
+    {
+        //Attach Database
         if (databaseManager == null)
         {
             databaseManager = FindObjectOfType<DatabaseManager>();
+            if (databaseManager == null)
+            {
+                Debug.LogError("DatabaseManager could not be found!");
+            }
         }
     }
 
@@ -37,17 +40,23 @@ public class HexMapGenerator : MonoBehaviour
         if (DatabaseManager.Instance != null) {
             checkTileDictionary();
 
-           // loop TileFactory... 
+            // loop TileFactory... 
 
             //TODO: ....Factory Tile ...
-
-
+            rows = databaseManager.initMapData.rows;
+            cols = databaseManager.initMapData.columns;
             //TODO: Add Tile to Dictionary
-            GridPosition position = new(cols, rows);
+            for (int i = 0;i<cols; i++)
+            {
+                for (int j = 0;j<rows; j++)
+                {
+                    GridPosition position = new(i, j);
+                    databaseManager.AddTile(position);
+                    checkTileDictionary();
+                }
+            }
+            // Debug.Log("Position:" + position.rows + " Einträge.");
 
-            //
-            databaseManager.AddTile(position);
-            checkTileDictionary();
 
             //register adjecent tiles
 

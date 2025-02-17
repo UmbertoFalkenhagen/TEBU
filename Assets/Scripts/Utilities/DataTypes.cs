@@ -7,12 +7,13 @@ using System;
 
 public class GridPosition
 {
-    private int column;
-    private int row;
+    public int column { get; set; }
+    public int row { get; set; }
     public GridPosition(int column, int row)
     {
         this.column = column;
         this.row = row;
+
     }
 }
 
@@ -129,6 +130,12 @@ public class SDBBuildingBlueprintValue
     public int productionPerWorker;
     public bool isMaxWorkersFixed;
     public int maxWorkers;
+}
+public class SDBInitMapData
+{
+    public int columns { get; set; } // Number of tile columns
+    public int rows { get; set; } // Number of tile rows
+
 }
 
 
