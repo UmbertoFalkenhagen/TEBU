@@ -19,14 +19,14 @@ public class DatabaseManager : MonoBehaviour
     // TODO: ObjectIdentifier are only for runtime DB, not for blueprints! They got other types, add SBInitMapData
     public Dictionary<BuildingType, SDBBuildingBlueprintValue> buildingBlueprintDictionary = new Dictionary<BuildingType, SDBBuildingBlueprintValue>();
     public Dictionary<AnimalType, SDBAnimalBlueprintValue> animalBlueprintDictionary = new Dictionary<AnimalType, SDBAnimalBlueprintValue>();
-    public SDBInitMapData initMapData = new SDBInitMapData(11,11);
+    public SDBInitMapData initMapData = new();
     //Singleton
     private void Awake()
     {
         if (Instance == null)
         {
             Instance = this;
-            DontDestroyOnLoad(gameObject);
+           // DontDestroyOnLoad(gameObject);
         }
         else
         {
@@ -156,8 +156,7 @@ public class DatabaseManager : MonoBehaviour
 public void AddTile(GridPosition postition)
     {
         List<DBTileValue> tiles = new List<DBTileValue>();
-        string uniqueId ="232333";
-        ObjectIdentifier identifier = new ObjectIdentifier(ObjectType.Tile, uniqueId);
+        ObjectIdentifier identifier = GenerateUniqueId(ObjectType.Tile);
 
         if (!tileDictionary.ContainsKey(identifier))
         {

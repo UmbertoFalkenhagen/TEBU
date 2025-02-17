@@ -7,12 +7,13 @@ using System;
 
 public class GridPosition
 {
-    private int column;
-    private int row;
+    public int column { get; set; }
+    public int row { get; set; }
     public GridPosition(int column, int row)
     {
         this.column = column;
         this.row = row;
+
     }
 }
 
@@ -132,14 +133,8 @@ public class SDBBuildingBlueprintValue
 }
 public class SDBInitMapData
 {
-    public int Columns { get; set; } // Number of tile columns
-    public int Rows { get; set; } // Number of tile rows
-    public SDBInitMapData(int columns, int rows){
-        Columns = columns;
-        Rows = rows;
-    } 
-
-    
+    public int columns { get; set; } // Number of tile columns
+    public int rows { get; set; } // Number of tile rows
 
 }
 
