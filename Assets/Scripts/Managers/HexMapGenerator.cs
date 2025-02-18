@@ -9,7 +9,7 @@ public class HexMapGenerator : MonoBehaviour
 {
     // string seed;
     private DatabaseManager databaseManager;
-    GridPosition position;
+    Vector2Int position;
 
     private void Awake()
     {
@@ -32,7 +32,7 @@ public class HexMapGenerator : MonoBehaviour
             {
                 for (int j = 0;j< databaseManager.initMapData.rows; j++)
                 {
-                    position = new(i, j);
+                    position = new Vector2Int(i, j);
                     //define Tile Grid -> find in old script
                     // tileFactory.build(getPositionForTile(i, j));
                     //TODO: ....Factory Tile ... Replace following two lines with factory call
@@ -87,32 +87,32 @@ public class HexMapGenerator : MonoBehaviour
     {
 
         //TODO: Fix that out of bounce tiles are added too
-        List<GridPosition> neighbors = new List<GridPosition>();
+        List<Vector2Int> neighbors = new List<Vector2Int>();
 
         foreach (var value in databaseManager.tileDictionary.Values)
         {
-            int row = value.Position.row;
-            int column = value.Position.column;
+            int row = value.Position.x;
+            int column = value.Position.y;
 
             bool isEvenRow = (row % 2) == 0;
 
             if (isEvenRow)
             {
-                neighbors.Add(new GridPosition(column - 1, row));     // Links
-                neighbors.Add(new GridPosition(column + 1, row));     // Rechts
-                neighbors.Add(new GridPosition(column, row - 1));     // Oben
-                neighbors.Add(new GridPosition(column, row + 1));     // Unten
-                neighbors.Add(new GridPosition(column - 1, row + 1)); // Links unten
-                neighbors.Add(new GridPosition(column - 1, row - 1)); // Links oben
+                neighbors.Add(new Vector2Int(column - 1, row));     // Links
+                neighbors.Add(new Vector2Int(column + 1, row));     // Rechts
+                neighbors.Add(new Vector2Int(column, row - 1));     // Oben
+                neighbors.Add(new Vector2Int(column, row + 1));     // Unten
+                neighbors.Add(new Vector2Int(column - 1, row + 1)); // Links unten
+                neighbors.Add(new Vector2Int(column - 1, row - 1)); // Links oben
             }
             else
             {
-                neighbors.Add(new GridPosition(column - 1, row));     // Links
-                neighbors.Add(new GridPosition(column + 1, row));     // Rechts
-                neighbors.Add(new GridPosition(column, row - 1));     // Oben
-                neighbors.Add(new GridPosition(column, row + 1));     // Unten
-                neighbors.Add(new GridPosition(column + 1, row + 1)); // Rechts unten
-                neighbors.Add(new GridPosition(column + 1, row - 1)); // Rechts oben
+                neighbors.Add(new Vector2Int(column - 1, row));     // Links
+                neighbors.Add(new Vector2Int(column + 1, row));     // Rechts
+                neighbors.Add(new Vector2Int(column, row - 1));     // Oben
+                neighbors.Add(new Vector2Int(column, row + 1));     // Unten
+                neighbors.Add(new Vector2Int(column + 1, row + 1)); // Rechts unten
+                neighbors.Add(new Vector2Int(column + 1, row - 1)); // Rechts oben
             }
             value.AdjacentTilesPosition = neighbors;
            // Debug.Log(neighbors[1].row.ToString() + ", " + neighbors[1].column.ToString());

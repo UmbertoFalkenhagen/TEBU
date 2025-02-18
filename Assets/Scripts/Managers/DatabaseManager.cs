@@ -19,7 +19,7 @@ public class DatabaseManager : MonoBehaviour
     public Dictionary<BuildingType, SDBBuildingBlueprintValue> buildingBlueprintDictionary = new Dictionary<BuildingType, SDBBuildingBlueprintValue>();
     public Dictionary<AnimalType, SDBAnimalBlueprintValue> animalBlueprintDictionary = new Dictionary<AnimalType, SDBAnimalBlueprintValue>();
     //initMapData is initiated empty and gets filled in GameLoader
-    public SDBInitMapData initMapData = new();
+    public SDBInitMapData initMapData = new SDBInitMapData();
     //Singleton
     private void Awake()
     {
@@ -72,8 +72,7 @@ public class DatabaseManager : MonoBehaviour
 
     #region GeneralFunctions
     // --------------------------------------------------------------------
-    // 1) Generate a random unique ID for the given ObjectType
-    //    Uses a FIXED ID length (e.g., 6 digits)
+    // Generate a random unique ID for the given ObjectType
     // --------------------------------------------------------------------
     public ObjectIdentifier GenerateUniqueId(ObjectType type)
     {
@@ -121,7 +120,7 @@ public class DatabaseManager : MonoBehaviour
     }
 
     // --------------------------------------------------------------------
-    // 2) Find and return the data entry for an ObjectIdentifier
+    // Find and return the data entry for an ObjectIdentifier
     // --------------------------------------------------------------------
     public object FindObjectByID(ObjectIdentifier identifier)
     {
@@ -155,7 +154,7 @@ public class DatabaseManager : MonoBehaviour
     #endregion
 
     #region tileDictionary
-    public void AddTile(GridPosition postition)
+    public void AddTile(Vector2Int postition)
     {
         List<DBTileValue> tiles = new List<DBTileValue>();
         ObjectIdentifier identifier = GenerateUniqueId(ObjectType.Tile);
@@ -164,7 +163,7 @@ public class DatabaseManager : MonoBehaviour
         {
 
             // Erstelle eine GridPosition für das Tile
-            GridPosition tilePosition = postition; // Beispielposition (x=0, y=0)
+            Vector2Int tilePosition = postition; // Beispielposition (x=0, y=0)
             // Erstelle ein GameObject für das Tile (dies sollte in der tatsächlichen Implementierung ein echtes GameObject sein)
             GameObject tileObject = new GameObject("TileObject");
             // Erstelle ein DBTileValue mit den entsprechenden Werten

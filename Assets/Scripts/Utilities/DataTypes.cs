@@ -5,7 +5,7 @@ using System.Linq;
 using System;
 //This class holds complex datatypes that are used across other scripts such as within the databasemanager
 
-public class GridPosition
+/*public class GridPosition
 {
     public int column { get; set; }
     public int row { get; set; }
@@ -15,7 +15,7 @@ public class GridPosition
         this.row = row;
 
     }
-}
+}*/
 
 public class ObjectIdentifier
 {
@@ -65,19 +65,19 @@ public class ObjectIdentifier
 
 public class DBTileValue
 {
-    public GridPosition Position { get; set; } // GridPosition für die Position des Tiles
+    public Vector2Int Position { get; set; } // GridPosition für die Position des Tiles
     public GameObject TileObject { get; set; } // Referenz auf das GameObject des Tiles
     public TileType Type { get; set; } // Typ des Tiles
     public ResourceType Resource { get; set; } // Ressourcentyp des Tiles
-    public List<GridPosition> AdjacentTilesPosition { get; set; } // Liste von angrenzenden Tile-Positionen
+    public List<Vector2Int> AdjacentTilesPosition { get; set; } // Liste von angrenzenden Tile-Positionen
     public List<ObjectIdentifier> ConstructionClaims { get; set; } // Liste von Bauansprüchen
-    public DBTileValue(GridPosition position, GameObject tileObject, TileType type, ResourceType resource)
+    public DBTileValue(Vector2Int position, GameObject tileObject, TileType type, ResourceType resource)
     {
         Position = position;
         TileObject = tileObject;
         Type = type;
         Resource = resource;
-        AdjacentTilesPosition = new List<GridPosition>();
+        AdjacentTilesPosition = new List<Vector2Int>();
         ConstructionClaims = new List<ObjectIdentifier>();
     }
 
