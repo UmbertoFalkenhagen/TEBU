@@ -13,9 +13,14 @@ public class DatabaseManager : MonoBehaviour
     public List<ScriptableTile> tileBlueprints = new List<ScriptableTile>();
 
     //runtime databases for instanced objects
-    
-    public Dictionary<ObjectIdentifier, DBTileValue> tileDictionary = new Dictionary<ObjectIdentifier, DBTileValue>();
-    public Dictionary<ObjectIdentifier, DBCityCenterValue> cityCenterDictionary = new Dictionary<ObjectIdentifier, DBCityCenterValue>();
+
+    private Dictionary<ObjectIdentifier, DBTileValue> tileDictionary
+        = new Dictionary<ObjectIdentifier, DBTileValue>();
+    public IReadOnlyDictionary<ObjectIdentifier, DBTileValue> TileDictionary
+        => tileDictionary;
+    private Dictionary<ObjectIdentifier, DBCityCenterValue> cityCenterDictionary = new Dictionary<ObjectIdentifier, DBCityCenterValue>();
+    public IReadOnlyDictionary<ObjectIdentifier, DBCityCenterValue> CityCenterDictionary
+        => cityCenterDictionary;
     public Dictionary<ObjectIdentifier, DBBuildingValue> buildingDictionary = new Dictionary<ObjectIdentifier, DBBuildingValue>();
     public Dictionary<ObjectIdentifier, DBAnimalValue> animalDictionary = new Dictionary<ObjectIdentifier, DBAnimalValue>();
 
@@ -134,32 +139,13 @@ public class DatabaseManager : MonoBehaviour
     #endregion
 
     #region tileDictionary
-    // 2) Add a random tile from tileBlueprints
-    public void AddRandomTile(Vector2Int dbPosition, Vector3 worldPosition)
+    public void AddTile(ObjectIdentifier tileID, DBTileValue tileValue)
     {
-        if (tileBlueprints == null || tileBlueprints.Count == 0)
-        {
-            Debug.LogError("DatabaseManager: No scriptable tiles in tileBlueprints!");
-            return;
-        }
-        int idx = Random.Range(0, tileBlueprints.Count);
-        ScriptableTile chosenTile = tileBlueprints[idx];
-
-        // The dictionary entry is handled in TileFactory's CreateObject
-        TileFactory.Instance.CreateObject(chosenTile, dbPosition, worldPosition);
+        tileDictionary[tileID] = tileValue;
+        // Overwrites if it already exists (rare, but possible).
+        Debug.Log($"DatabaseManager: Added tile [{tileID}] to tileDictionary. Count={tileDictionary.Count}");
     }
 
-    // 3) Add a tile of a specified type from tileBlueprints
-    public void AddTileOfType(TileType tileType, Vector2Int dbPosition, Vector3 worldPosition)
-    {
-        ScriptableTile tileData = tileBlueprints.FirstOrDefault(t => t.tileType == tileType);
-        if (tileData == null)
-        {
-            Debug.LogWarning($"DatabaseManager: No ScriptableTile found for TileType '{tileType}'.");
-            return;
-        }
-        TileFactory.Instance.CreateObject(tileData, dbPosition, worldPosition);
-    }
 
     // 4) Query methods (for when HexTile wants data):
     //    Provide typed queries so HexTile can easily find info it needs.

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 public class HexTile : MonoBehaviour
 {
     // The unique ID in the database for this tile
-    public ObjectIdentifier TileID { get; set; }
+    public ObjectIdentifier TileID;
 
     // If we need to keep track of an actively placed resource object,
     // we can keep that reference here. However, the resource TYPE

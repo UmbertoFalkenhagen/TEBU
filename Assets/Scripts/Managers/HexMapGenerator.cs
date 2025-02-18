@@ -17,40 +17,43 @@ public class HexMapGenerator : MonoBehaviour
 
     public void GenerateMap()
     {
-        if (databaseManager == null)
+        if (DatabaseManager.Instance == null)
         {
             Debug.LogError("DatabaseManager.Instance is null!");
             return;
         }
-
-        // Example loop
-        for (int i = 0; i < databaseManager.initMapData.columns; i++)
+        if (TileFactory.Instance == null)
         {
-            for (int j = 0; j < databaseManager.initMapData.rows; j++)
-            {
-                // 1) DB position
-                Vector2Int dbPosition = new Vector2Int(i, j);
+            Debug.LogError("TileFactory.Instance is null!");
+            return;
+        }
 
-                // 2) World position
+        // Example
+        for (int i = 0; i < DatabaseManager.Instance.initMapData.columns; i++)
+        {
+            for (int j = 0; j < DatabaseManager.Instance.initMapData.rows; j++)
+            {
+                Vector2Int dbPosition = new Vector2Int(i, j);
                 Vector3 worldPosition = GetPositionForTile(i, j);
 
-                // 3) Add a random tile for demonstration
-                databaseManager.AddRandomTile(dbPosition, worldPosition);
+                // e.g. random tile
+                TileFactory.Instance.AddRandomTile(dbPosition, worldPosition);
 
-                // or if you want a specific tile type:
-                // databaseManager.AddTileOfType(TileType.Grassland, dbPosition, worldPosition);
+                // or tile of specific type:
+                // TileFactory.Instance.AddTileOfType(TileType.Grassland, dbPosition, worldPosition);
             }
         }
 
+        // adjacency, etc...
         checkTileDictionary();
         getAdjacentTiles();
     }
 
     private void checkTileDictionary()
     {
-        if (databaseManager.tileDictionary.Count > 0)
+        if (databaseManager.TileDictionary.Count > 0)
         {
-            Debug.Log("tileDictionary enthält " + databaseManager.tileDictionary.Count + " Einträge.");
+            Debug.Log("tileDictionary enthält " + databaseManager.TileDictionary.Count + " Einträge.");
         }
         else
         {
@@ -76,7 +79,7 @@ public class HexMapGenerator : MonoBehaviour
     public void getAdjacentTiles()
     {
         // TODO: Fix out-of-bounds references
-        foreach (var value in databaseManager.tileDictionary.Values)
+        foreach (var value in databaseManager.TileDictionary.Values)
         {
             int col = value.Position.x;
             int row = value.Position.y;
