@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BuildingFactory : MonoBehaviour, IFactory<ScriptableBuilding>
+public class BuildingFactory : MonoBehaviour
 {
     public static BuildingFactory Instance;
 

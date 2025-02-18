@@ -58,7 +58,7 @@ public class Building : MonoBehaviour
 
     public void CheckForWorkableTiles()
     {
-        List<GameObject> tiles = GridMap.Instance.FindTilesAtEdgeDistance(this.transform.parent.gameObject, 1f);
+        /*List<GameObject> tiles = GridMap.Instance.FindTilesAtEdgeDistance(this.transform.parent.gameObject, 1f);
         Debug.Log("Found " + tiles.Count + " tiles at distance.");
         workableTiles = new List<GameObject>();
         workableTiles.Add(this.transform.parent.gameObject);
@@ -81,6 +81,6 @@ public class Building : MonoBehaviour
             
         }
 
-        maxWorkers = workableTiles.Count;
+        maxWorkers = workableTiles.Count;*/
     }
 }

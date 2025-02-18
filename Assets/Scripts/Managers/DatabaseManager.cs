@@ -9,7 +9,11 @@ public class DatabaseManager : MonoBehaviour
 {
     public static DatabaseManager Instance;
 
+    // Store all tile blueprint data here (public for easy assignment in Inspector)
+    public List<ScriptableTile> tileBlueprints = new List<ScriptableTile>();
+
     //runtime databases for instanced objects
+    
     public Dictionary<ObjectIdentifier, DBTileValue> tileDictionary = new Dictionary<ObjectIdentifier, DBTileValue>();
     public Dictionary<ObjectIdentifier, DBCityCenterValue> cityCenterDictionary = new Dictionary<ObjectIdentifier, DBCityCenterValue>();
     public Dictionary<ObjectIdentifier, DBBuildingValue> buildingDictionary = new Dictionary<ObjectIdentifier, DBBuildingValue>();
@@ -130,30 +134,75 @@ public class DatabaseManager : MonoBehaviour
     #endregion
 
     #region tileDictionary
-    public void AddTile(Vector2Int postition)
+    // 2) Add a random tile from tileBlueprints
+    public void AddRandomTile(Vector2Int dbPosition, Vector3 worldPosition)
     {
-        List<DBTileValue> tiles = new List<DBTileValue>();
-        ObjectIdentifier identifier = GenerateUniqueId(ObjectType.Tile);
-
-        if (!tileDictionary.ContainsKey(identifier))
+        if (tileBlueprints == null || tileBlueprints.Count == 0)
         {
-
-            // Erstelle eine GridPosition für das Tile
-            Vector2Int tilePosition = postition; // Beispielposition (x=0, y=0)
-            // Erstelle ein GameObject für das Tile (dies sollte in der tatsächlichen Implementierung ein echtes GameObject sein)
-            GameObject tileObject = new GameObject("TileObject");
-            // Erstelle ein DBTileValue mit den entsprechenden Werten
-            DBTileValue tileValue = new DBTileValue(tilePosition, tileObject, TileType.Grassland, ResourceType.Rice);
-
-
-
-            // Füge die Liste mit dem einzelnen DBTileValue dem Dictionary hinzu
-            tileDictionary[identifier] = tileValue;
-
-            // tileDictionary[identifier] = null; // Füge die Tiles zur Liste hinzu
-           // tileDictionary[identifier] = singleTileValue; // Neue Liste erstellen, wenn der Key nicht existiert
+            Debug.LogError("DatabaseManager: No scriptable tiles in tileBlueprints!");
+            return;
         }
-        Debug.Log($"Tiles für {identifier} hinzugefügt. Gesamtanzahl: {tileDictionary.Count}");
+        int idx = Random.Range(0, tileBlueprints.Count);
+        ScriptableTile chosenTile = tileBlueprints[idx];
+
+        // The dictionary entry is handled in TileFactory's CreateObject
+        TileFactory.Instance.CreateObject(chosenTile, dbPosition, worldPosition);
+    }
+
+    // 3) Add a tile of a specified type from tileBlueprints
+    public void AddTileOfType(TileType tileType, Vector2Int dbPosition, Vector3 worldPosition)
+    {
+        ScriptableTile tileData = tileBlueprints.FirstOrDefault(t => t.tileType == tileType);
+        if (tileData == null)
+        {
+            Debug.LogWarning($"DatabaseManager: No ScriptableTile found for TileType '{tileType}'.");
+            return;
+        }
+        TileFactory.Instance.CreateObject(tileData, dbPosition, worldPosition);
+    }
+
+    // 4) Query methods (for when HexTile wants data):
+    //    Provide typed queries so HexTile can easily find info it needs.
+    public DBTileValue GetTileValue(ObjectIdentifier tileID)
+    {
+        if (tileID.Type != ObjectType.Tile) return null;
+        if (tileDictionary.TryGetValue(tileID, out var tileVal))
+        {
+            return tileVal;
+        }
+        return null;
+    }
+
+    // Maybe a typed resource accessor:
+    public ResourceType GetTileResourceType(ObjectIdentifier tileID)
+    {
+        var val = GetTileValue(tileID);
+        return val != null ? val.Resource : ResourceType.None;
+    }
+
+    // Return the actual tile GameObject from an ID (if you only want that):
+    public GameObject GetTileGameObject(ObjectIdentifier tileID)
+    {
+        var val = GetTileValue(tileID);
+        return val != null ? val.TileObject : null;
+    }
+
+    // Return a list of neighbor DBTileValues
+    public List<DBTileValue> GetTileNeighbors(ObjectIdentifier tileID)
+    {
+        var val = GetTileValue(tileID);
+        if (val == null) return null;
+
+        var neighbors = new List<DBTileValue>();
+        foreach (var nPos in val.AdjacentTilesPosition)
+        {
+            // Attempt to look up by position
+            var neighborVal = tileDictionary
+                .Values
+                .FirstOrDefault(t => t.Position == nPos);
+            if (neighborVal != null) neighbors.Add(neighborVal);
+        }
+        return neighbors;
     }
     #endregion
 

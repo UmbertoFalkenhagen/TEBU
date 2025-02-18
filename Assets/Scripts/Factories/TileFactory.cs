@@ -1,11 +1,7 @@
 using UnityEngine;
 
-/// <summary>
-/// Factory class for creating tile GameObjects from ScriptableTile data.
-/// </summary>
 public class TileFactory : MonoBehaviour
 {
-    // Singleton pattern for global access (optional)
     public static TileFactory Instance;
 
     private void Awake()
@@ -21,7 +17,6 @@ public class TileFactory : MonoBehaviour
         }
     }
 
-    // CreateInstance method
     protected GameObject InstantiatePrefab(GameObject prefab, Vector3 position, Quaternion rotation, Transform parent = null)
     {
         if (prefab == null)
@@ -32,7 +27,20 @@ public class TileFactory : MonoBehaviour
         return Object.Instantiate(prefab, position, rotation, parent);
     }
 
-    public GameObject CreateObject(ScriptableTile tileData, Vector3 position, Quaternion rotation, Transform parent = null)
+    /// <summary>
+    /// Creates a tile object from the given ScriptableTile data and
+    /// registers it in the DatabaseManager's tile dictionary.
+    /// </summary>
+    /// <param name="tileData">The ScriptableTile blueprint to use.</param>
+    /// <param name="dbPosition">Grid coordinates for the tile (row/column).</param>
+    /// <param name="worldPosition">The 3D world position where the tile should appear.</param>
+    /// <param name="parent">Optional parent transform.</param>
+    /// <returns>The newly instantiated tile GameObject (or null on failure).</returns>
+    public GameObject CreateObject(
+        ScriptableTile tileData,
+        Vector2Int dbPosition,
+        Vector3 worldPosition,
+        Transform parent = null)
     {
         if (tileData == null)
         {
@@ -40,47 +48,50 @@ public class TileFactory : MonoBehaviour
             return null;
         }
 
-        // Instantiate the tile prefab at the specified position and rotation
-        GameObject hexTileObject = InstantiatePrefab(tileData.prefab, position, rotation, parent);
+        // 1) Generate a unique ID for this tile
+        ObjectIdentifier tileID = DatabaseManager.Instance.GenerateUniqueId(ObjectType.Tile);
 
+        // 2) Instantiate the tile prefab
+        GameObject hexTileObject = InstantiatePrefab(tileData.prefab, worldPosition, Quaternion.identity, parent);
+        if (hexTileObject == null)
+        {
+            Debug.LogError("TileFactory: Failed to instantiate tile prefab.");
+            return null;
+        }
+
+        // 3) Ensure a HexTile component is present
         HexTile hexTileComponent = hexTileObject.GetComponent<HexTile>();
-        if (hexTileComponent == null) {
-
-            // Set up the HexTile component with the chosen properties
+        if (hexTileComponent == null)
+        {
             hexTileComponent = hexTileObject.AddComponent<HexTile>();
         }
 
-        TileClick tileClickComponent = hexTileObject.GetComponent<TileClick>();
-        if (tileClickComponent == null)
+        // 4) Determine which resource (if any) is spawned on this tile
+        GameObject initialResourceGO = GetInitialObjectForTile(tileData, out ResourceType assignedResource);
+        // Optionally place the actual resource GameObject at runtime (visual)
+        if (initialResourceGO != null)
         {
-            //Add TileClick script
-            tileClickComponent = hexTileObject.AddComponent<TileClick>();
-
-
+            initialResourceGO.transform.SetParent(hexTileObject.transform);
+            initialResourceGO.transform.localPosition = Vector3.zero; // or some offset
         }
 
-        //add tile to layer "Tile"
-        hexTileObject.layer = 6;
-        if (hexTileComponent != null)
-        {
-            hexTileComponent.TileType = tileData.tileType;  // Set the tile type from the ScriptableTile
+        // 5) Create a DBTileValue to store in DatabaseManager
+        //    The tile's "type" is from tileData.tileType
+        //    The "resource" is assignedResource from above
+        DBTileValue dbTileValue = new DBTileValue(
+            dbPosition,
+            hexTileObject,
+            tileData.tileType,
+            assignedResource
+        );
 
-            // Get the initial object to place on the tile and the assigned resource
-            GameObject initialResource = GetInitialObjectForTile(tileData, out ResourceType assignedResource);
+        // 6) Insert the new entry into the tileDictionary
+        DatabaseManager.Instance.tileDictionary[tileID] = dbTileValue;
 
-            // Store the resource in the HexTile component
-            hexTileComponent.resource = assignedResource;
+        // 7) Store the tileID in the HexTile component (so it knows how to look itself up)
+        hexTileComponent.TileID = tileID;
 
-            // Place the initial object on the tile
-            if (initialResource != null)
-            {
-                hexTileComponent.PlaceResourceOnTile(initialResource);
-            }
-        }
-        else
-        {
-            Debug.LogError($"HexTile component missing on the instantiated prefab.");
-        }
+        Debug.Log($"TileFactory: Created new tile [{tileID}] at DB pos {dbPosition}.");
 
         return hexTileObject;
     }
@@ -89,11 +100,11 @@ public class TileFactory : MonoBehaviour
     /// Retrieves the initial object to place on the tile based on the ScriptableTile resource probabilities.
     /// </summary>
     /// <param name="tileData">The ScriptableTile to evaluate.</param>
-    /// <param name="out Resource">The determined resource to assign to the HexTile.</param>
-    /// <returns>The initial GameObject to be placed on the tile.</returns>
+    /// <param name="assignedResource">Which resource was assigned for DB storage.</param>
+    /// <returns>The initial GameObject resource (or null if none spawned).</returns>
     public GameObject GetInitialObjectForTile(ScriptableTile tileData, out ResourceType assignedResource)
     {
-        assignedResource = ResourceType.None; // Default to None
+        assignedResource = ResourceType.None; // Default
 
         if (tileData == null)
         {
@@ -101,17 +112,16 @@ public class TileFactory : MonoBehaviour
             return null;
         }
 
-        // Iterate through the resources list to see if any resource should be spawned based on probability
+        // Probability-based resource spawning
         foreach (var resourceProbability in tileData.resources)
         {
             if (Random.value <= resourceProbability.spawnProbability)
             {
-                assignedResource = resourceProbability.resourceName; // Assign the resource
-                return resourceProbability.resourcePrefab; // Return the prefab of the resource if it spawns
+                assignedResource = resourceProbability.resourceName;
+                return resourceProbability.resourcePrefab;
             }
         }
-
-        // If no resources spawn, return the default prefab
+        // If no resource spawns, return the default prefab
         return tileData.defaultPrefab;
     }
 }
