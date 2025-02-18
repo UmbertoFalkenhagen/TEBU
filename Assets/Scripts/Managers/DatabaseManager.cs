@@ -72,8 +72,7 @@ public class DatabaseManager : MonoBehaviour
 
     #region GeneralFunctions
     // --------------------------------------------------------------------
-    // 1) Generate a random unique ID for the given ObjectType
-    //    Uses a FIXED ID length (e.g., 6 digits)
+    // Generate a random unique ID for the given ObjectType
     // --------------------------------------------------------------------
     public ObjectIdentifier GenerateUniqueId(ObjectType type)
     {
@@ -121,7 +120,7 @@ public class DatabaseManager : MonoBehaviour
     }
 
     // --------------------------------------------------------------------
-    // 2) Find and return the data entry for an ObjectIdentifier
+    // Find and return the data entry for an ObjectIdentifier
     // --------------------------------------------------------------------
     public object FindObjectByID(ObjectIdentifier identifier)
     {
