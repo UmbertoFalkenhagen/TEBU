@@ -135,6 +135,7 @@ public class SDBInitMapData
 {
     public int columns { get; set; } // Number of tile columns
     public int rows { get; set; } // Number of tile rows
+    public float cellSize {  get; set; }
 
 }
 

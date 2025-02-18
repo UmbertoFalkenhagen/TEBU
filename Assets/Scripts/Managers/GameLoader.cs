@@ -19,10 +19,10 @@ public class GameLoader : MonoBehaviour
                 Debug.LogError("DatabaseManager could not be found!");
             }
         }
-    
         //fillBlueprintDB
         databaseManager.initMapData.columns = 5;
         databaseManager.initMapData.rows = 5;
+        databaseManager.initMapData.cellSize = 1.24f;
 
 
         //Run Generate Map

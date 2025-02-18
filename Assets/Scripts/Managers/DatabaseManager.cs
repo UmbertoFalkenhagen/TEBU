@@ -16,9 +16,9 @@ public class DatabaseManager : MonoBehaviour
     public Dictionary<ObjectIdentifier, DBAnimalValue> animalDictionary = new Dictionary<ObjectIdentifier, DBAnimalValue>();
 
     //static databases for persistent blueprints
-    // TODO: ObjectIdentifier are only for runtime DB, not for blueprints! They got other types, add SBInitMapData
     public Dictionary<BuildingType, SDBBuildingBlueprintValue> buildingBlueprintDictionary = new Dictionary<BuildingType, SDBBuildingBlueprintValue>();
     public Dictionary<AnimalType, SDBAnimalBlueprintValue> animalBlueprintDictionary = new Dictionary<AnimalType, SDBAnimalBlueprintValue>();
+    //initMapData is initiated empty and gets filled in GameLoader
     public SDBInitMapData initMapData = new();
     //Singleton
     private void Awake()
@@ -26,6 +26,7 @@ public class DatabaseManager : MonoBehaviour
         if (Instance == null)
         {
             Instance = this;
+            //where does it come from? do we need it? 
            // DontDestroyOnLoad(gameObject);
         }
         else
@@ -151,9 +152,10 @@ public class DatabaseManager : MonoBehaviour
         return null;
     }
 
-#endregion
-#region tileDictionary
-public void AddTile(GridPosition postition)
+    #endregion
+
+    #region tileDictionary
+    public void AddTile(GridPosition postition)
     {
         List<DBTileValue> tiles = new List<DBTileValue>();
         ObjectIdentifier identifier = GenerateUniqueId(ObjectType.Tile);
