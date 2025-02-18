@@ -1,75 +1,68 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Xml;
 using UnityEngine;
-using static UnityEngine.Rendering.DebugUI;
 
 public class HexMapGenerator : MonoBehaviour
 {
-    // string seed;
     private DatabaseManager databaseManager;
-    Vector2Int position;
 
     private void Awake()
     {
-        //Attach Database
+        databaseManager = DatabaseManager.Instance;
         if (databaseManager == null)
         {
-            databaseManager = FindObjectOfType<DatabaseManager>();
-            if (databaseManager == null)
-            {
-                Debug.LogError("DatabaseManager could not be found!");
-            }
+            Debug.LogError("DatabaseManager could not be found!");
         }
     }
+
     public void GenerateMap()
     {
-        // Check if databaseManager is null or empty before proceeding
-        if (DatabaseManager.Instance != null) {
-            // loop Cols and Rows
-            for (int i = 0;i< databaseManager.initMapData.columns; i++)
-            {
-                for (int j = 0;j< databaseManager.initMapData.rows; j++)
-                {
-                    position = new Vector2Int(i, j);
-                    //define Tile Grid -> find in old script
-                    // tileFactory.build(getPositionForTile(i, j));
-                    //TODO: ....Factory Tile ... Replace following two lines with factory call
-                    GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                    cube.transform.position = getPositionForTile(i, j);
-                    //Add Tile to Dictionary
-                    databaseManager.AddTile(position);
-                    checkTileDictionary();
-                }
-            }
-            //TODO: register adjecent tiles
-            getAdjacentTiles();
-        }
-        else
+        if (DatabaseManager.Instance == null)
         {
-            Debug.LogError("DatabaseManager.Instance ist null!");
+            Debug.LogError("DatabaseManager.Instance is null!");
+            return;
         }
+        if (TileFactory.Instance == null)
+        {
+            Debug.LogError("TileFactory.Instance is null!");
+            return;
+        }
+
+        // Example
+        for (int i = 0; i < DatabaseManager.Instance.initMapData.columns; i++)
+        {
+            for (int j = 0; j < DatabaseManager.Instance.initMapData.rows; j++)
+            {
+                Vector2Int dbPosition = new Vector2Int(i, j);
+                Vector3 worldPosition = GetPositionForTile(i, j);
+
+                // e.g. random tile
+                TileFactory.Instance.AddRandomTile(dbPosition, worldPosition);
+
+                // or tile of specific type:
+                // TileFactory.Instance.AddTileOfType(TileType.Grassland, dbPosition, worldPosition);
+            }
+        }
+
+        // adjacency, etc...
+        checkTileDictionary();
+        getAdjacentTiles();
     }
 
     private void checkTileDictionary()
     {
-        if (DatabaseManager.Instance.tileDictionary.Count > 0)
+        if (databaseManager.TileDictionary.Count > 0)
         {
-            Debug.Log("tileDictionary enthält " + DatabaseManager.Instance.tileDictionary.Count + " Einträge.");
+            Debug.Log("tileDictionary enthält " + databaseManager.TileDictionary.Count + " Einträge.");
         }
         else
         {
             Debug.Log("tileDictionary ist leer.");
         }
-
     }
 
-    private Vector3 getPositionForTile(int _column, int _row)
+    private Vector3 GetPositionForTile(int column, int row)
     {
-        //some Math to get World Positions from cells and rows
-        int column = _column;
-        int row = _row;
         float size = databaseManager.initMapData.cellSize;
         bool shouldOffset = (row % 2) == 0;
         float width = Mathf.Sqrt(3) * size;
@@ -85,39 +78,35 @@ public class HexMapGenerator : MonoBehaviour
 
     public void getAdjacentTiles()
     {
-
-        //TODO: Fix that out of bounce tiles are added too
-        List<Vector2Int> neighbors = new List<Vector2Int>();
-
-        foreach (var value in databaseManager.tileDictionary.Values)
+        // TODO: Fix out-of-bounds references
+        foreach (var value in databaseManager.TileDictionary.Values)
         {
-            int row = value.Position.x;
-            int column = value.Position.y;
-
+            int col = value.Position.x;
+            int row = value.Position.y;
             bool isEvenRow = (row % 2) == 0;
 
+            List<Vector2Int> neighbors = new List<Vector2Int>();
             if (isEvenRow)
             {
-                neighbors.Add(new Vector2Int(column - 1, row));     // Links
-                neighbors.Add(new Vector2Int(column + 1, row));     // Rechts
-                neighbors.Add(new Vector2Int(column, row - 1));     // Oben
-                neighbors.Add(new Vector2Int(column, row + 1));     // Unten
-                neighbors.Add(new Vector2Int(column - 1, row + 1)); // Links unten
-                neighbors.Add(new Vector2Int(column - 1, row - 1)); // Links oben
+                neighbors.Add(new Vector2Int(col - 1, row));     // Left
+                neighbors.Add(new Vector2Int(col + 1, row));     // Right
+                neighbors.Add(new Vector2Int(col, row - 1));     // Up
+                neighbors.Add(new Vector2Int(col, row + 1));     // Down
+                neighbors.Add(new Vector2Int(col - 1, row + 1)); // Bottom-left
+                neighbors.Add(new Vector2Int(col - 1, row - 1)); // Top-left
             }
             else
             {
-                neighbors.Add(new Vector2Int(column - 1, row));     // Links
-                neighbors.Add(new Vector2Int(column + 1, row));     // Rechts
-                neighbors.Add(new Vector2Int(column, row - 1));     // Oben
-                neighbors.Add(new Vector2Int(column, row + 1));     // Unten
-                neighbors.Add(new Vector2Int(column + 1, row + 1)); // Rechts unten
-                neighbors.Add(new Vector2Int(column + 1, row - 1)); // Rechts oben
+                neighbors.Add(new Vector2Int(col - 1, row));
+                neighbors.Add(new Vector2Int(col + 1, row));
+                neighbors.Add(new Vector2Int(col, row - 1));
+                neighbors.Add(new Vector2Int(col, row + 1));
+                neighbors.Add(new Vector2Int(col + 1, row + 1));
+                neighbors.Add(new Vector2Int(col + 1, row - 1));
             }
+
+            // Assign the neighbor list to the DBTileValue
             value.AdjacentTilesPosition = neighbors;
-           // Debug.Log(neighbors[1].row.ToString() + ", " + neighbors[1].column.ToString());
         }
-
-
     }
 }

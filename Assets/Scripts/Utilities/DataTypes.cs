@@ -17,34 +17,43 @@ using System;
     }
 }*/
 
+[Serializable]
 public class ObjectIdentifier
 {
-    // Lookup from enum -> prefix character
-    private static readonly Dictionary<ObjectType, char> TypeToPrefix =
-        new Dictionary<ObjectType, char>
-        {
-            { ObjectType.Tile,       '$' },
-            { ObjectType.CityCenter, '#' },
-            { ObjectType.Building,   '+' },
-            { ObjectType.Animal,     '~' }
-        };
+    // Static dictionaries can remain as-is; they're not serialized for the instance.
+    private static readonly Dictionary<ObjectType, char> TypeToPrefix = new Dictionary<ObjectType, char>
+    {
+        { ObjectType.Tile,       '$' },
+        { ObjectType.CityCenter, '#' },
+        { ObjectType.Building,   '+' },
+        { ObjectType.Animal,     '~' }
+    };
 
-    // Reverse lookup from prefix -> enum
     private static readonly Dictionary<char, ObjectType> PrefixToType =
         TypeToPrefix.ToDictionary(kvp => kvp.Value, kvp => kvp.Key);
 
-    public ObjectType Type { get; }
-    public string UniqueId { get; }
+    // These fields get serialized, which makes them visible in the Inspector
+    [SerializeField] private ObjectType type;
+    [SerializeField] private string uniqueId;
 
+    // Public read-only properties that refer to the serialized fields
+    public ObjectType Type => type;
+    public string UniqueId => uniqueId;
+
+    // This constructor is used in code
     public ObjectIdentifier(ObjectType type, string uniqueId)
     {
-        Type = type;
-        UniqueId = uniqueId;
+        this.type = type;
+        this.uniqueId = uniqueId;
     }
+
+    // Parameterless constructor so Unity can create it if needed
+    // (Depending on usage, might not be strictly necessary, but often helpful)
+    private ObjectIdentifier() { }
 
     public override string ToString()
     {
-        return $"{TypeToPrefix[Type]}{UniqueId}";
+        return $"{TypeToPrefix[type]}{uniqueId}";
     }
 
     public static ObjectIdentifier FromString(string objectIdString)
@@ -53,15 +62,16 @@ public class ObjectIdentifier
             throw new ArgumentException("Object ID string cannot be null or empty.");
 
         char prefix = objectIdString[0];
-        if (!PrefixToType.TryGetValue(prefix, out var type))
+        if (!PrefixToType.TryGetValue(prefix, out var parsedType))
         {
             throw new ArgumentException($"Unrecognized prefix '{prefix}' in object ID.");
         }
 
-        string uniqueId = objectIdString.Substring(1);
-        return new ObjectIdentifier(type, uniqueId);
+        string parsedId = objectIdString.Substring(1);
+        return new ObjectIdentifier(parsedType, parsedId);
     }
 }
+
 
 public class DBTileValue
 {
@@ -139,5 +149,29 @@ public class SDBInitMapData
 
 }
 
+// Define a class to hold resource data, representing the resources that can spawn on a tile
+[System.Serializable]
+public class ResourceProbability
+{
+    [Tooltip("The type of resource that can spawn on this tile, such as 'Herbs' or 'Raw Rice'.")]
+    public ResourceType resourceName;      // Name of the resource, e.g., "Herbs", "Raw Rice". See Enums class
+
+    [Tooltip("The prefab used to visually represent this resource on the tile.")]
+    public GameObject resourcePrefab;  // Prefab representing the resource (e.g., a plant or mineral)
+
+    [Tooltip("Probability (0 to 1) of this resource spawning on the tile.")]
+    [Range(0, 1)]
+    public float spawnProbability;     // Probability of this resource spawning on the tile (0 to 1 range)
+}
+
+[System.Serializable]
+public class ProductRequirement
+{
+    [Tooltip("The type of product required for production.")]
+    public ProductType product;
+
+    [Tooltip("The quantity of the product required for production.")]
+    public int quantity;
+}
 
 

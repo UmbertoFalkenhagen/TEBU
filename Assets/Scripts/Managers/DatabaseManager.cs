@@ -9,9 +9,18 @@ public class DatabaseManager : MonoBehaviour
 {
     public static DatabaseManager Instance;
 
+    // Store all tile blueprint data here (public for easy assignment in Inspector)
+    public List<ScriptableTile> tileBlueprints = new List<ScriptableTile>();
+
     //runtime databases for instanced objects
-    public Dictionary<ObjectIdentifier, DBTileValue> tileDictionary = new Dictionary<ObjectIdentifier, DBTileValue>();
-    public Dictionary<ObjectIdentifier, DBCityCenterValue> cityCenterDictionary = new Dictionary<ObjectIdentifier, DBCityCenterValue>();
+
+    private Dictionary<ObjectIdentifier, DBTileValue> tileDictionary
+        = new Dictionary<ObjectIdentifier, DBTileValue>();
+    public IReadOnlyDictionary<ObjectIdentifier, DBTileValue> TileDictionary
+        => tileDictionary;
+    private Dictionary<ObjectIdentifier, DBCityCenterValue> cityCenterDictionary = new Dictionary<ObjectIdentifier, DBCityCenterValue>();
+    public IReadOnlyDictionary<ObjectIdentifier, DBCityCenterValue> CityCenterDictionary
+        => cityCenterDictionary;
     public Dictionary<ObjectIdentifier, DBBuildingValue> buildingDictionary = new Dictionary<ObjectIdentifier, DBBuildingValue>();
     public Dictionary<ObjectIdentifier, DBAnimalValue> animalDictionary = new Dictionary<ObjectIdentifier, DBAnimalValue>();
 
@@ -37,31 +46,7 @@ public class DatabaseManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        /* This is a test to see if creating IDs works
-        // 1) Generate a couple of unique IDs to see them in the console
-        ObjectIdentifier tileId1 = GenerateUniqueId(ObjectType.Tile);
-        ObjectIdentifier tileId2 = GenerateUniqueId(ObjectType.Tile);
-        Debug.Log($"Generated Tile IDs: {tileId1}, {tileId2}");
-
-        // 2) Add two Tiles to the dictionary (internally calls GenerateUniqueId)
-        AddTile(new GridPosition(0, 0));  // Creates & logs a Tile entry
-        AddTile(new GridPosition(1, 1));  // Creates & logs another Tile entry
-
-        // 3) Let's pick the first tile ID from the dictionary
-        var firstTileId = tileDictionary.Keys.First();
-        Debug.Log($"First tile ID in dictionary: {firstTileId}");
-
-        // 4) Try to find that tile in the database
-        var foundData = FindObjectByID(firstTileId);
-        if (foundData != null)
-        {
-            // foundData should be a DBTileValue in this case
-            Debug.Log($"Found tile data for ID {firstTileId}: {foundData}");
-        }
-        else
-        {
-            Debug.LogWarning($"No tile found with ID: {firstTileId}");
-        }*/
+        
     }
 
     // Update is called once per frame
@@ -154,31 +139,127 @@ public class DatabaseManager : MonoBehaviour
     #endregion
 
     #region tileDictionary
-    public void AddTile(Vector2Int postition)
+    public void AddTile(ObjectIdentifier tileID, DBTileValue tileValue)
     {
-        List<DBTileValue> tiles = new List<DBTileValue>();
-        ObjectIdentifier identifier = GenerateUniqueId(ObjectType.Tile);
+        tileDictionary[tileID] = tileValue;
+        // Overwrites if it already exists (rare, but possible).
+        Debug.Log($"DatabaseManager: Added tile [{tileID}] to tileDictionary. Count={tileDictionary.Count}");
+    }
 
-        if (!tileDictionary.ContainsKey(identifier))
+
+    // 4) Query methods (for when HexTile wants data):
+    //    Provide typed queries so HexTile can easily find info it needs.
+    public DBTileValue GetTileValue(ObjectIdentifier tileID)
+    {
+        if (tileID.Type != ObjectType.Tile) return null;
+        if (tileDictionary.TryGetValue(tileID, out var tileVal))
         {
-
-            // Erstelle eine GridPosition für das Tile
-            Vector2Int tilePosition = postition; // Beispielposition (x=0, y=0)
-            // Erstelle ein GameObject für das Tile (dies sollte in der tatsächlichen Implementierung ein echtes GameObject sein)
-            GameObject tileObject = new GameObject("TileObject");
-            // Erstelle ein DBTileValue mit den entsprechenden Werten
-            DBTileValue tileValue = new DBTileValue(tilePosition, tileObject, TileType.Grassland, ResourceType.Rice);
-
-
-
-            // Füge die Liste mit dem einzelnen DBTileValue dem Dictionary hinzu
-            tileDictionary[identifier] = tileValue;
-
-            // tileDictionary[identifier] = null; // Füge die Tiles zur Liste hinzu
-           // tileDictionary[identifier] = singleTileValue; // Neue Liste erstellen, wenn der Key nicht existiert
+            return tileVal;
         }
-        Debug.Log($"Tiles für {identifier} hinzugefügt. Gesamtanzahl: {tileDictionary.Count}");
+        return null;
+    }
+
+    // Maybe a typed resource accessor:
+    public ResourceType GetTileResourceType(ObjectIdentifier tileID)
+    {
+        var val = GetTileValue(tileID);
+        return val != null ? val.Resource : ResourceType.None;
+    }
+
+    // Return the actual tile GameObject from an ID (if you only want that):
+    public GameObject GetTileGameObject(ObjectIdentifier tileID)
+    {
+        var val = GetTileValue(tileID);
+        return val != null ? val.TileObject : null;
+    }
+
+    // Return a list of neighbor DBTileValues
+    public List<DBTileValue> GetTileNeighbors(ObjectIdentifier tileID)
+    {
+        var val = GetTileValue(tileID);
+        if (val == null) return null;
+
+        var neighbors = new List<DBTileValue>();
+        foreach (var nPos in val.AdjacentTilesPosition)
+        {
+            // Attempt to look up by position
+            var neighborVal = tileDictionary
+                .Values
+                .FirstOrDefault(t => t.Position == nPos);
+            if (neighborVal != null) neighbors.Add(neighborVal);
+        }
+        return neighbors;
     }
     #endregion
 
+    #region StaticBlueprintDBFunctions
+    /// <summary>
+    /// Populates the building blueprint dictionary with data from the provided ScriptableBuilding.
+    /// </summary>
+    public void AddBuildingBlueprint(ScriptableBuilding scriptableBuilding)
+    {
+        if (scriptableBuilding == null)
+        {
+            Debug.LogError("AddBuildingBlueprint: Provided ScriptableBuilding is null.");
+            return;
+        }
+
+        // Create a new SDBBuildingBlueprintValue from the data
+        SDBBuildingBlueprintValue blueprintValue = new SDBBuildingBlueprintValue
+        {
+            prefab = scriptableBuilding.basicPrefab,
+            requiredTileTypes = new List<TileType>(scriptableBuilding.suitableTileTypeLocations),
+            requiredResources = new List<ResourceType>(scriptableBuilding.requiredResources),
+            outputProduct = scriptableBuilding.product,
+            // If your ScriptableBuilding's inputProducts is a list of custom structs/classes,
+            // you can translate them into a List<ProductType> or adapt as necessary:
+            inputProducts = scriptableBuilding.inputProducts
+                .Select(req => req.product)   // or req.theProductType, depending on your fields
+                .ToList(),
+            productionPerWorker = scriptableBuilding.productionPerWorker,
+            isMaxWorkersFixed = scriptableBuilding.isMaxWorkersFixed,
+            maxWorkers = scriptableBuilding.maxWorkers
+        };
+
+        // Store it in the dictionary, keyed by the building type
+        buildingBlueprintDictionary[scriptableBuilding.buildingName] = blueprintValue;
+
+        Debug.Log($"Building blueprint '{scriptableBuilding.buildingName}' added/updated in the dictionary.");
+    }
+
+    /// <summary>
+    /// Populates the animal blueprint dictionary from the provided ScriptableAnimal.
+    /// </summary>
+    public void AddAnimalBlueprint(ScriptableAnimal scriptableAnimal)
+    {
+        if (scriptableAnimal == null)
+        {
+            Debug.LogError("AddAnimalBlueprint: Provided ScriptableAnimal is null.");
+            return;
+        }
+
+        // Create a new SDBAnimalBlueprintValue from the data in ScriptableAnimal
+        SDBAnimalBlueprintValue blueprintValue = new SDBAnimalBlueprintValue
+        {
+            prefab = scriptableAnimal.prefab,
+            // Since 'spawnLocation' is a single TileType, we'll store it as a single-entry list.
+            requiredTileTypes = new List<TileType> { scriptableAnimal.spawnLocation },
+
+            basicFood = scriptableAnimal.basicFood,
+
+            // Renaming to match the SDBAnimalBlueprintValue fields:
+            ability1UnlockProduct = scriptableAnimal.basicAbilityUnlockProduct1,
+            ability2UnlockProduct = scriptableAnimal.basicAbilityUnlockProduct2,
+            ability1ImprovProduct = scriptableAnimal.abilityImprovementProduct1,
+            ability2ImprovProduct = scriptableAnimal.abilityImprovementProduct2
+        };
+
+        // Key the dictionary by the AnimalType specified in ScriptableAnimal
+        animalBlueprintDictionary[scriptableAnimal.animalName] = blueprintValue;
+
+        Debug.Log($"Animal blueprint '{scriptableAnimal.animalName}' added/updated in the dictionary.");
+    }
+
+
+    #endregion
 }
