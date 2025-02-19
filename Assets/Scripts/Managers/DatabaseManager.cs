@@ -143,7 +143,7 @@ public class DatabaseManager : MonoBehaviour
     {
         tileDictionary[tileID] = tileValue;
         // Overwrites if it already exists (rare, but possible).
-        Debug.Log($"DatabaseManager: Added tile [{tileID}] to tileDictionary. Count={tileDictionary.Count}");
+      //  Debug.Log($"DatabaseManager: Added tile [{tileID}] to tileDictionary. Count={tileDictionary.Count}");
     }
 
 
