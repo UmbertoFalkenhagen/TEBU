@@ -73,8 +73,10 @@ public class TileFactory : MonoBehaviour
         GameObject initialResource = GetInitialObjectForTile(tileData, out ResourceType assignedResource);
         if (initialResource != null)
         {
-            initialResource.transform.SetParent(hexTileObject.transform);
-            initialResource.transform.localPosition = Vector3.zero;
+            GameObject resourceInstance = Instantiate(initialResource);
+            resourceInstance.transform.SetParent(hexTileObject.transform);
+            resourceInstance.transform.localPosition = Vector3.zero;
+
         }
 
         // 5) Create DBTileValue

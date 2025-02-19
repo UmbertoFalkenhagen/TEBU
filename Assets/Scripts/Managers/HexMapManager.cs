@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class HexMapGenerator : MonoBehaviour
+public class HexMapManager : MonoBehaviour
 {
     private DatabaseManager databaseManager;
 
