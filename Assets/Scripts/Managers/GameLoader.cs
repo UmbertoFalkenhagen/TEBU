@@ -5,7 +5,7 @@ using UnityEngine;
 public class GameLoader : MonoBehaviour
 {
 
-    private HexMapGenerator hexMapGenerator;
+    private HexMapManager hexMapGenerator;
     private DatabaseManager databaseManager;
 
     public List<ScriptableBuilding> buildingBlueprints;
@@ -45,7 +45,7 @@ public class GameLoader : MonoBehaviour
         //Run Generate Map
         //TODO: Check if any is there
         if (hexMapGenerator == null) { 
-            hexMapGenerator = FindObjectOfType<HexMapGenerator>();
+            hexMapGenerator = FindObjectOfType<HexMapManager>();
             
         }
         hexMapGenerator.GenerateMap();

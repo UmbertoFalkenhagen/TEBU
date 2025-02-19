@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class HexMapGenerator : MonoBehaviour
+public class HexMapManager : MonoBehaviour
 {
     private DatabaseManager databaseManager;
 
@@ -37,8 +37,8 @@ public class HexMapGenerator : MonoBehaviour
                 Vector3 worldPosition = GetPositionForTile(i, j);
 
                 // e.g. random tile
-                TileFactory.Instance.AddRandomTile(dbPosition, worldPosition);
-
+                ObjectIdentifier thisID =  TileFactory.Instance.AddRandomTile(dbPosition, worldPosition);
+                
                 // or tile of specific type:
                 // TileFactory.Instance.AddTileOfType(TileType.Grassland, dbPosition, worldPosition);
             }
@@ -53,7 +53,7 @@ public class HexMapGenerator : MonoBehaviour
     {
         if (databaseManager.TileDictionary.Count > 0)
         {
-            Debug.Log("tileDictionary enthält " + databaseManager.TileDictionary.Count + " Einträge.");
+          //  Debug.Log("tileDictionary enthält " + databaseManager.TileDictionary.Count + " Einträge.");
         }
         else
         {
