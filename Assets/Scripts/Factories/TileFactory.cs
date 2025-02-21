@@ -13,42 +13,42 @@ public class TileFactory : MonoBehaviour
     }
 
     // AddRandomTile
-    public ObjectIdentifier AddRandomTile(Vector2Int dbPosition, Vector3 worldPosition, Transform parent = null)
+    public KeyValuePair<ObjectIdentifier, DBTileValue> AddRandomTile(Vector2Int dbPosition, Vector3 worldPosition, Transform parent = null)
     {
         // Make sure we have tileBlueprints in the DB
         var manager = DatabaseManager.Instance;
         if (manager.tileBlueprints == null || manager.tileBlueprints.Count == 0)
         {
             Debug.LogError("TileFactory: No ScriptableTiles found in DatabaseManager.tileBlueprints!");
-            return null;
+            return default;
         }
         int randomIndex = Random.Range(0, manager.tileBlueprints.Count);
         ScriptableTile chosenTile = manager.tileBlueprints[randomIndex];
-        
+
         return CreateTile(chosenTile, dbPosition, worldPosition, parent);
     }
 
     // AddTileOfType
-    public ObjectIdentifier AddTileOfType(TileType tileType, Vector2Int dbPosition, Vector3 worldPosition, Transform parent = null)
+    public KeyValuePair<ObjectIdentifier, DBTileValue> AddTileOfType(TileType tileType, Vector2Int dbPosition, Vector3 worldPosition, Transform parent = null)
     {
         // Find the scriptable tile with matching tileType
         ScriptableTile tileData = DatabaseManager.Instance.tileBlueprints.FirstOrDefault(t => t.tileType == tileType);
         if (tileData == null)
         {
             Debug.LogWarning($"TileFactory: No ScriptableTile found for TileType '{tileType}'");
-            return null;
+            return default;
         }
 
         return CreateTile(tileData, dbPosition, worldPosition, parent);
     }
 
     // Core creation logic - used by both methods
-    private ObjectIdentifier CreateTile(ScriptableTile tileData, Vector2Int dbPosition, Vector3 worldPosition, Transform parent)
+    private KeyValuePair<ObjectIdentifier, DBTileValue> CreateTile(ScriptableTile tileData, Vector2Int dbPosition, Vector3 worldPosition, Transform parent)
     {
         if (tileData == null)
         {
             Debug.LogError("TileFactory: tileData is null!");
-            return null;
+            return default;
         }
 
         // 1) Generate a unique ID (ObjectType.Tile)
@@ -59,7 +59,7 @@ public class TileFactory : MonoBehaviour
         if (hexTileObject == null)
         {
             Debug.LogError("TileFactory: Failed to instantiate tile prefab.");
-            return null;
+            return default;
         }
 
         // 3) Ensure HexTile component
@@ -71,6 +71,7 @@ public class TileFactory : MonoBehaviour
 
         // Make HexTile clickable
         hexTileObject.AddComponent<SelectableObject>();
+       // hexTileObject.AddComponent<ObjectID>().objectID = tileID;
 
         // 4) Possibly set up resource logic
         GameObject initialResource = GetInitialObjectForTile(tileData, out ResourceType assignedResource);
@@ -84,13 +85,10 @@ public class TileFactory : MonoBehaviour
         // 5) Create DBTileValue
         DBTileValue tileValue = new DBTileValue(dbPosition, hexTileObject, tileData.tileType, assignedResource);
 
-        // 6) Add new entry to the dictionary
-        DatabaseManager.Instance.AddTile(tileID, tileValue);
-
         // 7) Let the HexTile know its ID
         hexTile.TileID = tileID;
 
-        return tileID;
+        return new KeyValuePair<ObjectIdentifier, DBTileValue>(tileID, tileValue);
     }
 
     // Instantiate Prefab (copied from old code)

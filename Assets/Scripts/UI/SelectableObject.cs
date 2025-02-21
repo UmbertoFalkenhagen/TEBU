@@ -2,60 +2,38 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using static Unity.Burst.Intrinsics.X86.Avx;
 public class SelectableObject : MonoBehaviour
 {
     public string objectName;
     public string description;
     public string tooltipText;
-
+    private UIManager uiManager;
     private void Awake()
     {
         objectName = "test";
+        uiManager = UIManager.Instance;
     }
     private void OnMouseDown()
     {
-      //  Debug.Log("TestOnMouseDown");
+        //  Debug.Log("TestOnMouseDown");
         //if (EventSystem.current.IsPointerOverGameObject())
-          //  return; // Verhindert Klicks durch UI
+        //  return; // Verhindert Klicks durch UI
 
-      //  UIManager.Instance.UpdateInfoPanel(objectName, description);
+        //  UIManager.Instance.UpdateInfoPanel(objectName, description);
     }
     public void Selected()
     {
-     //   if (UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
-     //   {
-     //       Debug.Log("Klick ignoriert, weil UI-Element getroffen wurde.");
-     //       return;
-     //    }
 
-        HandleSelectedID(CheckForPrefix());
+        CheckComponentAndExecute();
+
+        //   if (UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
+        //   {
+        //       Debug.Log("Klick ignoriert, weil UI-Element getroffen wurde.");
+        //       return;
+        //    }
+        //UIManagerChangeUI based on object
     }
-    public void HandleSelectedID(string id)
-    {
-        char prefix = id[0]; // Nimmt das erste Zeichen als Prefix
-
-        switch (prefix)
-        {
-            case '$':
-                Debug.Log($"HexTile gefunden! TypeID: {id}");
-
-                // HandleDollarPrefix(id);
-                break;
-            case '#':
-             //   HandleHashPrefix(id);
-                break;
-            case '+':
-              //  HandlePlusPrefix(id);
-                break;
-            case '~':
-              //  HandleTildePrefix(id);
-                break;
-            default:
-                Debug.LogWarning($"Unbekanntes Prefix: {prefix}");
-                break;
-        }
-    }
-
     private void OnMouseEnter()
     {
       //  TooltipManager.Instance.ShowTooltip(tooltipText, Input.mousePosition);
@@ -65,18 +43,22 @@ public class SelectableObject : MonoBehaviour
     {
        // TooltipManager.Instance.HideTooltip();
     }
-
-    private string CheckForPrefix()
+    void CheckComponentAndExecute()
     {
-        HexTile hexTile = GetComponent<HexTile>();
-        if (hexTile != null)
+        if (this.TryGetComponent(out HexTile compA))
         {
-            return hexTile.TileID.ToString();
+            ObjectIdentifier tileID = GetComponent<HexTile>().TileID;
+            uiManager.tileClick(tileID);
+        }
+        else if (this.TryGetComponent(out HexMapManager compB))
+        {
+           // HandleComponentB(compB);
         }
         else
         {
-            Debug.Log("Kein HexTile-Skript auf diesem Objekt.");
-            return null;
+            Debug.Log("Keines der gesuchten Skripte gefunden.");
         }
     }
+
+
 }

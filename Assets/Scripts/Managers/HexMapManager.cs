@@ -36,9 +36,14 @@ public class HexMapManager : MonoBehaviour
                 Vector2Int dbPosition = new Vector2Int(i, j);
                 Vector3 worldPosition = GetPositionForTile(i, j);
 
-                // e.g. random tile
-                ObjectIdentifier thisID =  TileFactory.Instance.AddRandomTile(dbPosition, worldPosition);
-                
+
+                KeyValuePair<ObjectIdentifier, DBTileValue> tile = TileFactory.Instance.AddRandomTile(dbPosition, worldPosition);
+
+                if (tile.Value != null)
+                {
+                    // e.g. random tile
+                    DatabaseManager.Instance.AddTile(tile.Key, tile.Value);
+                }
                 // or tile of specific type:
                 // TileFactory.Instance.AddTileOfType(TileType.Grassland, dbPosition, worldPosition);
             }
