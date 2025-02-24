@@ -45,12 +45,12 @@ public class SelectableObject : MonoBehaviour
     }
     void CheckComponentAndExecute()
     {
-        if (this.TryGetComponent(out HexTile compA))
+        if (this.TryGetComponent(out HexTile tile))
         {
-            ObjectIdentifier tileID = GetComponent<HexTile>().TileID;
+            ObjectIdentifier tileID = tile.TileID;
             uiManager.tileClick(tileID);
         }
-        else if (this.TryGetComponent(out HexMapManager compB))
+        else if (this.TryGetComponent(out HexMapManager building)) //placeholder for building
         {
            // HandleComponentB(compB);
         }

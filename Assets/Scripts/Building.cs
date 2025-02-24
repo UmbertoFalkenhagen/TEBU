@@ -6,6 +6,8 @@ public class Building : MonoBehaviour
 {
     public string oName;
 
+    public ObjectIdentifier buildingID;
+
     [Tooltip("The selection of tile types on which the building can be constructed.")]
     public List<TileType> suitableTileTypeLocations;
 

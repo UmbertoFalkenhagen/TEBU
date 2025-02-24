@@ -20,6 +20,7 @@ public class HexTile : MonoBehaviour
     // to neighbor GameObjects, you can do so, but it's often enough to
     // query adjacency from the DB when needed.
 
+
     // Example: Use DB queries to get tile data
     public DBTileValue GetMyTileValue()
     {
@@ -27,7 +28,30 @@ public class HexTile : MonoBehaviour
         // Use a typed function we created in DatabaseManager
         return DatabaseManager.Instance.GetTileValue(TileID);
     }
+    public ObjectIdentifier GetHeldBuildingID()
+    {
 
+        if(heldBuilding.TryGetComponent(out Building buildingScript))
+        {
+            return buildingScript.buildingID;
+        }else
+        {
+            Debug.Log("Tile Contains no Building");
+            return null;
+        }
+    }
+    public ObjectIdentifier GetHeldCityID()
+    {
+        if (heldBuilding.TryGetComponent(out CityCenter cityScript))
+        {
+            return cityScript.cityCenterID;
+        }
+        else
+        {
+            Debug.Log("Tile Contains no CityCenter");
+            return null;
+        }
+    }
     // Example: a method that obtains the tile type from DB
     public TileType GetTileType()
     {
