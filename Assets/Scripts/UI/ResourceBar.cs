@@ -4,16 +4,14 @@ using UnityEngine;
 
 public class ResourceBar : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    public static ResourceBar Instance { get; private set; }
 
-    // Update is called once per frame
-    void Update()
+    private void Awake()
     {
-        
+        if (Instance != null) { Destroy(gameObject); return; }
+
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
     }
 
     public void UpdateResourceBar(ObjectIdentifier cityID, DatabaseManager database)

@@ -6,17 +6,16 @@ using UnityEngine;
 public class UIManager : MonoBehaviour
 {
 
-    public static UIManager Instance;
+    public static UIManager Instance { get; private set; }
     private DatabaseManager databaseManager;
-    private static ResourceBar resourceScript;
 
     private void Awake()
     {
-        if (Instance == null) Instance = this;
-        else Destroy(gameObject);
+        if (Instance != null) { Destroy(gameObject); return; }
 
-        if (resourceScript == null) resourceScript = FindObjectOfType<ResourceBar>();
-        else Debug.Log("ResourceBar not found");
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
+
 
     }
     // Start is called before the first frame update
@@ -52,7 +51,7 @@ public class UIManager : MonoBehaviour
                     {
                         //city ist hier logic
                         //1. update resourceBar based on
-                        //                    resourceScript.UpdateResourceBar(tileID, databaseManager);
+                        //                   ResourceBar.Instance.UpdateResourceBar(tileID, databaseManager);
 
                         //show claims
                         // show tile Infomation in right menu

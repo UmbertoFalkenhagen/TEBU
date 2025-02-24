@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-
-
 public class DatabaseManager : MonoBehaviour
 {
     public static DatabaseManager Instance;
@@ -32,29 +30,12 @@ public class DatabaseManager : MonoBehaviour
     //Singleton
     private void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-            //where does it come from? do we need it? 
-           // DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
-     }
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+        if (Instance != null) { Destroy(gameObject); return; }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
     }
-
+    
     #region GeneralFunctions
     // --------------------------------------------------------------------
     // Generate a random unique ID for the given ObjectType

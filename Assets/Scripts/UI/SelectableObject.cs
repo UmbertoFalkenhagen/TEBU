@@ -50,8 +50,11 @@ public class SelectableObject : MonoBehaviour
             ObjectIdentifier tileID = tile.TileID;
             uiManager.tileClick(tileID);
         }
-        else if (this.TryGetComponent(out HexMapManager building)) //placeholder for building
+        else if (this.TryGetComponent(out Building building)) 
         {
+
+            //do we need? only click tiles?!
+            //evt change to UI click?
            // HandleComponentB(compB);
         }
         else

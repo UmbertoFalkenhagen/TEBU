@@ -5,7 +5,6 @@ using UnityEngine;
 public class GameLoader : MonoBehaviour
 {
 
-    private HexMapManager hexMapGenerator;
     private DatabaseManager databaseManager;
 
     public List<ScriptableBuilding> buildingBlueprints;
@@ -15,7 +14,7 @@ public class GameLoader : MonoBehaviour
     {
         if (databaseManager == null)
         {
-            databaseManager = FindObjectOfType<DatabaseManager>();
+            databaseManager = DatabaseManager.Instance;
             if (databaseManager == null)
             {
                 Debug.LogError("DatabaseManager could not be found!");
@@ -44,11 +43,9 @@ public class GameLoader : MonoBehaviour
 
         //Run Generate Map
         //TODO: Check if any is there
-        if (hexMapGenerator == null) { 
-            hexMapGenerator = FindObjectOfType<HexMapManager>();
-            
-        }
-        hexMapGenerator.GenerateMap();
+
+        HexMapManager.Instance.GenerateMap();            
+
 
         //Load UI
 
