@@ -5,8 +5,16 @@ using UnityEngine;
 public class HexMapManager : MonoBehaviour
 {
     private DatabaseManager databaseManager;
+    public static HexMapManager Instance { get; private set; }
 
     private void Awake()
+    {
+        if (Instance != null) { Destroy(gameObject); return; }
+
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
+    }
+    private void Start()
     {
         databaseManager = DatabaseManager.Instance;
         if (databaseManager == null)

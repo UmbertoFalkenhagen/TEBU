@@ -8,6 +8,7 @@ public class CityCenter : MonoBehaviour
     public Dictionary<ProductType, int> productInventory = new Dictionary<ProductType, int>();
     public string oName;
     private List<Building> cityBuildings;
+    public ObjectIdentifier cityCenterID;
 
     // Initialize the city center with given data
     public void Initialize(ScriptableCityCenter data)

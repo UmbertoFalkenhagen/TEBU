@@ -1,17 +1,21 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting.Dependencies.NCalc;
 using UnityEngine;
 
 public class UIManager : MonoBehaviour
 {
 
-    public static UIManager Instance;
+    public static UIManager Instance { get; private set; }
     private DatabaseManager databaseManager;
 
     private void Awake()
     {
-        if (Instance == null) Instance = this;
-        else Destroy(gameObject);
+        if (Instance != null) { Destroy(gameObject); return; }
+
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
+
 
     }
     // Start is called before the first frame update
@@ -37,27 +41,41 @@ public class UIManager : MonoBehaviour
         if (databaseManager.TileDictionary.TryGetValue(tileID, out DBTileValue tileValue))  
             {
             GameObject hexTile = tileValue.TileObject;
+            
             if (hexTile.TryGetComponent(out HexTile hexTileScript))
             {
-                if (hexTileScript.heldBuilding != null)
-                {
-                    Debug.Log(hexTileScript.heldBuilding.ToString());
-                    //  Debug.Log(hexTileScript.heldBuilding.GetComponent<>)
+                if(hexTileScript.heldBuilding != null) { 
+                ObjectIdentifier buildingID = hexTileScript.GetHeldBuildingID();
+                ObjectIdentifier cityID = hexTileScript.GetHeldCityID();
+                    if (buildingID == null && cityID != null)
+                    {
+                        //city ist hier logic
+                        //1. update resourceBar based on
+                        //                   ResourceBar.Instance.UpdateResourceBar(tileID, databaseManager);
 
-                    //check if held building is citycenter or building
-                    //if citycenter get ID and get resources with it
+                        //show claims
+                        // show tile Infomation in right menu
+                    }
+                    else if(buildingID != null && cityID == null)
+                    {
+                        //building ist hier logic
+                        Debug.Log("BuildingID: " + buildingID);
+                        //get parent city center and update resource bar based on it
+                      //  resourceScript.UpdateResourceBar(tileID, databaseManager);
 
-                    //if building get parent citycenter id, get recources
-
-                    // -> click -> check if hexTIleComponent ->get HexTileComponent ->
-                    // Get Tile ID -> get tileValue -> get TileObject -> get hexTileScript -> get held building -> 
-                    // get buildingComponnent -> get building id -> if city get recources/if building get praentcity id -> get resources
-
+                        //show claims
+                        //show tile Information in right menu
+                    }
                 }
                 else
                 {
-                    Debug.Log("No held Building in this tile");
+                    //logic wenn nichts gebaut wurde
+                    //show build options
+                    //show claims 
+                    //show tile Informations in richt menu
+                    Debug.Log("no Building here!!");
                 }
+                
             }
             else
             {

@@ -45,13 +45,16 @@ public class SelectableObject : MonoBehaviour
     }
     void CheckComponentAndExecute()
     {
-        if (this.TryGetComponent(out HexTile compA))
+        if (this.TryGetComponent(out HexTile tile))
         {
-            ObjectIdentifier tileID = GetComponent<HexTile>().TileID;
+            ObjectIdentifier tileID = tile.TileID;
             uiManager.tileClick(tileID);
         }
-        else if (this.TryGetComponent(out HexMapManager compB))
+        else if (this.TryGetComponent(out Building building)) 
         {
+
+            //do we need? only click tiles?!
+            //evt change to UI click?
            // HandleComponentB(compB);
         }
         else
