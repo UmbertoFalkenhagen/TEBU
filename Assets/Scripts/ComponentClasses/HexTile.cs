@@ -36,7 +36,6 @@ public class HexTile : MonoBehaviour
             return buildingScript.buildingID;
         }else
         {
-            Debug.Log("Tile Contains no Building");
             return null;
         }
     }
@@ -48,7 +47,6 @@ public class HexTile : MonoBehaviour
         }
         else
         {
-            Debug.Log("Tile Contains no CityCenter");
             return null;
         }
     }
@@ -128,6 +126,16 @@ public class HexTile : MonoBehaviour
                 heldResource.SetActive(true);
             }
         }
+    }
+    public void SetSelected(bool isSelected)
+    {
+        if (isSelected)
+        {
+            transform.position += new Vector3(0, 1, 0); // Nach oben bewegen
+            Debug.Log("Selected Tile UP" + TileID.ToString());
+        }
+        else
+            transform.position -= new Vector3(0, 1, 0); // Zurücksetzen
     }
 
     // If you need adjacency references, either get them from DBTileValue:

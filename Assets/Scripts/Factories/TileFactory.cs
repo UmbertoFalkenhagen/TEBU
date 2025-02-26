@@ -70,7 +70,7 @@ public class TileFactory : MonoBehaviour
         }
 
         // Make HexTile clickable
-        hexTileObject.AddComponent<SelectableObject>();
+        hexTileObject.layer = LayerMask.NameToLayer("Tile");
        // hexTileObject.AddComponent<ObjectID>().objectID = tileID;
 
         // 4) Possibly set up resource logic

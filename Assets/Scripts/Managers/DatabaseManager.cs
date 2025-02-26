@@ -153,6 +153,11 @@ public class DatabaseManager : MonoBehaviour
         var val = GetTileValue(tileID);
         return val != null ? val.TileObject : null;
     }
+    public ObjectIdentifier GetTileIDByPosition()
+    {
+        //TODO:
+        return null;
+    }
 
     // Return a list of neighbor DBTileValues
     public List<DBTileValue> GetTileNeighbors(ObjectIdentifier tileID)
