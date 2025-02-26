@@ -26,27 +26,32 @@ public class UIManager : MonoBehaviour
         {
             Debug.LogError("DatabaseManager could not be found!");
         }
-    }
+        ActiveTile.OnActiveTileChanged += tileClick;
 
+    }
+    private void OnDestroy()
+    {
+        ActiveTile.OnActiveTileChanged -= tileClick;
+    }
     // Update is called once per frame
     void Update()
     {
         
     }
 
-    public void tileClick(ObjectIdentifier tileID)
+    public void tileClick(HexTile newTile)
     {
+        ObjectIdentifier tileID = newTile.TileID;
         //update resourceUI to tell player what resources are on it, happens even with building ontop
 
         if (databaseManager.TileDictionary.TryGetValue(tileID, out DBTileValue tileValue))  
             {
-            GameObject hexTile = tileValue.TileObject;
-            
-            if (hexTile.TryGetComponent(out HexTile hexTileScript))
-            {
-                if(hexTileScript.heldBuilding != null) { 
-                ObjectIdentifier buildingID = hexTileScript.GetHeldBuildingID();
-                ObjectIdentifier cityID = hexTileScript.GetHeldCityID();
+            GameObject hexTileObj = tileValue.TileObject;            
+
+                if(newTile.heldBuilding != null) 
+                { 
+                ObjectIdentifier buildingID = newTile.GetHeldBuildingID();
+                ObjectIdentifier cityID = newTile.GetHeldCityID();
                     if (buildingID == null && cityID != null)
                     {
                         //city ist hier logic
@@ -69,18 +74,20 @@ public class UIManager : MonoBehaviour
                 }
                 else
                 {
+                    Debug.Log("no Building here!!");
+
                     //logic wenn nichts gebaut wurde
                     //show build options
                     //show claims 
                     //show tile Informations in richt menu
-                    Debug.Log("no Building here!!");
+                    //                    ScriptableBuilding sCC = Resources.Load<ScriptableBuilding>("")
+
+                    ScriptableCityCenter sCC = Resources.Load<ScriptableCityCenter>("Data/Buildings/CityCenter_Grassland");
+                    newTile.PlaceCityCenterOnTile(sCC);
+
                 }
                 
-            }
-            else
-            {
-                Debug.LogError ("HexTile Script not found!");
-            }
+
 
 
             // Debug.Log("value "); 

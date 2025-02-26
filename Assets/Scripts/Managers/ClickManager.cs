@@ -4,24 +4,32 @@ using UnityEngine;
 
 public class ClickManager : MonoBehaviour
 {
-    public Camera mainCamera;
+    public LayerMask tileLayer; // Stellt sicher, dass nur HexTiles getroffen werden!
 
-    private void Update()
+    void Update()
     {
-        if (Input.GetMouseButtonDown(0)) // Linke Maustaste
+        if (Input.GetMouseButtonDown(0)) // Linksklick
         {
-            Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
+            // Falls ein UI-Element angeklickt wurde, ignoriere das Tile-Handling
+            if (IsPointerOverUI()) return;
 
-            if (Physics.Raycast(ray, out hit))
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, tileLayer))
             {
-                SelectableObject obj = hit.collider.GetComponent<SelectableObject>();
-                if (obj != null)
+                HexTile clickedTile = hit.collider.GetComponent<HexTile>();
+                if (clickedTile != null)
                 {
-                    obj.Selected();
-                   // UIManager.Instance.UpdateObjectInfo(obj.objectName, obj.value);
+                    ActiveTile.Instance.SetActiveTile(clickedTile);
                 }
             }
         }
+    }
+
+    // Prüft, ob die Maus über einem UI-Element ist
+    private bool IsPointerOverUI()
+    {
+        //TODO:
+        return false;
+       // return EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
     }
 }
