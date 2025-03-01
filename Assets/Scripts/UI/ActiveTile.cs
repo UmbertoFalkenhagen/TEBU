@@ -33,7 +33,7 @@ public class ActiveTile : MonoBehaviour
         {
             lastActiveTile = activeTile;
             lastActiveTileID = activeTileID;
-           // MoveTileDown(lastActiveTile); // Altes Tile zurücksetzen
+            // MoveTileDown(lastActiveTile); // Altes Tile zurücksetzen
             activeTile.SetSelected(false);
         }
 
@@ -45,7 +45,7 @@ public class ActiveTile : MonoBehaviour
         if (activeTile != null)
         {
             activeTile.SetSelected(true);
-           // MoveTileUp(activeTile);
+            // MoveTileUp(activeTile);
         }
         OnActiveTileChanged?.Invoke(activeTile);
     }

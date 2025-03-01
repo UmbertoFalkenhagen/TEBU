@@ -1,11 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class ClickManager : MonoBehaviour
 {
     public LayerMask tileLayer; // Stellt sicher, dass nur HexTiles getroffen werden!
-
     void Update()
     {
         if (Input.GetMouseButtonDown(0)) // Linksklick
@@ -28,8 +28,6 @@ public class ClickManager : MonoBehaviour
     // Prüft, ob die Maus über einem UI-Element ist
     private bool IsPointerOverUI()
     {
-        //TODO:
-        return false;
-       // return EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
+        return EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
     }
 }

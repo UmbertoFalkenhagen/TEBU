@@ -132,7 +132,6 @@ public class HexTile : MonoBehaviour
         if (isSelected)
         {
             transform.position += new Vector3(0, 1, 0); // Nach oben bewegen
-            Debug.Log("Selected Tile UP" + TileID.ToString());
         }
         else
             transform.position -= new Vector3(0, 1, 0); // Zurücksetzen
