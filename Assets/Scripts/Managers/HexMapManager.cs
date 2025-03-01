@@ -66,7 +66,7 @@ public class HexMapManager : MonoBehaviour
     {
         if (databaseManager.TileDictionary.Count > 0)
         {
-          //  Debug.Log("tileDictionary enthält " + databaseManager.TileDictionary.Count + " Einträge.");
+            //  Debug.Log("tileDictionary enthält " + databaseManager.TileDictionary.Count + " Einträge.");
         }
         else
         {
