@@ -122,4 +122,16 @@ public class HexMapManager : MonoBehaviour
             value.AdjacentTilesPosition = neighbors;
         }
     }
+
+    //does the stuff to hightlight selected  tile
+    public void selectTile(bool isSelected, HexTile tile)
+    {
+
+    if (isSelected)
+    {
+        tile.transform.position += new Vector3(0, 1, 0); // Nach oben bewegen
+    }
+    else
+        tile.transform.position -= new Vector3(0, 1, 0); // Zurücksetzen
+    }
 }

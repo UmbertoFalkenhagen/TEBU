@@ -8,19 +8,14 @@ public class UIManager : MonoBehaviour
 
     public static UIManager Instance { get; private set; }
     private DatabaseManager databaseManager;
-    public BuildingPanel buildingPanel; //TODO: atm added via inspector
 
 
     private void Awake()
     {
         if (Instance != null) { Destroy(gameObject); return; }
-
         Instance = this;
         DontDestroyOnLoad(gameObject);
-
-
     }
-    // Start is called before the first frame update
     void Start()
     {
         databaseManager = DatabaseManager.Instance;
@@ -38,7 +33,7 @@ public class UIManager : MonoBehaviour
 
     public void tileClick(HexTile activeTile)
     {
-        Debug.Log("Tile Active:" + ActiveTile.Instance.GetActiveTile().ToString());
+        Debug.Log("Tile Active:" + ActiveTile.Instance.GetActiveTileID().ToString());
         if (activeTile.heldBuilding != null)
         {
             ObjectIdentifier buildingID = activeTile.GetHeldBuildingID();
@@ -69,10 +64,20 @@ public class UIManager : MonoBehaviour
         else
         {
             //logic wenn tile leer ist
-            buildingPanel.UpdateBuildingOptions(activeTile);  //show build options
+            BuildingPanel.Instance.UpdateBuildingOptions(activeTile);  //show build options
                                                               //show claims 
                                                               //show tile Informations in rechten menu
         }
+    }
+    public void RequestBuild()
+    {
+
+        //if() decied if city or building and call
+        //callBuildingManager
+
+        //if cityCenter
+        CityCenterManager.Instance.Build();
+
     }
 
 

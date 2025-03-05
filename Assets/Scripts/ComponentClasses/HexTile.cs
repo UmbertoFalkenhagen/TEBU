@@ -101,6 +101,8 @@ public class HexTile : MonoBehaviour
             Debug.LogError("CityCenterFactory instance is null.");
             return;
         }
+        if (heldBuilding != null) return;
+
         heldBuilding = CityCenterFactory.Instance.CreateObject(cityCenterData, this.gameObject, Quaternion.identity, this.gameObject);
     }
 
@@ -127,16 +129,6 @@ public class HexTile : MonoBehaviour
             }
         }
     }
-    public void SetSelected(bool isSelected)
-    {
-        if (isSelected)
-        {
-            transform.position += new Vector3(0, 1, 0); // Nach oben bewegen
-        }
-        else
-            transform.position -= new Vector3(0, 1, 0); // Zurücksetzen
-    }
-
     // If you need adjacency references, either get them from DBTileValue:
     //   var neighbors = GetMyTileValue()?.AdjacentTilesPosition;
     // or create a function to convert those positions into actual GameObjects
