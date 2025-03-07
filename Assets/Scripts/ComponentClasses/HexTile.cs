@@ -15,6 +15,10 @@ public class HexTile : MonoBehaviour
     // building GameObject can remain here for easy access/visuals.
     public GameObject heldBuilding;
 
+
+
+    public List<ObjectIdentifier> constructionClaims = new List<ObjectIdentifier>();
+
     // Because adjacency is stored as a list of Vector2Int in DBTileValue,
     // we remove the old "adjacentTiles" list. If you want to keep references
     // to neighbor GameObjects, you can do so, but it's often enough to

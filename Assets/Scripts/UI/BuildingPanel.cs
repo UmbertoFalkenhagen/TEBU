@@ -12,7 +12,7 @@ public class BuildingPanel : MonoBehaviour
     public static BuildingPanel Instance { get; private set; }
 
     //TODO: Bug beheben, dass wenn auf tile mit gebäude geklickt wird und gebaut, auf das tile vorher ohne gebäude gebaut wird
-    private Dictionary<string, string> buildingOptions = new Dictionary<string, string> //TODO: Implement to get real information to fill into database
+    public Dictionary<string, string> buildingOptions = new Dictionary<string, string> //TODO: Implement to get real information to fill into database
     {
         { "House", "Baue ein Haus" },
         { "Farm", "Errichte eine Farm" },
@@ -26,9 +26,10 @@ public class BuildingPanel : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
     }
-    public void UpdateBuildingOptions(HexTile tile)
+
+
+    public void UpdateBuildingOptions()
     {
-        activeTile = tile;
 
         ClearButtons();
 
@@ -45,10 +46,11 @@ public class BuildingPanel : MonoBehaviour
             Destroy(child.gameObject);
         }
     }
-    private void Build()
+    private void Build(String text)
     {
         //TODO: Dont build if already exist, or disable build menu after build
-        BuildingPanel.Instance.onBuildButtonClicked();
+        BuildingPanel.Instance.onBuildButtonClicked(text);
+       
     }
 
     private void CreateButton(string text, string value)
@@ -56,15 +58,16 @@ public class BuildingPanel : MonoBehaviour
         //TODO: Add some kind of identifier for Buttons to know which one was klicked
         GameObject newButton = Instantiate(buttonPrefab, buttonContainer);
         newButton.GetComponentInChildren<TextMeshProUGUI>().text = value;
-        newButton.GetComponent<Button>().onClick.AddListener(() => Build());
+        newButton.GetComponent<Button>().onClick.AddListener(() => Build(text));
 
 
     }
 
-    public void onBuildButtonClicked()
+    public void onBuildButtonClicked(String buildingType)
     {
+        Debug.Log("BUTTON:" + buildingType);
         //BuildingButton was clicked > BuildingPanel -> here 
         //check resources in buildingManager?
-        UIManager.Instance.RequestBuild();
+        UIManager.Instance.RequestBuild(buildingType);
     }
 }

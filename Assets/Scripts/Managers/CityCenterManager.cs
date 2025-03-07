@@ -21,7 +21,4 @@ public class CityCenterManager : MonoBehaviour
         ScriptableCityCenter sCC = Resources.Load<ScriptableCityCenter>("Data/Buildings/CityCenter_Grassland");
         tileToBuildOn.PlaceCityCenterOnTile(sCC);
     }
-
-
-
 }

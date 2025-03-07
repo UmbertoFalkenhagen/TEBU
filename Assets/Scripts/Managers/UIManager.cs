@@ -33,11 +33,11 @@ public class UIManager : MonoBehaviour
 
     public void tileClick(HexTile activeTile)
     {
-        Debug.Log("Tile Active:" + ActiveTile.Instance.GetActiveTileID().ToString());
         if (activeTile.heldBuilding != null)
         {
             ObjectIdentifier buildingID = activeTile.GetHeldBuildingID();
             ObjectIdentifier cityID = activeTile.GetHeldCityID();
+            BuildingPanel.Instance.buildingOptions.Clear();
             if (buildingID == null && cityID != null)
             {
                 //city ist hier logic
@@ -60,23 +60,46 @@ public class UIManager : MonoBehaviour
                 //show claims
                 //show tile Information in right menu
             }
+            BuildingPanel.Instance.UpdateBuildingOptions();
+
         }
         else
         {
             //logic wenn tile leer ist
-            BuildingPanel.Instance.UpdateBuildingOptions(activeTile);  //show build options
-                                                              //show claims 
-                                                              //show tile Informations in rechten menu
+            if (activeTile.constructionClaims.Count == 0)
+            {
+                BuildingPanel.Instance.buildingOptions.Clear();
+                BuildingPanel.Instance.buildingOptions.Add("CityCenter", "Build City Center");
+                //TODO: add only CityCenter build button...
+                BuildingPanel.Instance.UpdateBuildingOptions();  //show build options
+
+            }
+            else
+            {
+                BuildingPanel.Instance.buildingOptions.Clear();
+                //TODO: there are claims, add bulding options based on them
+            }
+            //show claims 
+            //show tile Informations in rechten menu
         }
     }
-    public void RequestBuild()
+    public void RequestBuild(string buildingType)
     {
+        if(buildingType == "CityCenter")
+        {
+            //TODO: Add check if enough resources
+            CityCenterManager.Instance.Build();
+        }
+        else
+        {
+            //TODO: Add check if enough resources
+           // BuildingManager.Instance.Build(buildingType);
+        }
 
-        //if() decied if city or building and call
+
         //callBuildingManager
 
         //if cityCenter
-        CityCenterManager.Instance.Build();
 
     }
 
