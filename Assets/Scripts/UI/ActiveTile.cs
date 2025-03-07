@@ -33,8 +33,7 @@ public class ActiveTile : MonoBehaviour
         {
             lastActiveTile = activeTile;
             lastActiveTileID = activeTileID;
-            // MoveTileDown(lastActiveTile); // Altes Tile zurücksetzen
-            activeTile.SetSelected(false);
+            activeTile.SelectTile(false);
         }
 
         // Setze das neue Tile
@@ -44,39 +43,23 @@ public class ActiveTile : MonoBehaviour
         // Aktiviere das neue Tile
         if (activeTile != null)
         {
-            activeTile.SetSelected(true);
-            // MoveTileUp(activeTile);
+            activeTile.SelectTile(true);
         }
         OnActiveTileChanged?.Invoke(activeTile);
     }
 
     // Gibt das aktuell aktive Tile zurück
-    public ObjectIdentifier GetActiveTile()
+    public ObjectIdentifier GetActiveTileID()
     {
         return activeTileID;
     }
-
+    public HexTile GetActiveTile()
+    {
+        return activeTile;
+    }
     // Gibt das zuletzt aktive Tile zurück
     public ObjectIdentifier GetLastActiveTile()
     {
         return lastActiveTileID;
-    }
-
-    // Hebt das Tile um 1 Einheit an
-    private void MoveTileUp(HexTile tile)
-    {
-        if (tile != null)
-        {
-            tile.transform.position += new Vector3(0, 1, 0);
-        }
-    }
-
-    // Senkt das vorherige Tile wieder ab
-    private void MoveTileDown(HexTile tile)
-    {
-        if (tile != null)
-        {
-            tile.transform.position -= new Vector3(0, 1, 0);
-        }
     }
 }

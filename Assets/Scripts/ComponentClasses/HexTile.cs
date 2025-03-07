@@ -15,6 +15,10 @@ public class HexTile : MonoBehaviour
     // building GameObject can remain here for easy access/visuals.
     public GameObject heldBuilding;
 
+
+
+    public List<ObjectIdentifier> constructionClaims = new List<ObjectIdentifier>();
+
     // Because adjacency is stored as a list of Vector2Int in DBTileValue,
     // we remove the old "adjacentTiles" list. If you want to keep references
     // to neighbor GameObjects, you can do so, but it's often enough to
@@ -101,6 +105,8 @@ public class HexTile : MonoBehaviour
             Debug.LogError("CityCenterFactory instance is null.");
             return;
         }
+        if (heldBuilding != null) return;
+
         heldBuilding = CityCenterFactory.Instance.CreateObject(cityCenterData, this.gameObject, Quaternion.identity, this.gameObject);
     }
 
@@ -127,16 +133,17 @@ public class HexTile : MonoBehaviour
             }
         }
     }
-    public void SetSelected(bool isSelected)
+
+    public void SelectTile(bool isSelected)
     {
+
         if (isSelected)
         {
-            transform.position += new Vector3(0, 1, 0); // Nach oben bewegen
+            this.transform.position += new Vector3(0, 1, 0); // Nach oben bewegen
         }
         else
-            transform.position -= new Vector3(0, 1, 0); // Zurücksetzen
+            this.transform.position -= new Vector3(0, 1, 0); // Zurücksetzen
     }
-
     // If you need adjacency references, either get them from DBTileValue:
     //   var neighbors = GetMyTileValue()?.AdjacentTilesPosition;
     // or create a function to convert those positions into actual GameObjects

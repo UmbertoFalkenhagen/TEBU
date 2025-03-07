@@ -601,6 +601,50 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!1 &1220163173
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1220163174}
+  - component: {fileID: 1220163175}
+  m_Layer: 0
+  m_Name: CityCenterManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1220163174
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1220163173}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2077299405}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1220163175
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1220163173}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 20ab3000e7c7dcb40ac2f3e743328780, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &1273378967 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 8525264874565401557, guid: eda536ecae0dbcc4180b1abeaba138ee, type: 3}
@@ -700,7 +744,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2423bcac18d520a43b303a5e1b08b8ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  buildingPanel: {fileID: 1720317204}
 --- !u!1 &1465931132
 GameObject:
   m_ObjectHideFlags: 0
@@ -966,19 +1009,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3097775320985083987, guid: bcf3e51e07f4f8c4798fc86456f5b977, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 457.1951
+      value: 485.1118
       objectReference: {fileID: 0}
     - target: {fileID: 3097775320985083987, guid: bcf3e51e07f4f8c4798fc86456f5b977, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 192.5926
+      value: 192.59
       objectReference: {fileID: 0}
     - target: {fileID: 3097775320985083987, guid: bcf3e51e07f4f8c4798fc86456f5b977, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 290.4868
+      value: 276.5284
       objectReference: {fileID: 0}
     - target: {fileID: 3097775320985083987, guid: bcf3e51e07f4f8c4798fc86456f5b977, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -124.81799
+      value: -124.82
       objectReference: {fileID: 0}
     - target: {fileID: 4034698498558505905, guid: bcf3e51e07f4f8c4798fc86456f5b977, type: 3}
       propertyPath: m_Name
@@ -1123,6 +1166,7 @@ Transform:
   - {fileID: 1999631967}
   - {fileID: 1359698892}
   - {fileID: 609779267}
+  - {fileID: 1220163174}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1349369879411382826

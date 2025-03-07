@@ -9,19 +9,28 @@ public class BuildingPanel : MonoBehaviour
     public GameObject buttonPrefab;
     public Transform buttonContainer;
     public HexTile activeTile;
+    public static BuildingPanel Instance { get; private set; }
 
-    private Dictionary<string, string> buildingOptions = new Dictionary<string, string> //TODO: Implement to get real information to fill into database
+    //TODO: Bug beheben, dass wenn auf tile mit gebäude geklickt wird und gebaut, auf das tile vorher ohne gebäude gebaut wird
+    public Dictionary<string, string> buildingOptions = new Dictionary<string, string> //TODO: Implement to get real information to fill into database
     {
         { "House", "Baue ein Haus" },
         { "Farm", "Errichte eine Farm" },
         { "Barracks", "Baut eine Kaserne" },
-        { "test", "tttt eine Kaserne" }
+        { "CityCenter", "Baue ein Stadtzentrum" }
 
     };
-    // Start is called before the first frame update
-    public void UpdateBuildingOptions(HexTile tile)
+    private void Awake()
     {
-        activeTile = tile;
+        if (Instance != null) { Destroy(gameObject); return; }
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
+    }
+
+
+    public void UpdateBuildingOptions()
+    {
+
         ClearButtons();
 
         foreach (var option in buildingOptions)
@@ -30,7 +39,6 @@ public class BuildingPanel : MonoBehaviour
 
         }
     }
-
     private void ClearButtons()
     {
         foreach (Transform child in buttonContainer)
@@ -38,20 +46,28 @@ public class BuildingPanel : MonoBehaviour
             Destroy(child.gameObject);
         }
     }
-    private void Build()
+    private void Build(String text)
     {
-
         //TODO: Dont build if already exist, or disable build menu after build
-        ScriptableCityCenter sCC = Resources.Load<ScriptableCityCenter>("Data/Buildings/CityCenter_Grassland");
-        activeTile.PlaceCityCenterOnTile(sCC);
+        BuildingPanel.Instance.onBuildButtonClicked(text);
+       
     }
 
     private void CreateButton(string text, string value)
     {
+        //TODO: Add some kind of identifier for Buttons to know which one was klicked
         GameObject newButton = Instantiate(buttonPrefab, buttonContainer);
         newButton.GetComponentInChildren<TextMeshProUGUI>().text = value;
-        newButton.GetComponent<Button>().onClick.AddListener(() => Build());
+        newButton.GetComponent<Button>().onClick.AddListener(() => Build(text));
 
 
+    }
+
+    public void onBuildButtonClicked(String buildingType)
+    {
+        Debug.Log("BUTTON:" + buildingType);
+        //BuildingButton was clicked > BuildingPanel -> here 
+        //check resources in buildingManager?
+        UIManager.Instance.RequestBuild(buildingType);
     }
 }
