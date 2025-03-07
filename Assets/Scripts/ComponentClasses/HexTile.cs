@@ -129,6 +129,17 @@ public class HexTile : MonoBehaviour
             }
         }
     }
+
+    public void SelectTile(bool isSelected)
+    {
+
+        if (isSelected)
+        {
+            this.transform.position += new Vector3(0, 1, 0); // Nach oben bewegen
+        }
+        else
+            this.transform.position -= new Vector3(0, 1, 0); // Zurücksetzen
+    }
     // If you need adjacency references, either get them from DBTileValue:
     //   var neighbors = GetMyTileValue()?.AdjacentTilesPosition;
     // or create a function to convert those positions into actual GameObjects

@@ -33,8 +33,7 @@ public class ActiveTile : MonoBehaviour
         {
             lastActiveTile = activeTile;
             lastActiveTileID = activeTileID;
-            //activeTile.SetSelected(false);
-            HexMapManager.Instance.selectTile(false, activeTile);
+            activeTile.SelectTile(false);
         }
 
         // Setze das neue Tile
@@ -44,8 +43,7 @@ public class ActiveTile : MonoBehaviour
         // Aktiviere das neue Tile
         if (activeTile != null)
         {
-           // activeTile.SetSelected(true);
-            HexMapManager.Instance.selectTile(true, activeTile);
+            activeTile.SelectTile(true);
         }
         OnActiveTileChanged?.Invoke(activeTile);
     }
