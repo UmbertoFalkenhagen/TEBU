@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class DatabaseManager : MonoBehaviour
@@ -12,15 +13,22 @@ public class DatabaseManager : MonoBehaviour
 
     //runtime databases for instanced objects
 
-    private Dictionary<ObjectIdentifier, DBTileValue> tileDictionary
-        = new Dictionary<ObjectIdentifier, DBTileValue>();
+    //Tiles
+    private Dictionary<ObjectIdentifier, DBTileValue> tileDictionary = new Dictionary<ObjectIdentifier, DBTileValue>();
     public IReadOnlyDictionary<ObjectIdentifier, DBTileValue> TileDictionary
         => tileDictionary;
+    //CityCenters
     private Dictionary<ObjectIdentifier, DBCityCenterValue> cityCenterDictionary = new Dictionary<ObjectIdentifier, DBCityCenterValue>();
     public IReadOnlyDictionary<ObjectIdentifier, DBCityCenterValue> CityCenterDictionary
         => cityCenterDictionary;
-    public Dictionary<ObjectIdentifier, DBBuildingValue> buildingDictionary = new Dictionary<ObjectIdentifier, DBBuildingValue>();
-    public Dictionary<ObjectIdentifier, DBAnimalValue> animalDictionary = new Dictionary<ObjectIdentifier, DBAnimalValue>();
+    //Building
+    private Dictionary<ObjectIdentifier, DBBuildingValue> buildingDictionary = new Dictionary<ObjectIdentifier, DBBuildingValue>();
+    public IReadOnlyDictionary<ObjectIdentifier, DBBuildingValue> BuildingDictionary
+        => buildingDictionary;
+    //Animal
+    private Dictionary<ObjectIdentifier, DBAnimalValue> animalDictionary = new Dictionary<ObjectIdentifier, DBAnimalValue>();
+    public IReadOnlyDictionary<ObjectIdentifier, DBAnimalValue> AnimalDictionary 
+        => animalDictionary;
 
     //static databases for persistent blueprints
     public Dictionary<BuildingType, SDBBuildingBlueprintValue> buildingBlueprintDictionary = new Dictionary<BuildingType, SDBBuildingBlueprintValue>();
@@ -117,6 +125,11 @@ public class DatabaseManager : MonoBehaviour
         return null;
     }
 
+    public ObjectIdentifier GetStructureIdByTileId(ObjectIdentifier tileId)
+    {
+        ObjectIdentifier structureId = GetCityCenterIdByTileId(tileId) ?? GetBuildingIdByTileId(tileId);
+        return structureId;
+    }
     #endregion
 
     #region tileDictionary
@@ -247,5 +260,75 @@ public class DatabaseManager : MonoBehaviour
     }
 
 
+    #endregion
+
+    #region buildingDictionary
+
+    //AddBuilding()
+    //RemoveBuilding()
+
+
+    public ObjectIdentifier GetBuildingIdByTileId(ObjectIdentifier tileId)
+    {
+        foreach (var kvp in buildingDictionary)
+        {
+            if (kvp.Value._parentTile == tileId)
+            {
+                return kvp.Key; // Gibt die buildingId zurück
+            }
+        }
+        return null; // Falls kein Gebäude gefunden wurde
+    }
+    public List<ObjectIdentifier> GetBuildingIdsByCityCenterId(ObjectIdentifier cityCenterId)
+    {
+        List<ObjectIdentifier> buildingIds = new List<ObjectIdentifier>();
+
+        foreach (var kvp in buildingDictionary)
+        {
+            if (kvp.Value._parentCityCenter == cityCenterId)
+            {
+                buildingIds.Add(kvp.Key); // Fügt die passende buildingId zur Liste hinzu
+            }
+        }
+
+        return buildingIds;
+    }
+    public ObjectIdentifier GetParentTileIdByBuildingId(ObjectIdentifier buildingId)
+    {
+        if (buildingDictionary.TryGetValue(buildingId, out DBBuildingValue buildingValue))
+        {
+            return buildingValue._parentTile; // Gibt die tileId des Gebäudes zurück
+        }
+        return null; // Falls die buildingId nicht existiert
+    }
+    #endregion
+
+    #region cityCenterDictionary
+    //AddCity()
+    //removeCity()
+
+
+
+
+    public ObjectIdentifier GetCityCenterIdByTileId(ObjectIdentifier tileId)
+    {
+        foreach (var kvp in cityCenterDictionary)
+        {
+            if (kvp.Value._parentTile == tileId)
+            {
+                return kvp.Key; // Gibt die buildingId zurück
+            }
+        }
+        return null; // Falls kein Gebäude gefunden wurde
+    }
+
+    public ObjectIdentifier GetParentTileIdByCityCenterId(ObjectIdentifier cityCenterId)
+    {
+        if (cityCenterDictionary.TryGetValue(cityCenterId, out DBCityCenterValue cityCenterValue))
+        {
+            return cityCenterValue._parentTile; // Gibt die tileId des Gebäudes zurück
+        }
+        return null; // Falls die buildingId nicht existiert
+    }
     #endregion
 }

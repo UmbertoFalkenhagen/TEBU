@@ -16,7 +16,6 @@ public class HexTile : MonoBehaviour
     public GameObject heldBuilding;
 
 
-
     public List<ObjectIdentifier> constructionClaims = new List<ObjectIdentifier>();
 
     // Because adjacency is stored as a list of Vector2Int in DBTileValue,
@@ -34,14 +33,14 @@ public class HexTile : MonoBehaviour
     }
     public ObjectIdentifier GetHeldBuildingID()
     {
+        //TODO:
+        return null;
 
-        if(heldBuilding.TryGetComponent(out Building buildingScript))
-        {
-            return buildingScript.buildingID;
-        }else
-        {
-            return null;
-        }
+    }
+    public GameObject GetHeldBuilding()
+    {
+        //TODO:
+        return null;
     }
     public ObjectIdentifier GetHeldCityID()
     {

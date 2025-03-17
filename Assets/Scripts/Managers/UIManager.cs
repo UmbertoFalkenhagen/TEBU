@@ -33,7 +33,7 @@ public class UIManager : MonoBehaviour
 
     public void tileClick(HexTile activeTile)
     {
-        if (activeTile.heldBuilding != null)
+        if (activeTile.GetHeldBuilding() != null)
         {
             ObjectIdentifier buildingID = activeTile.GetHeldBuildingID();
             ObjectIdentifier cityID = activeTile.GetHeldCityID();
