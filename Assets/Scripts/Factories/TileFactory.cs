@@ -71,15 +71,26 @@ public class TileFactory : MonoBehaviour
 
         // Make HexTile clickable
         hexTileObject.layer = LayerMask.NameToLayer("Tile");
-       // hexTileObject.AddComponent<ObjectID>().objectID = tileID;
+        // hexTileObject.AddComponent<ObjectID>().objectID = tileID;
 
-        // 4) Possibly set up resource logic
-        GameObject initialResource = GetInitialObjectForTile(tileData, out ResourceType assignedResource);
-        if (initialResource != null)
+        ResourceType assignedResource;
+        GetInitialObjectForTile(tileData, out assignedResource);
+
+        GameObject resourceInstance = null;
+
+        if (assignedResource != ResourceType.None)
         {
-            GameObject resourceInstance = Instantiate(initialResource); // Hier instanziieren
-            resourceInstance.transform.SetParent(hexTileObject.transform);
-            resourceInstance.transform.localPosition = Vector3.zero;
+            // Get resource prefab from DatabaseManager
+            var resourcePrefab = DatabaseManager.Instance.GetResourcePrefabForType(assignedResource);
+            if (resourcePrefab != null)
+            {
+                // Instantiate resource as child of the tile
+                resourceInstance = InstantiatePrefab(resourcePrefab, worldPosition, Quaternion.identity, hexTileObject.transform);
+            }
+            else
+            {
+                Debug.LogWarning($"TileFactory: No prefab found for ResourceType '{assignedResource}'");
+            }
         }
 
         // 5) Create DBTileValue
@@ -103,20 +114,27 @@ public class TileFactory : MonoBehaviour
     }
 
     // Probability-based resource spawning
-    private GameObject GetInitialObjectForTile(ScriptableTile tileData, out ResourceType assignedResource)
+    private ResourceType GetInitialObjectForTile(ScriptableTile tileData, out ResourceType assignedResource)
     {
-        assignedResource = ResourceType.None;
-        if (tileData == null) return null;
+        if (tileData.defaultResource != null)
+        {
+            assignedResource = tileData.defaultResource;
+        } else
+        {
+            assignedResource = ResourceType.None;
+        }
+        
 
         foreach (var resourceProbability in tileData.resources)
         {
             if (Random.value <= resourceProbability.spawnProbability)
             {
                 assignedResource = resourceProbability.resourceName;
-                return resourceProbability.resourcePrefab;
+                return assignedResource;
+                
             }
         }
         // fallback to default prefab
-        return tileData.defaultPrefab;
+        return assignedResource;
     }
 }

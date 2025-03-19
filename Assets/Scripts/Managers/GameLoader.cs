@@ -8,6 +8,7 @@ public class GameLoader : MonoBehaviour
     private DatabaseManager databaseManager;
 
     public List<ScriptableBuilding> buildingBlueprints;
+    public List<ScriptableResource> resourceBlueprints;
 
     // Start is called before the first frame update
     void Start()
@@ -32,6 +33,17 @@ public class GameLoader : MonoBehaviour
 
             // For each valid ScriptableBuilding, call the DatabaseManager's function
             DatabaseManager.Instance.AddBuildingBlueprint(blueprint);
+        }
+
+        foreach (ScriptableResource blueprint in resourceBlueprints)
+        {
+            if (blueprint == null)
+            {
+                Debug.LogWarning("Encountered a null ScriptableResource in resourceBlueprints. Skipping.");
+                continue;
+            }
+
+            DatabaseManager.Instance.AddResourceBlueprint(blueprint);
         }
 
         Debug.Log("Finished populating buildingBlueprintDictionary from buildingBlueprints.");

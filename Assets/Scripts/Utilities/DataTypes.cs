@@ -141,6 +141,7 @@ public class SDBBuildingBlueprintValue
     public bool isMaxWorkersFixed;
     public int maxWorkers;
 }
+
 public class SDBInitMapData
 {
     public int columns { get; set; } // Number of tile columns
@@ -155,9 +156,6 @@ public class ResourceProbability
 {
     [Tooltip("The type of resource that can spawn on this tile, such as 'Herbs' or 'Raw Rice'.")]
     public ResourceType resourceName;      // Name of the resource, e.g., "Herbs", "Raw Rice". See Enums class
-
-    [Tooltip("The prefab used to visually represent this resource on the tile.")]
-    public GameObject resourcePrefab;  // Prefab representing the resource (e.g., a plant or mineral)
 
     [Tooltip("Probability (0 to 1) of this resource spawning on the tile.")]
     [Range(0, 1)]

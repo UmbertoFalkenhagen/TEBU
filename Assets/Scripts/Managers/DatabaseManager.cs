@@ -33,6 +33,7 @@ public class DatabaseManager : MonoBehaviour
     //static databases for persistent blueprints
     public Dictionary<BuildingType, SDBBuildingBlueprintValue> buildingBlueprintDictionary = new Dictionary<BuildingType, SDBBuildingBlueprintValue>();
     public Dictionary<AnimalType, SDBAnimalBlueprintValue> animalBlueprintDictionary = new Dictionary<AnimalType, SDBAnimalBlueprintValue>();
+    public Dictionary<ResourceType, GameObject> resourceBlueprintDictionary = new Dictionary<ResourceType, GameObject>();
     //initMapData is initiated empty and gets filled in GameLoader
     public SDBInitMapData initMapData = new SDBInitMapData();
     //Singleton
@@ -257,6 +258,24 @@ public class DatabaseManager : MonoBehaviour
         animalBlueprintDictionary[scriptableAnimal.animalName] = blueprintValue;
 
         Debug.Log($"Animal blueprint '{scriptableAnimal.animalName}' added/updated in the dictionary.");
+    }
+
+    public void AddResourceBlueprint(ScriptableResource scriptableResource)
+    {
+        resourceBlueprintDictionary[scriptableResource.resourcename] = scriptableResource.resourcePrefab;
+    }
+
+    public GameObject GetResourcePrefabForType(ResourceType resourceType)
+    {
+        if (resourceBlueprintDictionary.TryGetValue(resourceType, out GameObject prefab))
+        {
+            return prefab;
+        }
+        else
+        {
+            Debug.LogWarning($"ResourceType {resourceType} not found in the dictionary.");
+            return null;
+        }
     }
 
 

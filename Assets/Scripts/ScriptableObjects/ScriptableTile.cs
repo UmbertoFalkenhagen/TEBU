@@ -15,6 +15,6 @@ public class ScriptableTile : ScriptableObject
     public List<ResourceProbability> resources;  // List of resources and their spawn probabilities
 
     [Header("Default Tile Properties")]
-    [Tooltip("The default visual prefab for this tile if no resources are spawned. For example, this could be a patch of grass or barren ground.")]
-    public GameObject defaultPrefab;  // Default visual prefab for the tile if no resources spawn
+    [Tooltip("The default resource if it has any (i.e. woods on forest tiles)")]
+    public ResourceType defaultResource;  // Default visual prefab for the tile if no resources spawn
 }
