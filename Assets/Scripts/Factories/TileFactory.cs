@@ -84,8 +84,13 @@ public class TileFactory : MonoBehaviour
             var resourcePrefab = DatabaseManager.Instance.GetResourcePrefabForType(assignedResource);
             if (resourcePrefab != null)
             {
+                // Create random Y rotation
+                float randomYRotation = Random.Range(0f, 360f);
+                Quaternion randomRotation = Quaternion.Euler(0f, randomYRotation, 0f);
+
                 // Instantiate resource as child of the tile
-                resourceInstance = InstantiatePrefab(resourcePrefab, worldPosition, Quaternion.identity, hexTileObject.transform);
+                Vector3 spawnPos = worldPosition; // You can offset if needed
+                resourceInstance = InstantiatePrefab(resourcePrefab, spawnPos, randomRotation, hexTileObject.transform);
             }
             else
             {
@@ -116,14 +121,8 @@ public class TileFactory : MonoBehaviour
     // Probability-based resource spawning
     private ResourceType GetInitialObjectForTile(ScriptableTile tileData, out ResourceType assignedResource)
     {
-        if (tileData.defaultResource != null)
-        {
-            assignedResource = tileData.defaultResource;
-        } else
-        {
-            assignedResource = ResourceType.None;
-        }
-        
+        assignedResource = tileData.defaultResource != null ? tileData.defaultResource : ResourceType.None;
+
 
         foreach (var resourceProbability in tileData.resources)
         {
