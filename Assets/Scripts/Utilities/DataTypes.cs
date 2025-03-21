@@ -100,6 +100,15 @@ public class DBCityCenterValue
     public Dictionary<ProductType, int> _inventory;
     public int _housingLimit;
     public string _cityName;
+
+    public DBCityCenterValue(ObjectIdentifier parentTile, GameObject obj, Dictionary<ProductType, int> inventory, int housingLimit, string cityName)
+    {
+        _parentTile = parentTile;
+        _object = obj;
+        _inventory = inventory;
+        _housingLimit = housingLimit;
+        _cityName = cityName;
+    }
 }
 
 public class DBBuildingValue

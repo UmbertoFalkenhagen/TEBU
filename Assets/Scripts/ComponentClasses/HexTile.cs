@@ -96,7 +96,7 @@ public class HexTile : MonoBehaviour
     }
 
     // Example building placement
-    public void PlaceCityCenterOnTile(ScriptableCityCenter cityCenterData)
+    /*public void PlaceCityCenterOnTile(ScriptableCityCenter cityCenterData)
     {
         ClearTileResource();
         if (CityCenterFactory.Instance == null)
@@ -118,7 +118,7 @@ public class HexTile : MonoBehaviour
             return;
         }
         heldBuilding = BuildingFactory.Instance.CreateObject(buildingData, this.gameObject, Quaternion.identity, this.gameObject);
-    }
+    }*/
 
     public void RemoveHeldBuildingFromTile()
     {

@@ -136,8 +136,13 @@ public class DatabaseManager : MonoBehaviour
     #region tileDictionary
     public void AddTile(ObjectIdentifier tileID, DBTileValue tileValue)
     {
+        if (tileDictionary.ContainsKey(tileID))
+        {
+            Debug.LogError($"DatabaseManager: Tile [{tileID}] already exists in tileDictionary! Count={tileDictionary.Count}");
+            return;
+        }
+
         tileDictionary[tileID] = tileValue;
-        // Overwrites if it already exists (rare, but possible).
         Debug.Log($"DatabaseManager: Added tile [{tileID}] to tileDictionary. Count={tileDictionary.Count}");
     }
 
@@ -323,11 +328,29 @@ public class DatabaseManager : MonoBehaviour
     #endregion
 
     #region cityCenterDictionary
-    //AddCity()
-    //removeCity()
+    public void AddCityCenter(ObjectIdentifier cityCenterID, DBCityCenterValue cityCenterValue)
+    {
+        if (cityCenterDictionary.ContainsKey(cityCenterID))
+        {
+            Debug.LogError($"DatabaseManager: City Center [{cityCenterID}] already exists in cityCenterDictionary! Count={cityCenterDictionary.Count}");
+            return;
+        }
 
+        cityCenterDictionary[cityCenterID] = cityCenterValue;
+        Debug.Log($"DatabaseManager: Added City Center [{cityCenterID}] to cityCenterDictionary. Count={cityCenterDictionary.Count}");
+    }
 
+    public void RemoveCityCenter(ObjectIdentifier cityCenterID)
+    {
+        if (!cityCenterDictionary.ContainsKey(cityCenterID))
+        {
+            Debug.LogError($"DatabaseManager: City Center [{cityCenterID}] does not exist in cityCenterDictionary! Count={cityCenterDictionary.Count}");
+            return;
+        }
 
+        cityCenterDictionary.Remove(cityCenterID);
+        Debug.Log($"DatabaseManager: Removed City Center [{cityCenterID}] from cityCenterDictionary. Count={cityCenterDictionary.Count}");
+    }
 
     public ObjectIdentifier GetCityCenterIdByTileId(ObjectIdentifier tileId)
     {

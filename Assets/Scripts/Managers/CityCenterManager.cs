@@ -19,6 +19,12 @@ public class CityCenterManager : MonoBehaviour
         //add to database
         HexTile tileToBuildOn = ActiveTile.Instance.GetActiveTile();
         ScriptableCityCenter sCC = Resources.Load<ScriptableCityCenter>("Data/Buildings/CityCenter_Grassland");
-        tileToBuildOn.PlaceCityCenterOnTile(sCC);
+        KeyValuePair<ObjectIdentifier, DBCityCenterValue> citycenter = CityCenterFactory.Instance.CreateCityCenter(sCC, tileToBuildOn);
+
+        if (citycenter.Value != null)
+        {
+            // e.g. random tile
+            DatabaseManager.Instance.AddCityCenter(citycenter.Key, citycenter.Value);
+        }
     }
 }
