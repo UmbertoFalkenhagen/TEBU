@@ -15,7 +15,6 @@ MonoBehaviour:
   tileType: 1
   prefab: {fileID: 4375486808293262297, guid: cf535dcb7a833444f95ae6d75ad23812, type: 3}
   resources:
-  - resourceName: 2
-    resourcePrefab: {fileID: 924472514708391882, guid: faba1124b6871f5408ba613941ec42a0, type: 3}
+  - resourceName: 3
     spawnProbability: 0.3
-  defaultPrefab: {fileID: 7740590973213523301, guid: b4f983a4180e3cc43bcc23b263b8d931, type: 3}
+  defaultResource: 1

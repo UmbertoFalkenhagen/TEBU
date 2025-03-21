@@ -695,6 +695,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   buildingBlueprints: []
+  resourceBlueprints:
+  - {fileID: 11400000, guid: 09302d15f4614bb4eba43b49fe9b51bd, type: 2}
+  - {fileID: 11400000, guid: 5bede5871d85be545b7df0e47e8b6d74, type: 2}
+  - {fileID: 11400000, guid: bbe160fde27069740bb8657a584f17b7, type: 2}
 --- !u!1 &1328119013 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4034698498558505905, guid: bcf3e51e07f4f8c4798fc86456f5b977, type: 3}
@@ -1102,27 +1106,27 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8762344865601369838, guid: bcf3e51e07f4f8c4798fc86456f5b977, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8762344865601369838, guid: bcf3e51e07f4f8c4798fc86456f5b977, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8762344865601369838, guid: bcf3e51e07f4f8c4798fc86456f5b977, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 80
       objectReference: {fileID: 0}
     - target: {fileID: 8762344865601369838, guid: bcf3e51e07f4f8c4798fc86456f5b977, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 0
+      value: 80
       objectReference: {fileID: 0}
     - target: {fileID: 8762344865601369838, guid: bcf3e51e07f4f8c4798fc86456f5b977, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 40
       objectReference: {fileID: 0}
     - target: {fileID: 8762344865601369838, guid: bcf3e51e07f4f8c4798fc86456f5b977, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -40
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

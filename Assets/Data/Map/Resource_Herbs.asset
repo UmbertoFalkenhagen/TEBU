@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6faa37a340072394e8d2f9085f852bcb, type: 3}
   m_Name: Resource_Herbs
   m_EditorClassIdentifier: 
-  resourcename: 0
-  resourcePrefab: {fileID: 0}
+  resourcename: 3
+  resourcePrefab: {fileID: 924472514708391882, guid: faba1124b6871f5408ba613941ec42a0, type: 3}

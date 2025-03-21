@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6faa37a340072394e8d2f9085f852bcb, type: 3}
   m_Name: Resource_Rice
   m_EditorClassIdentifier: 
-  resourcename: 0
-  resourcePrefab: {fileID: 0}
+  resourcename: 2
+  resourcePrefab: {fileID: 7322811874412895695, guid: 8e9be178fa677b246ab1a3f8a9366250, type: 3}

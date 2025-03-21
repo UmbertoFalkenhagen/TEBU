@@ -47,6 +47,8 @@ public class HexMapManager : MonoBehaviour
 
                 KeyValuePair<ObjectIdentifier, DBTileValue> tile = TileFactory.Instance.AddRandomTile(dbPosition, worldPosition);
 
+
+
                 if (tile.Value != null)
                 {
                     // e.g. random tile
