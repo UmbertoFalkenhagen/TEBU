@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using static UnityEngine.GraphicsBuffer;
 
 public class HexTile : MonoBehaviour
 {
@@ -31,38 +32,7 @@ public class HexTile : MonoBehaviour
         // Use a typed function we created in DatabaseManager
         return DatabaseManager.Instance.GetTileValue(TileID);
     }
-    public ObjectIdentifier GetHeldBuildingID()
-    {
-        //TODO:
-        return null;
 
-    }
-    public GameObject GetHeldBuilding()
-    {
-        //TODO:
-        return null;
-    }
-    public ObjectIdentifier GetHeldCityID()
-    {
-        if (heldBuilding.TryGetComponent(out CityCenter cityScript))
-        {
-            return cityScript.cityCenterID;
-        }
-        else
-        {
-            return null;
-        }
-    }
-    // Example: a method that obtains the tile type from DB
-    public TileType GetTileType()
-    {
-        var val = GetMyTileValue();
-        if (val != null)
-        {
-            return val.Type; // DBTileValue.Type
-        }
-        return TileType.Grassland; // fallback or default
-    }
 
     // Similarly for resource
     public ResourceType GetResourceType()

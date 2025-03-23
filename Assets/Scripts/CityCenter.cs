@@ -25,6 +25,7 @@ public class CityCenter : MonoBehaviour
     // Method to add products to the inventory
     public void AddProduct(ProductType product, int quantity)
     {
+        //TODO: only added local, not in databse
         if (productInventory.ContainsKey(product))
         {
             productInventory[product] += quantity;
