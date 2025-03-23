@@ -26,5 +26,6 @@ public class CityCenterManager : MonoBehaviour
             // e.g. random tile
             DatabaseManager.Instance.AddCityCenter(citycenter.Key, citycenter.Value);
         }
+        UIManager.Instance.tileClick(ActiveTile.Instance.GetActiveTile());
     }
 }

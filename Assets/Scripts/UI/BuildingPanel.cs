@@ -65,7 +65,6 @@ public class BuildingPanel : MonoBehaviour
 
     public void onBuildButtonClicked(String buildingType)
     {
-        Debug.Log("BUTTON:" + buildingType);
         //BuildingButton was clicked > BuildingPanel -> here 
         //check resources in buildingManager?
         UIManager.Instance.RequestBuild(buildingType);

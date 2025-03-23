@@ -33,21 +33,34 @@ public class UIManager : MonoBehaviour
 
     public void tileClick(HexTile activeTile)
     {
-        if (activeTile.GetHeldBuilding() != null)
+        ObjectIdentifier structureID = databaseManager.GetStructureIdByTileId(activeTile.TileID);
+        ProductDisplay.Instance.Clear();
+
+        if (structureID != null)
         {
-            ObjectIdentifier buildingID = activeTile.GetHeldBuildingID();
-            ObjectIdentifier cityID = activeTile.GetHeldCityID();
             BuildingPanel.Instance.buildingOptions.Clear();
-            if (buildingID == null && cityID != null)
+            if (structureID.Type == ObjectType.CityCenter)
             {
-                //city ist hier logic
-                //1. update resourceBar based on
+                var cityId = structureID;
+
+                //ressourceBar
+                Dictionary<ProductType, int> productInventory = databaseManager.CityCenterDictionary[cityId]._inventory;
+
+
+                //TODO: remove here this needs to be filled on create
+                if (!productInventory.ContainsKey(ProductType.Bricks))
+                {
+                    productInventory[ProductType.Bricks] = 42; // Standardwert setzen
+                    productInventory[ProductType.Logs] = 11;
+                }
+                ProductDisplay.Instance.UpdateResourceBar(productInventory);
+
                 //                   ResourceBar.Instance.UpdateResourceBar(tileID, databaseManager);
 
                 //show claims
                 // show tile Infomation in right menu
             }
-            else if (buildingID != null && cityID == null)
+            else if (structureID.Type == ObjectType.Building)
             {
                 //building ist hier logic
 
@@ -102,6 +115,7 @@ public class UIManager : MonoBehaviour
         //if cityCenter
 
     }
+
 
 
 }
