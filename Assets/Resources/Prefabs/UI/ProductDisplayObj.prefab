@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 4709248261314643937}
   - component: {fileID: 4176381113593426096}
   m_Layer: 5
-  m_Name: ProductBarObj
+  m_Name: ProductDisplayObj
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

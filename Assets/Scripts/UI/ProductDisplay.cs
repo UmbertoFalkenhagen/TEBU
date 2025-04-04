@@ -6,8 +6,7 @@ using TMPro;
 public class ProductDisplay : MonoBehaviour
 {
     public static ProductDisplay Instance { get; private set; }
-    public Transform resourceBarContainer;
-    public GameObject resourceBarPrefab;
+    private GameObject productDisplayPrefab;
 
     private void Awake()
     {
@@ -15,11 +14,29 @@ public class ProductDisplay : MonoBehaviour
 
         Instance = this;
         DontDestroyOnLoad(gameObject);
+
+
+
+    }
+    private void Start()
+    {
+        //
+        //add ProductDisplay prefab
+        productDisplayPrefab = Resources.Load<GameObject>("Prefabs/UI/ProductDisplay"); // Path inside Resources folder
+        if (productDisplayPrefab != null)
+        {
+            Instantiate(productDisplayPrefab, Vector3.zero, Quaternion.identity);
+        }
+        else
+        {
+            Debug.LogError("productDisplayPrefab not found!");
+        }
+
     }
 
     public void UpdateResourceBar(Dictionary<ProductType, int> productInventory)
     {
-        foreach(Transform child in resourceBarContainer){
+        foreach(Transform child in this.transform){
             Destroy(child.gameObject);
         } 
 
@@ -27,7 +44,7 @@ public class ProductDisplay : MonoBehaviour
         List<(ProductType Type, int Amount)> availableProducts = GetAvailableProducts(productInventory);
         foreach (var product in availableProducts)
         {
-            GameObject productDisplay = Instantiate(resourceBarPrefab, resourceBarContainer);
+            GameObject productDisplay = Instantiate(productDisplayPrefab, this.transform);
             TextMeshProUGUI productText = productDisplay.transform.Find("ProductText").GetComponent<TextMeshProUGUI>(); // Nutze Find(), um die Text-Komponente zu finden
 
             if (productText != null)
@@ -56,7 +73,7 @@ public class ProductDisplay : MonoBehaviour
 
     public void Clear()
     {
-        foreach (Transform child in resourceBarContainer)
+        foreach (Transform child in this.transform)
         {
             Destroy(child.gameObject);
         }
