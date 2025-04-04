@@ -5,7 +5,7 @@ public class CityCenter : MonoBehaviour
 {
 
     // Inventory of products available in the city
-    public Dictionary<ProductType, int> productInventory = new Dictionary<ProductType, int>();
+    private Dictionary<ProductType, int> inventoryStack = new Dictionary<ProductType, int>();
     public string oName;
     private List<Building> cityBuildings;
     public ObjectIdentifier cityCenterID;
@@ -17,7 +17,7 @@ public class CityCenter : MonoBehaviour
         // Initialize product inventory (e.g., start with no products)
         foreach (ProductType product in System.Enum.GetValues(typeof(ProductType)))
         {
-            productInventory[product] = 0;
+            inventoryStack[product] = 0;
         }
         oName = "City Center";
     }
@@ -26,13 +26,13 @@ public class CityCenter : MonoBehaviour
     public void AddProduct(ProductType product, int quantity)
     {
         //TODO: only added local, not in databse
-        if (productInventory.ContainsKey(product))
+        if (inventoryStack.ContainsKey(product))
         {
-            productInventory[product] += quantity;
+            inventoryStack[product] += quantity;
         }
         else
         {
-            productInventory[product] = quantity;
+            inventoryStack[product] = quantity;
         }
     }
 

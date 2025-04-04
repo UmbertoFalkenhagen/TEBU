@@ -101,7 +101,7 @@ public class HexMapManager : MonoBehaviour
             bool isEvenRow = (row % 2) == 0;
 
             List<Vector2Int> neighbors = new List<Vector2Int>();
-            if (isEvenRow)
+            if (!isEvenRow)
             {
                 neighbors.Add(new Vector2Int(col - 1, row));     // Left
                 neighbors.Add(new Vector2Int(col + 1, row));     // Right
