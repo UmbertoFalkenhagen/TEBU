@@ -156,7 +156,8 @@ public class CityCenterFactory : MonoBehaviour
         }
 
         string cityName = GetAndRemoveRandomCityName();
-        DBCityCenterValue dBCityCenterValue = new DBCityCenterValue(parentTile.TileID, cityCenterData.basicPrefab, cityCenterComponent.productInventory, 6, cityName);
+        Dictionary<ProductType, int> productInventory = new Dictionary<ProductType, int>();
+        DBCityCenterValue dBCityCenterValue = new DBCityCenterValue(parentTile.TileID, cityCenterData.basicPrefab, productInventory, 6, cityName);
         cityCenterComponent.cityCenterID = cityCenterID;
 
         return new KeyValuePair<ObjectIdentifier, DBCityCenterValue>(cityCenterID, dBCityCenterValue);
