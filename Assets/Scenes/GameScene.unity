@@ -694,7 +694,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 84873c73682f7854abaf3f0677dfd84a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  buildingBlueprints: []
+  buildingBlueprints:
+  - {fileID: 11400000, guid: 15f54bdf47604834182af3c798d63881, type: 2}
+  - {fileID: 11400000, guid: d532f56aacbe79849b2a6cf90f8f7beb, type: 2}
+  - {fileID: 11400000, guid: f3c2676d87a651049bd9de08816f309e, type: 2}
+  - {fileID: 11400000, guid: ace7ef82736a9f548816435a2a98881c, type: 2}
+  - {fileID: 11400000, guid: 9d3fdd0c56c255e4ea474d26250a282f, type: 2}
+  - {fileID: 11400000, guid: 2e5ce3d352c59f644a3cd0184f110996, type: 2}
+  - {fileID: 11400000, guid: 92346a6ef4c560c4f80a69c39ec4db2a, type: 2}
+  - {fileID: 11400000, guid: 4a69c8b056fbf3d4494ce6d47c2ca5ff, type: 2}
   resourceBlueprints:
   - {fileID: 11400000, guid: 09302d15f4614bb4eba43b49fe9b51bd, type: 2}
   - {fileID: 11400000, guid: 5bede5871d85be545b7df0e47e8b6d74, type: 2}
