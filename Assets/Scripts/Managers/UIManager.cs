@@ -175,7 +175,8 @@ public class UIManager : MonoBehaviour
         else
         {
             //TODO: Add check if enough resources
-           // BuildingManager.Instance.Build(buildingType);
+            Debug.Log("Trying to build a " + buildingType);
+           BuildingManager.Instance.Build(buildingType);
         }
 
 

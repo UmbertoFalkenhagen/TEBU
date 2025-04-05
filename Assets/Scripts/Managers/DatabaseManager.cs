@@ -283,6 +283,28 @@ public class DatabaseManager : MonoBehaviour
         }
     }
 
+    public SDBBuildingBlueprintValue GetBuildingBlueprint(BuildingType buildingType)
+    {
+        if (buildingBlueprintDictionary.TryGetValue(buildingType, out SDBBuildingBlueprintValue blueprint))
+        {
+            return blueprint;
+        }
+
+        Debug.LogWarning($"DatabaseManager: No blueprint found for BuildingType [{buildingType}]");
+        return null;
+    }
+
+    public SDBBuildingBlueprintValue GetBuildingBlueprint(string buildingTypeName)
+    {
+        if (System.Enum.TryParse<BuildingType>(buildingTypeName, true, out BuildingType parsedType))
+        {
+            return GetBuildingBlueprint(parsedType);
+        }
+
+        Debug.LogWarning($"DatabaseManager: Unable to parse string [{buildingTypeName}] into BuildingType");
+        return null;
+    }
+
 
     #endregion
 
@@ -324,6 +346,18 @@ public class DatabaseManager : MonoBehaviour
             return buildingValue._parentTile; // Gibt die tileId des Gebäudes zurück
         }
         return null; // Falls die buildingId nicht existiert
+    }
+
+    public void AddBuilding(ObjectIdentifier buildingID, DBBuildingValue buildingValue)
+    {
+        if (buildingDictionary.ContainsKey(buildingID))
+        {
+            Debug.LogError($"DatabaseManager: Building [{buildingID}] already exists in buildingDictionary! Count={buildingDictionary.Count}");
+            return;
+        }
+
+        buildingDictionary[buildingID] = buildingValue;
+        Debug.Log($"DatabaseManager: Added Building [{buildingID}] to buildingDictionary. Count={buildingDictionary.Count}");
     }
     #endregion
 

@@ -81,6 +81,7 @@ public class DBTileValue
     public ResourceType Resource { get; set; } // Ressourcentyp des Tiles
     public List<Vector2Int> AdjacentTilesPosition { get; set; } // Liste von angrenzenden Tile-Positionen
     public List<ObjectIdentifier> ConstructionClaims { get; set; } // Liste von Bauansprüchen
+    public List<ObjectIdentifier> ActiveClaims { get; set; }
     public DBTileValue(Vector2Int position, GameObject tileObject, TileType type, ResourceType resource)
     {
         Position = position;
@@ -89,6 +90,7 @@ public class DBTileValue
         Resource = resource;
         AdjacentTilesPosition = new List<Vector2Int>();
         ConstructionClaims = new List<ObjectIdentifier>();
+        ActiveClaims = new List<ObjectIdentifier>();
     }
 
 }
@@ -117,6 +119,14 @@ public class DBBuildingValue
     public ObjectIdentifier _parentCityCenter;
     public BuildingType _type;
     public GameObject _object;
+
+    public DBBuildingValue(ObjectIdentifier parentTile, ObjectIdentifier parentCityCenter, BuildingType buildingType, GameObject obj)
+    {
+        _parentTile = parentTile;
+        _parentCityCenter = parentCityCenter;
+        _type = buildingType;
+        _object = obj;
+    }
 }
 
 public class DBAnimalValue
