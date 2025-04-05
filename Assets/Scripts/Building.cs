@@ -31,7 +31,7 @@ public class Building : MonoBehaviour
     public List<ProductRequirement> inputProducts = new List<ProductRequirement>();
     public List<GameObject> workableTiles;
 
-    public void Initialize(ScriptableBuilding buildingData)
+    /*public void Initialize(ScriptableBuilding buildingData)
     {
         oName = buildingData.buildingName.ToString();
         suitableTileTypeLocations = buildingData.suitableTileTypeLocations;
@@ -41,7 +41,7 @@ public class Building : MonoBehaviour
         isMaxWorkersFixed = buildingData.isMaxWorkersFixed;
         inputProducts = buildingData.inputProducts;
 
-    }
+    }*/
     // Start is called before the first frame update
     void Start()
     {

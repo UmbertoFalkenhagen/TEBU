@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -18,27 +19,43 @@ public class BuildingFactory : MonoBehaviour
         }
     }
 
-    public GameObject CreateObject(ScriptableBuilding data, GameObject positionObject, Quaternion rotation, GameObject parentObject)
+    internal KeyValuePair<ObjectIdentifier, DBBuildingValue> CreateBuilding(BuildingType buildingType, SDBBuildingBlueprintValue buildingData, HexTile parentTile)
     {
-        if (data == null)
+        Vector3 worldPosition = parentTile.gameObject.transform.position;
+        Transform parent = parentTile.gameObject.transform;
+        if (buildingData == null)
         {
-            Debug.LogError("Building data is null. Cannot create building.");
-            return null;
+            Debug.LogError("CityCenterFactory: citycenterdata is null!");
+            return default;
         }
 
-        // Instantiate the basic building prefab
-        GameObject buildingObject = Instantiate(data.basicPrefab, positionObject.transform.position, Quaternion.Euler(0, Random.Range(0f, 360f), 0), parentObject.transform); // Random rotation around y-axis
+        //clear resource from tile
+        parentTile.ClearTileResource();
 
+        //generate new objectidentifier for the citycenter
+        ObjectIdentifier buildingID = DatabaseManager.Instance.GenerateUniqueId(ObjectType.Building);
+
+        //instantiate citycenterprefab on the tile
+        GameObject buildingObject = Instantiate(buildingData.prefab, worldPosition, Quaternion.identity, parent);
         if (buildingObject == null)
         {
-            Debug.LogError("Failed to instantiate building prefab.");
-            return null;
+            Debug.LogError("BuildingFactory: Failed to instantiate citycenter prefab.");
+            return default;
         }
+        parentTile.heldBuilding = buildingObject;
 
-        // Add and initialize building component
-        Building buildingComponent = buildingObject.AddComponent<Building>();
-        buildingComponent.Initialize(data);
+        //ensure city center component on the gameobject
+        Building buildingComponent = buildingObject.GetComponent<Building>();
+        if (buildingComponent == null)  // <-- Check buildingComponent
+        {
+            Debug.Log("Adding Building component");
+            buildingComponent = buildingObject.AddComponent<Building>();
+        }
+        buildingComponent.buildingID = buildingID;
+        ObjectIdentifier parentCC = DatabaseManager.Instance.GetTileValue(parentTile.TileID).ConstructionClaims[0];
+        DBBuildingValue dBBuildingValue = new DBBuildingValue(parentTile.TileID, parentCC, buildingType, buildingObject);
+        
 
-        return buildingObject;
+        return new KeyValuePair<ObjectIdentifier, DBBuildingValue>(buildingID, dBBuildingValue);
     }
 }
