@@ -52,7 +52,7 @@ public class BuildingManager : MonoBehaviour
             return;
         }
 
-        // 2) Lookup DBBuildingValue for this building
+        // 2) Look up the building’s data
         DatabaseManager db = DatabaseManager.Instance;
         if (!db.BuildingDictionary.TryGetValue(buildingId, out DBBuildingValue buildingValue))
         {
@@ -60,10 +60,10 @@ public class BuildingManager : MonoBehaviour
             return;
         }
 
-        // 3) Get the BuildingType from the DBBuildingValue
-        BuildingType buildingType = buildingValue._type; // adjust to your field name
+        // 3) Determine the BuildingType
+        BuildingType buildingType = buildingValue._type; // adjust if needed
 
-        // 4) Retrieve the blueprint from buildingBlueprintDictionary
+        // 4) Retrieve the corresponding blueprint
         if (!db.buildingBlueprintDictionary.TryGetValue(buildingType, out SDBBuildingBlueprintValue blueprint))
         {
             Debug.LogError($"CreateActiveClaimsForBuilding: No blueprint found for BuildingType [{buildingType}].");
@@ -78,50 +78,68 @@ public class BuildingManager : MonoBehaviour
             return;
         }
 
-        // 6) Gather neighboring tiles around the parent tile
-        List<DBTileValue> adjacentTiles = db.GetTileNeighbors(parentTileId);
-        if (adjacentTiles == null || adjacentTiles.Count == 0)
+        DBTileValue parentTileVal = db.GetTileValue(parentTileId);
+        if (parentTileVal == null)
         {
-            Debug.Log($"CreateActiveClaimsForBuilding: No adjacent tiles found for Building [{buildingId}].");
+            Debug.LogError($"CreateActiveClaimsForBuilding: No DBTileValue found for parent tile [{parentTileId}].");
             return;
         }
 
-        // 7) Attempt to claim each neighbor if it meets tile & resource requirements
-        List<DBTileValue> newlyClaimedTiles = new List<DBTileValue>();
-        int claimsCreatedCount = 0;
+        // 6) The building always claims its own tile (and is inserted at index 0)
+        //    Remove it first if it was there already, then insert at 0.
+        parentTileVal.ActiveClaims.Remove(buildingId);
+        parentTileVal.ActiveClaims.Insert(0, buildingId);
 
-        foreach (DBTileValue neighborTile in adjacentTiles)
+        // (We’ll keep track of all claimed tiles for optional debug coloring)
+        List<DBTileValue> newlyClaimedTiles = new List<DBTileValue> { parentTileVal };
+        int claimsCreatedCount = 1; // We successfully claimed the parent tile
+
+        // 7) If the building’s maxWorkers are not fixed, claim surrounding tiles
+        if (!blueprint.isMaxWorkersFixed)
         {
-            // a) Tile type requirement
-            if (!blueprint.requiredTileTypes.Contains(neighborTile.Type))
-                continue;
-
-            // b) Resource requirement
-            bool resourceRequirementMet = false;
-            if (blueprint.requiredResources.Contains(ResourceType.None))
+            List<DBTileValue> adjacentTiles = db.GetTileNeighbors(parentTileId);
+            if (adjacentTiles != null && adjacentTiles.Count > 0)
             {
-                // "None" in blueprint means no resource restriction
-                resourceRequirementMet = true;
-            }
-            else if (blueprint.requiredResources.Contains(neighborTile.Resource))
-            {
-                // Otherwise, tile resource must be one of blueprint.requiredResources
-                resourceRequirementMet = true;
-            }
+                foreach (DBTileValue neighborTile in adjacentTiles)
+                {
+                    // a) Check tile type requirement
+                    if (!blueprint.requiredTileTypes.Contains(neighborTile.Type))
+                        continue;
 
-            if (!resourceRequirementMet)
-                continue;
+                    // b) Resource requirement
+                    bool resourceRequirementMet = false;
+                    if (blueprint.requiredResources.Contains(ResourceType.None))
+                    {
+                        // "None" means no resource restriction
+                        resourceRequirementMet = true;
+                    }
+                    else if (blueprint.requiredResources.Contains(neighborTile.Resource))
+                    {
+                        resourceRequirementMet = true;
+                    }
 
-            // c) If not already claimed by this building, add the claim
-            if (!neighborTile.ActiveClaims.Contains(buildingId))
-            {
-                neighborTile.ActiveClaims.Add(buildingId);
-                newlyClaimedTiles.Add(neighborTile);
-                claimsCreatedCount++;
+                    if (!resourceRequirementMet)
+                        continue;
+
+                    // c) If not yet claimed by this building, add it
+                    if (!neighborTile.ActiveClaims.Contains(buildingId))
+                    {
+                        neighborTile.ActiveClaims.Add(buildingId);
+                        newlyClaimedTiles.Add(neighborTile);
+                        claimsCreatedCount++;
+                    }
+                }
             }
         }
+        else
+        {
+            Debug.Log($"CreateActiveClaimsForBuilding: {buildingType} has isMaxWorkersFixed = true. " +
+                      $"Not claiming surrounding tiles, only the parent tile.");
+        }
 
-        //DebugClaimedTilesColoring(buildingId, newlyClaimedTiles);
+        // 9) (Optional) Debug-color the newly claimed tiles, etc.
+
+        DebugClaimedTilesColoring(buildingId, newlyClaimedTiles);
 
         Debug.Log($"CreateActiveClaimsForBuilding: Added building [{buildingId}] as claimant on {claimsCreatedCount} tiles.");
     }

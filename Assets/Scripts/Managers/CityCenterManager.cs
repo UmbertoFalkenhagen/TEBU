@@ -64,7 +64,7 @@ public class CityCenterManager : MonoBehaviour
                 neighborTile.ConstructionClaims.Add(cityCenterId);
             }
 
-            /*// b) Check whether this cityCenterId is the FIRST claimant
+            // b) Check whether this cityCenterId is the FIRST claimant
             Renderer tileRenderer = neighborTile.TileObject != null
                 ? neighborTile.TileObject.GetComponent<Renderer>()
                 : null;
@@ -74,14 +74,14 @@ public class CityCenterManager : MonoBehaviour
                 if (neighborTile.ConstructionClaims[0] == cityCenterId)
                 {
                     // If our CityCenter is the first claimant, set tile color to red
-                    tileRenderer.material.color = Color.red;
+                    tileRenderer.material.color = Color.black;
                 }
                 else
                 {
                     // If there's already another claimant, set tile color to yellow
-                    tileRenderer.material.color = Color.yellow;
+                    tileRenderer.material.color = Color.white;
                 }
-            }*/
+            }
         }
 
         Debug.Log($"CreateConstructionClaimsForCityCenter: Added CityCenter [{cityCenterId}] as a claimant to {adjacentTiles.Count} tiles.");
