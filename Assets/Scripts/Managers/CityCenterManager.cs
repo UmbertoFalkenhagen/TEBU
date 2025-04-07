@@ -27,7 +27,7 @@ public class CityCenterManager : MonoBehaviour
             DatabaseManager.Instance.AddCityCenter(citycenter.Key, citycenter.Value);
             CreateConstructionClaimsForCityCenter(citycenter.Key);
         }
-        UIManager.Instance.tileClick(ActiveTile.Instance.GetActiveTile());
+        UIManager.Instance.tileClick(ActiveTile.Instance.GetActiveTileID());
     }
 
     public void CreateConstructionClaimsForCityCenter(ObjectIdentifier cityCenterId)

@@ -11,7 +11,7 @@ public class ActiveTile : MonoBehaviour
     private ObjectIdentifier activeTileID;
     private ObjectIdentifier lastActiveTileID;
 
-    public static event Action<HexTile> OnActiveTileChanged;
+    public static event Action<ObjectIdentifier> OnActiveTileChanged;
     private void Awake()
     {
         if (Instance == null)
@@ -45,7 +45,7 @@ public class ActiveTile : MonoBehaviour
         {
             activeTile.SelectTile(true);
         }
-        OnActiveTileChanged?.Invoke(activeTile);
+        OnActiveTileChanged?.Invoke(activeTileID);
     }
 
     // Gibt das aktuell aktive Tile zurück
