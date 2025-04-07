@@ -97,7 +97,7 @@ public class DatabaseManager : MonoBehaviour
     // --------------------------------------------------------------------
     // Find and return the data entry for an ObjectIdentifier
     // --------------------------------------------------------------------
-    public object FindObjectByID(ObjectIdentifier identifier)
+    public object FindObject(ObjectIdentifier identifier)
     {
         switch (identifier.Type)
         {
@@ -126,7 +126,7 @@ public class DatabaseManager : MonoBehaviour
         return null;
     }
 
-    public ObjectIdentifier GetStructureIdByTileId(ObjectIdentifier tileId)
+    public ObjectIdentifier GetStructureId(ObjectIdentifier tileId)
     {
         ObjectIdentifier structureId = GetCityCenterIdByTileId(tileId) ?? GetBuildingIdByTileId(tileId);
         return structureId;

@@ -31,19 +31,12 @@ public class UIManager : MonoBehaviour
         ActiveTile.OnActiveTileChanged -= tileClick;
     }
 
-    public void tileClick(HexTile activeTile)
+    public void tileClick(ObjectIdentifier activeTileID)
     {
-        ObjectIdentifier structureID = databaseManager.GetStructureIdByTileId(activeTile.TileID);
+        DBTileValue tileValue = databaseManager.GetTileValue(activeTileID);
+        ObjectIdentifier structureID = databaseManager.GetStructureId(activeTileID);
         ProductDisplay.Instance.Clear();
-        DBTileValue tileValue = databaseManager.GetTileValue(activeTile.TileID);
-        if (tileValue.ActiveClaims.Count > 0)
-        {
-            Debug.Log("tileValue aClaims: " + tileValue.ActiveClaims[0].ToString());
-        }
-        if (tileValue.ConstructionClaims.Count > 0)
-        {
-            Debug.Log("tileValue construction CLaims: " + tileValue.ConstructionClaims[0].ToString());
-        }
+
         // sollte das wirklich über den ID check gehen, oder sollte das über check von active claim/construction claim gehen??
         // aka: if(active CLaim == vorhanden) if(activeClaim.Type == CityCenter) ....elseif(activeClaim == null) -> check construction Claims and show resources of top construction claim
         if (structureID != null)
@@ -60,7 +53,7 @@ public class UIManager : MonoBehaviour
                 //TODO: remove here this needs to be filled on create
                 if (!productInventory.ContainsKey(ProductType.Bricks))
                 {
-                    productInventory[ProductType.Bricks] = 42; // Standardwert setzen
+                    productInventory[ProductType.Bricks] = 42 + databaseManager.CityCenterDictionary.Count; // Standardwert setzen
                     productInventory[ProductType.Logs] = 12;
                 }
                 ProductDisplay.Instance.UpdateResourceBar(productInventory);
@@ -94,7 +87,7 @@ public class UIManager : MonoBehaviour
         {
             //logic wenn tile leer ist
             
-            if (databaseManager.GetTileValue(activeTile.TileID).ConstructionClaims.Count == 0 || databaseManager.GetCityCenterIdByTileId(activeTile.TileID) != null)
+            if (tileValue.ConstructionClaims.Count == 0 || databaseManager.GetCityCenterIdByTileId(activeTileID) != null)
             {
                 
                 BuildingPanel.Instance.buildingOptions.Clear();
@@ -108,15 +101,14 @@ public class UIManager : MonoBehaviour
                 BuildingPanel.Instance.buildingOptions.Clear();
                 Debug.Log("Hello");
 
-                var tileVal = databaseManager.GetTileValue(activeTile.TileID);
-                if (tileVal == null)
+                if (tileValue == null)
                 {
-                    Debug.LogError($"No tile value found for ID {activeTile.TileID}");
+                    Debug.LogError($"No tile value found for ID {activeTileID}");
                     return;
                 }
 
-                TileType tileType = tileVal.Type;
-                ResourceType tileResource = tileVal.Resource;
+                TileType tileType = tileValue.Type;
+                ResourceType tileResource = tileValue.Resource;
 
                 // We'll collect all suitable building types for debugging
                 List<BuildingType> suitableBuildings = new List<BuildingType>();
@@ -166,11 +158,11 @@ public class UIManager : MonoBehaviour
                 if (suitableBuildings.Count > 0)
                 {
                     string debugList = string.Join(", ", suitableBuildings);
-                    Debug.Log($"Suitable buildings for tile [{activeTile.TileID}]: {debugList}");
+                    Debug.Log($"Suitable buildings for tile [{activeTileID}]: {debugList}");
                 }
                 else
                 {
-                    Debug.Log($"No suitable buildings found for tile [{activeTile.TileID}].");
+                    Debug.Log($"No suitable buildings found for tile [{activeTileID}].");
                 }
 
                 // Finally, update the UI

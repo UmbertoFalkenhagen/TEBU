@@ -40,7 +40,7 @@ public class BuildingManager : MonoBehaviour
             DatabaseManager.Instance.AddBuilding(building.Key, building.Value);
             CreateActiveClaimsForBuilding(building.Key);
         }
-        UIManager.Instance.tileClick(ActiveTile.Instance.GetActiveTile());
+        UIManager.Instance.tileClick(ActiveTile.Instance.GetActiveTileID());
     }
 
     public void CreateActiveClaimsForBuilding(ObjectIdentifier buildingId)
@@ -52,7 +52,7 @@ public class BuildingManager : MonoBehaviour
             return;
         }
 
-        // 2) Look up the building’s data
+        // 2) Look up the buildingâ€™s data
         DatabaseManager db = DatabaseManager.Instance;
         if (!db.BuildingDictionary.TryGetValue(buildingId, out DBBuildingValue buildingValue))
         {
@@ -154,7 +154,7 @@ public class BuildingManager : MonoBehaviour
 
         // 9) (Optional) Debug-color the newly claimed tiles, etc.
 
-        //DebugClaimedTilesColoring(buildingId, newlyClaimedTiles);
+        DebugClaimedTilesColoring(buildingId, newlyClaimedTiles);
 
         Debug.Log($"CreateActiveClaimsForBuilding: Added building [{buildingId}] as claimant on {claimsCreatedCount} tiles.");
     }

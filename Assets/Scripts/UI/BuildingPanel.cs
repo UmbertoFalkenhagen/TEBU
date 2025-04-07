@@ -8,7 +8,6 @@ public class BuildingPanel : MonoBehaviour
 {
     public GameObject buttonPrefab;
     public Transform buttonContainer;
-    public HexTile activeTile;
     public static BuildingPanel Instance { get; private set; }
 
     //TODO: Bug beheben, dass wenn auf tile mit gebäude geklickt wird und gebaut, auf das tile vorher ohne gebäude gebaut wird
@@ -26,12 +25,19 @@ public class BuildingPanel : MonoBehaviour
     {
 
         ClearButtons();
-
-        foreach (var option in buildingOptions)
+        if (buildingOptions.Count <= 0) {
+            return;
+        }else
         {
-            CreateButton(option.Key, option.Value);
+            gameObject.SetActive(true);
+            foreach (var option in buildingOptions)
+            {
+                CreateButton(option.Key, option.Value);
 
+            }
         }
+
+
     }
     private void ClearButtons()
     {
@@ -39,11 +45,13 @@ public class BuildingPanel : MonoBehaviour
         {
             Destroy(child.gameObject);
         }
+        this.gameObject.SetActive(false);
+
     }
     private void Build(String text)
     {
         //TODO: Dont build if already exist, or disable build menu after build
-        BuildingPanel.Instance.onBuildButtonClicked(text);
+        onBuildButtonClicked(text);
        
     }
 

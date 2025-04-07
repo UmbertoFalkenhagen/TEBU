@@ -27,7 +27,7 @@ public class CityCenterManager : MonoBehaviour
             DatabaseManager.Instance.AddCityCenter(citycenter.Key, citycenter.Value);
             CreateConstructionClaimsForCityCenter(citycenter.Key);
         }
-        UIManager.Instance.tileClick(ActiveTile.Instance.GetActiveTile());
+        UIManager.Instance.tileClick(ActiveTile.Instance.GetActiveTileID());
     }
 
     public void CreateConstructionClaimsForCityCenter(ObjectIdentifier cityCenterId)
@@ -55,7 +55,7 @@ public class CityCenterManager : MonoBehaviour
             return;
         }
 
-        // 4) Add the CityCenter’s ObjectIdentifier to each tile’s construction claims list
+        // 4) Add the CityCenterâ€™s ObjectIdentifier to each tileâ€™s construction claims list
         foreach (DBTileValue neighborTile in adjacentTiles)
         {
             // a) Ensure DBTileValue has a List<ObjectIdentifier> constructionClaims
@@ -64,7 +64,9 @@ public class CityCenterManager : MonoBehaviour
                 neighborTile.ConstructionClaims.Add(cityCenterId);
             }
 
+
            /* // b) Check whether this cityCenterId is the FIRST claimant
+
             Renderer tileRenderer = neighborTile.TileObject != null
                 ? neighborTile.TileObject.GetComponent<Renderer>()
                 : null;
@@ -81,7 +83,7 @@ public class CityCenterManager : MonoBehaviour
                     // If there's already another claimant, set tile color to yellow
                     tileRenderer.material.color = Color.white;
                 }
-            }*/
+            }
         }
 
         Debug.Log($"CreateConstructionClaimsForCityCenter: Added CityCenter [{cityCenterId}] as a claimant to {adjacentTiles.Count} tiles.");
