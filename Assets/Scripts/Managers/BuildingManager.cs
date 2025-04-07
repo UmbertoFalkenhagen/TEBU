@@ -27,10 +27,10 @@ public class BuildingManager : MonoBehaviour
 
     public void Build(string inputString)
     {
-        Debug.Log("Building " + inputString + "...");
+       // Debug.Log("Building " + inputString + "...");
         HexTile tileToBuildOn = ActiveTile.Instance.GetActiveTile();
         BuildingType _buildingType = System.Enum.TryParse(inputString, true, out BuildingType parsed) ? parsed : default;
-        Debug.Log("Found building of type " + _buildingType.ToString());
+       // Debug.Log("Found building of type " + _buildingType.ToString());
         SDBBuildingBlueprintValue buildingBlueprint = DatabaseManager.Instance.GetBuildingBlueprint(_buildingType);
         KeyValuePair<ObjectIdentifier, DBBuildingValue> building = BuildingFactory.Instance.CreateBuilding(_buildingType, buildingBlueprint, tileToBuildOn);
 

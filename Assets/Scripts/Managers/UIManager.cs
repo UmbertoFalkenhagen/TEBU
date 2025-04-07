@@ -35,7 +35,17 @@ public class UIManager : MonoBehaviour
     {
         ObjectIdentifier structureID = databaseManager.GetStructureIdByTileId(activeTile.TileID);
         ProductDisplay.Instance.Clear();
-
+        DBTileValue tileValue = databaseManager.GetTileValue(activeTile.TileID);
+        if (tileValue.ActiveClaims.Count > 0)
+        {
+            Debug.Log("tileValue aClaims: " + tileValue.ActiveClaims[0].ToString());
+        }
+        if (tileValue.ConstructionClaims.Count > 0)
+        {
+            Debug.Log("tileValue construction CLaims: " + tileValue.ConstructionClaims[0].ToString());
+        }
+        // sollte das wirklich über den ID check gehen, oder sollte das über check von active claim/construction claim gehen??
+        // aka: if(active CLaim == vorhanden) if(activeClaim.Type == CityCenter) ....elseif(activeClaim == null) -> check construction Claims and show resources of top construction claim
         if (structureID != null)
         {
             BuildingPanel.Instance.buildingOptions.Clear();
@@ -51,7 +61,7 @@ public class UIManager : MonoBehaviour
                 if (!productInventory.ContainsKey(ProductType.Bricks))
                 {
                     productInventory[ProductType.Bricks] = 42; // Standardwert setzen
-                    productInventory[ProductType.Logs] = 11;
+                    productInventory[ProductType.Logs] = 12;
                 }
                 ProductDisplay.Instance.UpdateResourceBar(productInventory);
 
@@ -62,6 +72,10 @@ public class UIManager : MonoBehaviour
             }
             else if (structureID.Type == ObjectType.Building)
             {
+                //Update Product Display, based on this buildings CityCenter
+                Dictionary<ProductType, int> productInventory = databaseManager.CityCenterDictionary[databaseManager.BuildingDictionary[structureID]._parentCityCenter]._inventory;
+                ProductDisplay.Instance.UpdateResourceBar(productInventory);
+
                 //building ist hier logic
 
 
