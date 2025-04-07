@@ -154,7 +154,7 @@ public class BuildingManager : MonoBehaviour
 
         // 9) (Optional) Debug-color the newly claimed tiles, etc.
 
-        DebugClaimedTilesColoring(buildingId, newlyClaimedTiles);
+        //DebugClaimedTilesColoring(buildingId, newlyClaimedTiles);
 
         Debug.Log($"CreateActiveClaimsForBuilding: Added building [{buildingId}] as claimant on {claimsCreatedCount} tiles.");
     }

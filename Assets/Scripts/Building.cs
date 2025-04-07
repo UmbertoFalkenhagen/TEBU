@@ -29,7 +29,7 @@ public class Building : MonoBehaviour
             ObjectIdentifier tile = claimedTiles[i];
             DBTileValue tileVal = DatabaseManager.Instance.GetTileValue(tile);
 
-            if (tileVal.ActiveClaims.Count > 0 && tileVal.ActiveClaims[0] == buildingID && DatabaseManager.Instance.GetStructureIdByTileId(claimedTiles[i]) == null)
+            if (tileVal.ActiveClaims.Count > 0 && tileVal.ActiveClaims[0] == buildingID && DatabaseManager.Instance.GetStructureId(claimedTiles[i]) == null)
             {
                 Vector3 worldPosition = tileVal.TileObject.transform.position;
                 // Instantiate the module prefab on the tile
