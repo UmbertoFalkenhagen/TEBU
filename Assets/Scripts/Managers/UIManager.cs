@@ -60,8 +60,10 @@ public class UIManager : MonoBehaviour
                 //TODO: remove here this needs to be filled on create
                 if (!productInventory.ContainsKey(ProductType.Bricks))
                 {
-                    productInventory[ProductType.Bricks] = 42; // Standardwert setzen
+                    var val = 42 + databaseManager.CityCenterDictionary.Count;
+                    productInventory[ProductType.Bricks] = val; // Standardwert setzen
                     productInventory[ProductType.Logs] = 12;
+                    val += 10;
                 }
                 ProductDisplay.Instance.UpdateResourceBar(productInventory);
 
