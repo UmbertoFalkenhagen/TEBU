@@ -25,7 +25,7 @@ public class BuildingFactory : MonoBehaviour
         Transform parent = parentTile.gameObject.transform;
         if (buildingData == null)
         {
-            Debug.LogError("CityCenterFactory: citycenterdata is null!");
+            Debug.LogError("BuildingFactory: buildingdatadata is null!");
             return default;
         }
 
@@ -35,7 +35,7 @@ public class BuildingFactory : MonoBehaviour
         //generate new objectidentifier for the citycenter
         ObjectIdentifier buildingID = DatabaseManager.Instance.GenerateUniqueId(ObjectType.Building);
 
-        //instantiate citycenterprefab on the tile
+        //instantiate buildingprefab on the tile
         GameObject buildingObject = Instantiate(buildingData.prefab, worldPosition, Quaternion.identity, parent);
         if (buildingObject == null)
         {
@@ -52,6 +52,7 @@ public class BuildingFactory : MonoBehaviour
             buildingComponent = buildingObject.AddComponent<Building>();
         }
         buildingComponent.buildingID = buildingID;
+        buildingComponent.buildingType = buildingType;
         ObjectIdentifier parentCC = DatabaseManager.Instance.GetTileValue(parentTile.TileID).ConstructionClaims[0];
         DBBuildingValue dBBuildingValue = new DBBuildingValue(parentTile.TileID, parentCC, buildingType, buildingObject);
         

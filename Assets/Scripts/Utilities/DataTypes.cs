@@ -152,6 +152,8 @@ public class SDBAnimalBlueprintValue
 public class SDBBuildingBlueprintValue
 {
     public GameObject prefab;
+    public GameObject unworkedModulePrefab;
+    public GameObject workedModulePrefab;
     public List<TileType> requiredTileTypes;
     public List<ResourceType> requiredResources;
     public ProductType outputProduct;
