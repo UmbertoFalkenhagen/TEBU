@@ -52,7 +52,7 @@ public class BuildingManager : MonoBehaviour
             return;
         }
 
-        // 2) Look up the building’s data
+        // 2) Look up the buildingâ€™s data
         DatabaseManager db = DatabaseManager.Instance;
         if (!db.BuildingDictionary.TryGetValue(buildingId, out DBBuildingValue buildingValue))
         {
@@ -90,42 +90,33 @@ public class BuildingManager : MonoBehaviour
         parentTileVal.ActiveClaims.Remove(buildingId);
         parentTileVal.ActiveClaims.Insert(0, buildingId);
 
-        // (We’ll keep track of all claimed tiles for optional debug coloring)
         List<DBTileValue> newlyClaimedTiles = new List<DBTileValue> { parentTileVal };
-        int claimsCreatedCount = 1; // We successfully claimed the parent tile
+        List<ObjectIdentifier> claimedTileIds = new List<ObjectIdentifier> { parentTileId };
+        int claimsCreatedCount = 1;
 
-        // 7) If the building’s maxWorkers are not fixed, claim surrounding tiles
+        // 7) If max workers are not fixed, claim surrounding tiles
         if (!blueprint.isMaxWorkersFixed)
         {
             List<DBTileValue> adjacentTiles = db.GetTileNeighbors(parentTileId);
-            if (adjacentTiles != null && adjacentTiles.Count > 0)
+            if (adjacentTiles != null)
             {
-                foreach (DBTileValue neighborTile in adjacentTiles)
+                foreach (var neighborTile in adjacentTiles)
                 {
-                    // a) Check tile type requirement
                     if (!blueprint.requiredTileTypes.Contains(neighborTile.Type))
                         continue;
 
-                    // b) Resource requirement
-                    bool resourceRequirementMet = false;
-                    if (blueprint.requiredResources.Contains(ResourceType.None))
-                    {
-                        // "None" means no resource restriction
-                        resourceRequirementMet = true;
-                    }
-                    else if (blueprint.requiredResources.Contains(neighborTile.Resource))
-                    {
-                        resourceRequirementMet = true;
-                    }
+                    bool resourceRequirementMet =
+                        blueprint.requiredResources.Contains(ResourceType.None) ||
+                        blueprint.requiredResources.Contains(neighborTile.Resource);
 
                     if (!resourceRequirementMet)
                         continue;
 
-                    // c) If not yet claimed by this building, add it
                     if (!neighborTile.ActiveClaims.Contains(buildingId))
                     {
                         neighborTile.ActiveClaims.Add(buildingId);
                         newlyClaimedTiles.Add(neighborTile);
+                        claimedTileIds.Add(db.GetTileIdByObject(neighborTile.TileObject));
                         claimsCreatedCount++;
                     }
                 }
@@ -135,6 +126,30 @@ public class BuildingManager : MonoBehaviour
         {
             Debug.Log($"CreateActiveClaimsForBuilding: {buildingType} has isMaxWorkersFixed = true. " +
                       $"Not claiming surrounding tiles, only the parent tile.");
+        }
+
+        // 8) Store claimed tile IDs in Building component
+        if (buildingValue._object != null)
+        {
+            Building buildingComponent = buildingValue._object.GetComponent<Building>();
+            if (buildingComponent == null)
+            {
+                buildingComponent = buildingValue._object.AddComponent<Building>();
+            }
+
+            buildingComponent.buildingID = buildingId;
+            buildingComponent.buildingType = buildingType;
+            buildingComponent.claimedTiles = claimedTileIds;
+
+            // Only place modules if building can assign workers dynamically
+            if (!blueprint.isMaxWorkersFixed)
+            {
+                buildingComponent.PlaceUnworkedModules();
+            }
+        }
+        else
+        {
+            Debug.LogWarning($"CreateActiveClaimsForBuilding: No building GameObject found for {buildingId}.");
         }
 
         // 9) (Optional) Debug-color the newly claimed tiles, etc.

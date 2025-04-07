@@ -172,10 +172,19 @@ public class DatabaseManager : MonoBehaviour
         var val = GetTileValue(tileID);
         return val != null ? val.TileObject : null;
     }
-    public ObjectIdentifier GetTileIDByPosition()
+
+    public ObjectIdentifier GetTileIdByObject(GameObject tileObj)
     {
-        //TODO:
-        return null;
+        foreach (var kvp in tileDictionary)
+        {
+            if (kvp.Value.TileObject == tileObj)
+            {
+                return kvp.Key;
+            }
+        }
+
+        Debug.LogWarning("GetTileIdByObject: No matching tile found for the provided GameObject.");
+        return null; // Or return ObjectIdentifier.None if you have a defined default
     }
 
     // Return a list of neighbor DBTileValues
@@ -213,6 +222,8 @@ public class DatabaseManager : MonoBehaviour
         SDBBuildingBlueprintValue blueprintValue = new SDBBuildingBlueprintValue
         {
             prefab = scriptableBuilding.basicPrefab,
+            unworkedModulePrefab = scriptableBuilding.emptyModulePrefab,
+            workedModulePrefab = scriptableBuilding.workedModulePrefab,
             requiredTileTypes = new List<TileType>(scriptableBuilding.suitableTileTypeLocations),
             requiredResources = new List<ResourceType>(scriptableBuilding.requiredResources),
             outputProduct = scriptableBuilding.product,

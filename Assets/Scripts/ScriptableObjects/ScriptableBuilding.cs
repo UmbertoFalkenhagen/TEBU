@@ -11,6 +11,12 @@ public class ScriptableBuilding : ScriptableObject
     [Tooltip("The prefab representing the initial version of the building.")]
     public GameObject basicPrefab;
 
+    [Tooltip("The prefab representing the unworked module of the building.")]
+    public GameObject emptyModulePrefab;
+
+    [Tooltip("The prefab representing the worked module of the building.")]
+    public GameObject workedModulePrefab;
+
     [Tooltip("The selection of tile types on which the building can be constructed.")]
     public List<TileType> suitableTileTypeLocations;
 

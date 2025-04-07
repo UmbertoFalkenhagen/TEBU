@@ -55,7 +55,7 @@ public class CityCenterManager : MonoBehaviour
             return;
         }
 
-        // 4) Add the CityCenter’s ObjectIdentifier to each tile’s construction claims list
+        // 4) Add the CityCenterâ€™s ObjectIdentifier to each tileâ€™s construction claims list
         foreach (DBTileValue neighborTile in adjacentTiles)
         {
             // a) Ensure DBTileValue has a List<ObjectIdentifier> constructionClaims
@@ -64,7 +64,9 @@ public class CityCenterManager : MonoBehaviour
                 neighborTile.ConstructionClaims.Add(cityCenterId);
             }
 
-            // b) Check whether this cityCenterId is the FIRST claimant
+
+           /* // b) Check whether this cityCenterId is the FIRST claimant
+
             Renderer tileRenderer = neighborTile.TileObject != null
                 ? neighborTile.TileObject.GetComponent<Renderer>()
                 : null;
