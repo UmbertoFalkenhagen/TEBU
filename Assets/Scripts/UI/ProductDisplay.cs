@@ -31,16 +31,15 @@ public class ProductDisplay : MonoBehaviour
         {
             Debug.LogError("productDisplayPrefab not found!");
         }
+        this.gameObject.SetActive(false);
+
 
     }
 
     public void UpdateResourceBar(Dictionary<ProductType, int> productInventory)
     {
-        foreach(Transform child in this.transform){
-            Destroy(child.gameObject);
-        } 
-
-
+        Clear();
+        this.gameObject.SetActive(true);
         List<(ProductType Type, int Amount)> availableProducts = GetAvailableProducts(productInventory);
         foreach (var product in availableProducts)
         {
@@ -73,6 +72,7 @@ public class ProductDisplay : MonoBehaviour
 
     public void Clear()
     {
+        this.gameObject.SetActive(false);
         foreach (Transform child in this.transform)
         {
             Destroy(child.gameObject);
