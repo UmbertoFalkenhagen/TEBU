@@ -34,7 +34,7 @@ public class UIManager : MonoBehaviour
     public void tileClick(ObjectIdentifier activeTileID)
     {
         DBTileValue tileValue = databaseManager.GetTileValue(activeTileID);
-        ObjectIdentifier structureID = databaseManager.GetStructureIdByTileId(activeTileID);
+        ObjectIdentifier structureID = databaseManager.GetStructureId(activeTileID);
         ProductDisplay.Instance.Clear();
 
         // sollte das wirklich über den ID check gehen, oder sollte das über check von active claim/construction claim gehen??
@@ -53,10 +53,8 @@ public class UIManager : MonoBehaviour
                 //TODO: remove here this needs to be filled on create
                 if (!productInventory.ContainsKey(ProductType.Bricks))
                 {
-                    var val = 42 + databaseManager.CityCenterDictionary.Count;
-                    productInventory[ProductType.Bricks] = val; // Standardwert setzen
+                    productInventory[ProductType.Bricks] = 42 + databaseManager.CityCenterDictionary.Count; // Standardwert setzen
                     productInventory[ProductType.Logs] = 12;
-                    val += 10;
                 }
                 ProductDisplay.Instance.UpdateResourceBar(productInventory);
 
