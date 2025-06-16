@@ -6,7 +6,7 @@ public class GameLoader : MonoBehaviour
 {
 
     private DatabaseManager databaseManager;
-
+    public GameObject uiPrefab;
     public List<ScriptableBuilding> buildingBlueprints;
     public List<ScriptableResource> resourceBlueprints;
 
@@ -52,7 +52,7 @@ public class GameLoader : MonoBehaviour
         databaseManager.initMapData.rows = 5;
         databaseManager.initMapData.cellSize = 1.24f;
 
-
+        loadUI();
         //Run Generate Map
         //TODO: Check if any is there
 
@@ -64,5 +64,13 @@ public class GameLoader : MonoBehaviour
 
         // ....
 
+    }
+
+    public void loadUI()
+    {
+        if (GameObject.Find("UICanvas") == null)
+        {
+            Instantiate(uiPrefab);
+        }
     }
 }

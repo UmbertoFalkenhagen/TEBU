@@ -143,7 +143,7 @@ public class DatabaseManager : MonoBehaviour
         }
 
         tileDictionary[tileID] = tileValue;
-        Debug.Log($"DatabaseManager: Added tile [{tileID}] to tileDictionary. Count={tileDictionary.Count}");
+        //Debug.Log($"DatabaseManager: Added tile [{tileID}] to tileDictionary. Count={tileDictionary.Count}");
     }
 
 
@@ -240,7 +240,7 @@ public class DatabaseManager : MonoBehaviour
         // Store it in the dictionary, keyed by the building type
         buildingBlueprintDictionary[scriptableBuilding.buildingName] = blueprintValue;
 
-        Debug.Log($"Building blueprint '{scriptableBuilding.buildingName}' added/updated in the dictionary.");
+        //Debug.Log($"Building blueprint '{scriptableBuilding.buildingName}' added/updated in the dictionary.");
     }
 
     /// <summary>
@@ -340,6 +340,8 @@ public class DatabaseManager : MonoBehaviour
     {
         List<ObjectIdentifier> buildingIds = new List<ObjectIdentifier>();
 
+        //TODO: get buildings and return their IDs
+
         foreach (var kvp in buildingDictionary)
         {
             if (kvp.Value._parentCityCenter == cityCenterId)
@@ -347,9 +349,13 @@ public class DatabaseManager : MonoBehaviour
                 buildingIds.Add(kvp.Key); // Fügt die passende buildingId zur Liste hinzu
             }
         }
-
         return buildingIds;
     }
+
+    //TODO:
+    //public ObjectIdentifier GetCityCenterIdByBuildingId(){
+    //
+    //}
     public ObjectIdentifier GetParentTileIdByBuildingId(ObjectIdentifier buildingId)
     {
         if (buildingDictionary.TryGetValue(buildingId, out DBBuildingValue buildingValue))
