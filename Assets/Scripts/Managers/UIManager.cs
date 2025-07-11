@@ -37,6 +37,8 @@ public class UIManager : MonoBehaviour
         ObjectIdentifier structureID = databaseManager.GetStructureId(activeTileID);
         ProductDisplay.Instance.Clear();
 
+        InfoPanel.Instance.DisplayStuff(tileValue);
+
         // sollte das wirklich über den ID check gehen, oder sollte das über check von active claim/construction claim gehen??
         // aka: if(active CLaim == vorhanden) if(activeClaim.Type == CityCenter) ....elseif(activeClaim == null) -> check construction Claims and show resources of top construction claim
         if (structureID != null)
