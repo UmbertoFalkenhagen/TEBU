@@ -66,7 +66,7 @@ public class UIManager : MonoBehaviour
             else if (structureID.Type == ObjectType.Building)
             {
                 //Update Product Display, based on this buildings CityCenter
-                Dictionary<ProductType, int> productInventory = databaseManager.CityCenterDictionary[databaseManager.BuildingDictionary[structureID]._parentCityCenter]._inventory;
+                Dictionary<ProductType, int> productInventory = databaseManager.CityCenterDictionary[databaseManager.GetCityCenterIdByBuildingId(structureID)]._inventory;
                 ProductDisplay.Instance.UpdateResourceBar(productInventory);
 
                 //building ist hier logic

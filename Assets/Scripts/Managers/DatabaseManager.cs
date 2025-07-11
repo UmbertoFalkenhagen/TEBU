@@ -1,427 +1,249 @@
+// Full updated DatabaseManager.cs
+// Reflects the change where buildings and animals no longer store their city center
+// Instead, the DBCityCenterValue keeps track of its buildings and animals
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class DatabaseManager : MonoBehaviour
 {
     public static DatabaseManager Instance;
 
-    // Store all tile blueprint data here (public for easy assignment in Inspector)
     public List<ScriptableTile> tileBlueprints = new List<ScriptableTile>();
 
-    //runtime databases for instanced objects
+    private Dictionary<ObjectIdentifier, DBTileValue> tileDictionary = new();
+    public IReadOnlyDictionary<ObjectIdentifier, DBTileValue> TileDictionary => tileDictionary;
 
-    //Tiles
-    private Dictionary<ObjectIdentifier, DBTileValue> tileDictionary = new Dictionary<ObjectIdentifier, DBTileValue>();
-    public IReadOnlyDictionary<ObjectIdentifier, DBTileValue> TileDictionary
-        => tileDictionary;
-    //CityCenters
-    private Dictionary<ObjectIdentifier, DBCityCenterValue> cityCenterDictionary = new Dictionary<ObjectIdentifier, DBCityCenterValue>();
-    public IReadOnlyDictionary<ObjectIdentifier, DBCityCenterValue> CityCenterDictionary
-        => cityCenterDictionary;
-    //Building
-    private Dictionary<ObjectIdentifier, DBBuildingValue> buildingDictionary = new Dictionary<ObjectIdentifier, DBBuildingValue>();
-    public IReadOnlyDictionary<ObjectIdentifier, DBBuildingValue> BuildingDictionary
-        => buildingDictionary;
-    //Animal
-    private Dictionary<ObjectIdentifier, DBAnimalValue> animalDictionary = new Dictionary<ObjectIdentifier, DBAnimalValue>();
-    public IReadOnlyDictionary<ObjectIdentifier, DBAnimalValue> AnimalDictionary 
-        => animalDictionary;
+    private Dictionary<ObjectIdentifier, DBCityCenterValue> cityCenterDictionary = new();
+    public IReadOnlyDictionary<ObjectIdentifier, DBCityCenterValue> CityCenterDictionary => cityCenterDictionary;
 
-    //static databases for persistent blueprints
-    public Dictionary<BuildingType, SDBBuildingBlueprintValue> buildingBlueprintDictionary = new Dictionary<BuildingType, SDBBuildingBlueprintValue>();
-    public Dictionary<AnimalType, SDBAnimalBlueprintValue> animalBlueprintDictionary = new Dictionary<AnimalType, SDBAnimalBlueprintValue>();
-    public Dictionary<ResourceType, GameObject> resourceBlueprintDictionary = new Dictionary<ResourceType, GameObject>();
-    //initMapData is initiated empty and gets filled in GameLoader
-    public SDBInitMapData initMapData = new SDBInitMapData();
-    //Singleton
+    private Dictionary<ObjectIdentifier, DBBuildingValue> buildingDictionary = new();
+    public IReadOnlyDictionary<ObjectIdentifier, DBBuildingValue> BuildingDictionary => buildingDictionary;
+
+    private Dictionary<ObjectIdentifier, DBAnimalValue> animalDictionary = new();
+    public IReadOnlyDictionary<ObjectIdentifier, DBAnimalValue> AnimalDictionary => animalDictionary;
+
+    public Dictionary<BuildingType, SDBBuildingBlueprintValue> buildingBlueprintDictionary = new();
+    public Dictionary<AnimalType, SDBAnimalBlueprintValue> animalBlueprintDictionary = new();
+    public Dictionary<ResourceType, GameObject> resourceBlueprintDictionary = new();
+
+    public SDBInitMapData initMapData = new();
+
     private void Awake()
     {
         if (Instance != null) { Destroy(gameObject); return; }
-
         Instance = this;
         DontDestroyOnLoad(gameObject);
     }
-    
-    #region GeneralFunctions
-    // --------------------------------------------------------------------
-    // Generate a random unique ID for the given ObjectType
-    // --------------------------------------------------------------------
+
+    #region General Functions
     public ObjectIdentifier GenerateUniqueId(ObjectType type)
     {
-        const int ID_LENGTH = 6; // Fixed length, e.g. 6 digits
+        const int ID_LENGTH = 6;
         while (true)
         {
-            // Generate a random integer in [0 .. 10^ID_LENGTH)
             int max = (int)Mathf.Pow(10, ID_LENGTH);
             int randomNumber = UnityEngine.Random.Range(0, max);
-
-            // Format with leading zeros to ensure fixed length
-            // e.g. "000123" for randomNumber=123
             string uniqueIdPart = randomNumber.ToString($"D{ID_LENGTH}");
+            ObjectIdentifier candidate = new(type, uniqueIdPart);
 
-            // Build the candidate ID
-            ObjectIdentifier candidate = new ObjectIdentifier(type, uniqueIdPart);
-
-            // Check if the candidate already exists
-            bool exists = false;
-            switch (type)
+            bool exists = type switch
             {
-                case ObjectType.Tile:
-                    exists = tileDictionary.ContainsKey(candidate);
-                    break;
-                case ObjectType.CityCenter:
-                    exists = cityCenterDictionary.ContainsKey(candidate);
-                    break;
-                case ObjectType.Building:
-                    exists = buildingDictionary.ContainsKey(candidate);
-                    break;
-                case ObjectType.Animal:
-                    exists = animalDictionary.ContainsKey(candidate);
-                    break;
-                default:
-                    exists = true; // If we ever add more types without updating
-                    break;
-            }
+                ObjectType.Tile => tileDictionary.ContainsKey(candidate),
+                ObjectType.CityCenter => cityCenterDictionary.ContainsKey(candidate),
+                ObjectType.Building => buildingDictionary.ContainsKey(candidate),
+                ObjectType.Animal => animalDictionary.ContainsKey(candidate),
+                _ => true
+            };
 
-            // If not found, return the fresh ID
-            if (!exists)
-                return candidate;
-
-            // Otherwise, loop again and generate another random ID
+            if (!exists) return candidate;
         }
     }
 
-    // --------------------------------------------------------------------
-    // Find and return the data entry for an ObjectIdentifier
-    // --------------------------------------------------------------------
     public object FindObject(ObjectIdentifier identifier)
     {
-        switch (identifier.Type)
+        return identifier.Type switch
         {
-            case ObjectType.Tile:
-                if (tileDictionary.TryGetValue(identifier, out var tileValue))
-                    return tileValue; // DBTileValue
-                break;
-
-            case ObjectType.CityCenter:
-                if (cityCenterDictionary.TryGetValue(identifier, out var cityCenterValue))
-                    return cityCenterValue; // DBCityCenterValue
-                break;
-
-            case ObjectType.Building:
-                if (buildingDictionary.TryGetValue(identifier, out var buildingValue))
-                    return buildingValue; // DBBuildingValue
-                break;
-
-            case ObjectType.Animal:
-                if (animalDictionary.TryGetValue(identifier, out var animalValue))
-                    return animalValue; // DBAnimalValue
-                break;
-        }
-
-        // If no matching entry found
-        return null;
+            ObjectType.Tile => tileDictionary.TryGetValue(identifier, out var tVal) ? tVal : null,
+            ObjectType.CityCenter => cityCenterDictionary.TryGetValue(identifier, out var cVal) ? cVal : null,
+            ObjectType.Building => buildingDictionary.TryGetValue(identifier, out var bVal) ? bVal : null,
+            ObjectType.Animal => animalDictionary.TryGetValue(identifier, out var aVal) ? aVal : null,
+            _ => null
+        };
     }
 
     public ObjectIdentifier GetStructureId(ObjectIdentifier tileId)
     {
-        ObjectIdentifier structureId = GetCityCenterIdByTileId(tileId) ?? GetBuildingIdByTileId(tileId);
-        return structureId;
+        return GetCityCenterIdByTileId(tileId) ?? GetBuildingIdByTileId(tileId);
     }
     #endregion
 
-    #region tileDictionary
+    #region Tile Functions
     public void AddTile(ObjectIdentifier tileID, DBTileValue tileValue)
     {
-        if (tileDictionary.ContainsKey(tileID))
-        {
-            Debug.LogError($"DatabaseManager: Tile [{tileID}] already exists in tileDictionary! Count={tileDictionary.Count}");
-            return;
-        }
-
-        tileDictionary[tileID] = tileValue;
-        //Debug.Log($"DatabaseManager: Added tile [{tileID}] to tileDictionary. Count={tileDictionary.Count}");
+        if (!tileDictionary.ContainsKey(tileID))
+            tileDictionary[tileID] = tileValue;
     }
 
-
-    // 4) Query methods (for when HexTile wants data):
-    //    Provide typed queries so HexTile can easily find info it needs.
     public DBTileValue GetTileValue(ObjectIdentifier tileID)
     {
-        if (tileID.Type != ObjectType.Tile) return null;
-        if (tileDictionary.TryGetValue(tileID, out var tileVal))
-        {
-            return tileVal;
-        }
-        return null;
+        return tileID.Type == ObjectType.Tile && tileDictionary.TryGetValue(tileID, out var val) ? val : null;
     }
 
-    // Maybe a typed resource accessor:
-    public ResourceType GetTileResourceType(ObjectIdentifier tileID)
-    {
-        var val = GetTileValue(tileID);
-        return val != null ? val.Resource : ResourceType.None;
-    }
+    public ResourceType GetTileResourceType(ObjectIdentifier tileID) => GetTileValue(tileID)?.Resource ?? ResourceType.None;
 
-    // Return the actual tile GameObject from an ID (if you only want that):
-    public GameObject GetTileGameObject(ObjectIdentifier tileID)
-    {
-        var val = GetTileValue(tileID);
-        return val != null ? val.TileObject : null;
-    }
+    public GameObject GetTileGameObject(ObjectIdentifier tileID) => GetTileValue(tileID)?.TileObject;
 
     public ObjectIdentifier GetTileIdByObject(GameObject tileObj)
     {
-        foreach (var kvp in tileDictionary)
-        {
-            if (kvp.Value.TileObject == tileObj)
-            {
-                return kvp.Key;
-            }
-        }
-
-        Debug.LogWarning("GetTileIdByObject: No matching tile found for the provided GameObject.");
-        return null; // Or return ObjectIdentifier.None if you have a defined default
+        return tileDictionary.FirstOrDefault(kvp => kvp.Value.TileObject == tileObj).Key;
     }
 
-    // Return a list of neighbor DBTileValues
     public List<DBTileValue> GetTileNeighbors(ObjectIdentifier tileID)
     {
         var val = GetTileValue(tileID);
-        if (val == null) return null;
-
-        var neighbors = new List<DBTileValue>();
-        foreach (var nPos in val.AdjacentTilesPosition)
-        {
-            // Attempt to look up by position
-            var neighborVal = tileDictionary
-                .Values
-                .FirstOrDefault(t => t.Position == nPos);
-            if (neighborVal != null) neighbors.Add(neighborVal);
-        }
-        return neighbors;
+        return val?.AdjacentTilesPosition.Select(pos => tileDictionary.Values.FirstOrDefault(t => t.Position == pos)).Where(n => n != null).ToList();
     }
     #endregion
 
-    #region StaticBlueprintDBFunctions
-    /// <summary>
-    /// Populates the building blueprint dictionary with data from the provided ScriptableBuilding.
-    /// </summary>
+    #region City Center
+    public void AddCityCenter(ObjectIdentifier cityCenterID, DBCityCenterValue value)
+    {
+        if (!cityCenterDictionary.ContainsKey(cityCenterID))
+            cityCenterDictionary[cityCenterID] = value;
+    }
+
+    public void RemoveCityCenter(ObjectIdentifier cityCenterID)
+    {
+        cityCenterDictionary.Remove(cityCenterID);
+    }
+
+    public ObjectIdentifier GetCityCenterIdByTileId(ObjectIdentifier tileId)
+    {
+        return cityCenterDictionary.FirstOrDefault(kvp => kvp.Value._parentTile == tileId).Key;
+    }
+
+    public ObjectIdentifier GetParentTileIdByCityCenterId(ObjectIdentifier cityCenterId)
+    {
+        return cityCenterDictionary.TryGetValue(cityCenterId, out var val) ? val._parentTile : null;
+    }
+
+    public List<ObjectIdentifier> GetBuildingIdsByCityCenterId(ObjectIdentifier cityCenterId)
+    {
+        return cityCenterDictionary.TryGetValue(cityCenterId, out var cityCenter) ? new List<ObjectIdentifier>(cityCenter._buildings) : new();
+    }
+
+    public List<ObjectIdentifier> GetAnimalIdsByCityCenterId(ObjectIdentifier cityCenterId)
+    {
+        return cityCenterDictionary.TryGetValue(cityCenterId, out var cityCenter) ? new List<ObjectIdentifier>(cityCenter._animals) : new();
+    }
+    #endregion
+
+    #region Building
+    public void AddBuilding(ObjectIdentifier buildingID, DBBuildingValue value, ObjectIdentifier parentCityCenterId)
+    {
+        if (!buildingDictionary.ContainsKey(buildingID))
+        {
+            buildingDictionary[buildingID] = value;
+            if (cityCenterDictionary.TryGetValue(parentCityCenterId, out var cityCenter))
+            {
+                cityCenter._buildings.Add(buildingID);
+            }
+        }
+    }
+
+    public ObjectIdentifier GetBuildingIdByTileId(ObjectIdentifier tileId)
+    {
+        return buildingDictionary.FirstOrDefault(kvp => kvp.Value._parentTile == tileId).Key;
+    }
+
+    public ObjectIdentifier GetParentTileIdByBuildingId(ObjectIdentifier buildingId)
+    {
+        return buildingDictionary.TryGetValue(buildingId, out var val) ? val._parentTile : null;
+    }
+
+    public ObjectIdentifier GetCityCenterIdByBuildingId(ObjectIdentifier buildingId)
+    {
+        return cityCenterDictionary.FirstOrDefault(kvp => kvp.Value._buildings.Contains(buildingId)).Key;
+    }
+    #endregion
+
+    #region Animal
+    public void AddAnimal(ObjectIdentifier animalID, DBAnimalValue value, ObjectIdentifier parentCityCenterId)
+    {
+        if (!animalDictionary.ContainsKey(animalID))
+        {
+            animalDictionary[animalID] = value;
+            if (cityCenterDictionary.TryGetValue(parentCityCenterId, out var cityCenter))
+            {
+                cityCenter._animals.Add(animalID);
+            }
+        }
+    }
+    #endregion
+
+    #region Static Blueprint DB
     public void AddBuildingBlueprint(ScriptableBuilding scriptableBuilding)
     {
-        if (scriptableBuilding == null)
-        {
-            Debug.LogError("AddBuildingBlueprint: Provided ScriptableBuilding is null.");
-            return;
-        }
+        if (scriptableBuilding == null) return;
 
-        // Create a new SDBBuildingBlueprintValue from the data
-        SDBBuildingBlueprintValue blueprintValue = new SDBBuildingBlueprintValue
+        SDBBuildingBlueprintValue blueprint = new()
         {
             prefab = scriptableBuilding.basicPrefab,
             unworkedModulePrefab = scriptableBuilding.emptyModulePrefab,
             workedModulePrefab = scriptableBuilding.workedModulePrefab,
-            requiredTileTypes = new List<TileType>(scriptableBuilding.suitableTileTypeLocations),
-            requiredResources = new List<ResourceType>(scriptableBuilding.requiredResources),
+            requiredTileTypes = new(scriptableBuilding.suitableTileTypeLocations),
+            requiredResources = new(scriptableBuilding.requiredResources),
             outputProduct = scriptableBuilding.product,
-            // If your ScriptableBuilding's inputProducts is a list of custom structs/classes,
-            // you can translate them into a List<ProductType> or adapt as necessary:
-            inputProducts = scriptableBuilding.inputProducts
-                .Select(req => req.product)   // or req.theProductType, depending on your fields
-                .ToList(),
+            inputProducts = scriptableBuilding.inputProducts.Select(req => req.product).ToList(),
             productionPerWorker = scriptableBuilding.productionPerWorker,
             isMaxWorkersFixed = scriptableBuilding.isMaxWorkersFixed,
             maxWorkers = scriptableBuilding.maxWorkers
         };
 
-        // Store it in the dictionary, keyed by the building type
-        buildingBlueprintDictionary[scriptableBuilding.buildingName] = blueprintValue;
-
-        //Debug.Log($"Building blueprint '{scriptableBuilding.buildingName}' added/updated in the dictionary.");
+        buildingBlueprintDictionary[scriptableBuilding.buildingName] = blueprint;
     }
 
-    /// <summary>
-    /// Populates the animal blueprint dictionary from the provided ScriptableAnimal.
-    /// </summary>
     public void AddAnimalBlueprint(ScriptableAnimal scriptableAnimal)
     {
-        if (scriptableAnimal == null)
-        {
-            Debug.LogError("AddAnimalBlueprint: Provided ScriptableAnimal is null.");
-            return;
-        }
+        if (scriptableAnimal == null) return;
 
-        // Create a new SDBAnimalBlueprintValue from the data in ScriptableAnimal
-        SDBAnimalBlueprintValue blueprintValue = new SDBAnimalBlueprintValue
+        SDBAnimalBlueprintValue blueprint = new()
         {
             prefab = scriptableAnimal.prefab,
-            // Since 'spawnLocation' is a single TileType, we'll store it as a single-entry list.
             requiredTileTypes = new List<TileType> { scriptableAnimal.spawnLocation },
-
             basicFood = scriptableAnimal.basicFood,
-
-            // Renaming to match the SDBAnimalBlueprintValue fields:
             ability1UnlockProduct = scriptableAnimal.basicAbilityUnlockProduct1,
             ability2UnlockProduct = scriptableAnimal.basicAbilityUnlockProduct2,
             ability1ImprovProduct = scriptableAnimal.abilityImprovementProduct1,
             ability2ImprovProduct = scriptableAnimal.abilityImprovementProduct2
         };
 
-        // Key the dictionary by the AnimalType specified in ScriptableAnimal
-        animalBlueprintDictionary[scriptableAnimal.animalName] = blueprintValue;
-
-        Debug.Log($"Animal blueprint '{scriptableAnimal.animalName}' added/updated in the dictionary.");
+        animalBlueprintDictionary[scriptableAnimal.animalName] = blueprint;
     }
 
     public void AddResourceBlueprint(ScriptableResource scriptableResource)
     {
-        resourceBlueprintDictionary[scriptableResource.resourcename] = scriptableResource.resourcePrefab;
+        if (scriptableResource != null)
+            resourceBlueprintDictionary[scriptableResource.resourcename] = scriptableResource.resourcePrefab;
     }
 
-    public GameObject GetResourcePrefabForType(ResourceType resourceType)
+    public GameObject GetResourcePrefabForType(ResourceType type)
     {
-        if (resourceBlueprintDictionary.TryGetValue(resourceType, out GameObject prefab))
-        {
-            return prefab;
-        }
-        else
-        {
-            Debug.LogWarning($"ResourceType {resourceType} not found in the dictionary.");
-            return null;
-        }
+        return resourceBlueprintDictionary.TryGetValue(type, out var prefab) ? prefab : null;
     }
 
-    public SDBBuildingBlueprintValue GetBuildingBlueprint(BuildingType buildingType)
+    public SDBBuildingBlueprintValue GetBuildingBlueprint(BuildingType type)
     {
-        if (buildingBlueprintDictionary.TryGetValue(buildingType, out SDBBuildingBlueprintValue blueprint))
-        {
-            return blueprint;
-        }
-
-        Debug.LogWarning($"DatabaseManager: No blueprint found for BuildingType [{buildingType}]");
-        return null;
+        return buildingBlueprintDictionary.TryGetValue(type, out var blueprint) ? blueprint : null;
     }
 
-    public SDBBuildingBlueprintValue GetBuildingBlueprint(string buildingTypeName)
+    public SDBBuildingBlueprintValue GetBuildingBlueprint(string typeName)
     {
-        if (System.Enum.TryParse<BuildingType>(buildingTypeName, true, out BuildingType parsedType))
-        {
-            return GetBuildingBlueprint(parsedType);
-        }
-
-        Debug.LogWarning($"DatabaseManager: Unable to parse string [{buildingTypeName}] into BuildingType");
-        return null;
-    }
-
-
-    #endregion
-
-    #region buildingDictionary
-
-    //AddBuilding()
-    //RemoveBuilding()
-
-
-    public ObjectIdentifier GetBuildingIdByTileId(ObjectIdentifier tileId)
-    {
-        foreach (var kvp in buildingDictionary)
-        {
-            if (kvp.Value._parentTile == tileId)
-            {
-                return kvp.Key; // Gibt die buildingId zurück
-            }
-        }
-        return null; // Falls kein Gebäude gefunden wurde
-    }
-    public List<ObjectIdentifier> GetBuildingIdsByCityCenterId(ObjectIdentifier cityCenterId)
-    {
-        List<ObjectIdentifier> buildingIds = new List<ObjectIdentifier>();
-
-        //TODO: get buildings and return their IDs
-
-        foreach (var kvp in buildingDictionary)
-        {
-            if (kvp.Value._parentCityCenter == cityCenterId)
-            {
-                buildingIds.Add(kvp.Key); // Fügt die passende buildingId zur Liste hinzu
-            }
-        }
-        return buildingIds;
-    }
-
-    //TODO:
-    //public ObjectIdentifier GetCityCenterIdByBuildingId(){
-    //
-    //}
-    public ObjectIdentifier GetParentTileIdByBuildingId(ObjectIdentifier buildingId)
-    {
-        if (buildingDictionary.TryGetValue(buildingId, out DBBuildingValue buildingValue))
-        {
-            return buildingValue._parentTile; // Gibt die tileId des Gebäudes zurück
-        }
-        return null; // Falls die buildingId nicht existiert
-    }
-
-    public void AddBuilding(ObjectIdentifier buildingID, DBBuildingValue buildingValue)
-    {
-        if (buildingDictionary.ContainsKey(buildingID))
-        {
-            Debug.LogError($"DatabaseManager: Building [{buildingID}] already exists in buildingDictionary! Count={buildingDictionary.Count}");
-            return;
-        }
-
-        buildingDictionary[buildingID] = buildingValue;
-        Debug.Log($"DatabaseManager: Added Building [{buildingID}] to buildingDictionary. Count={buildingDictionary.Count}");
-    }
-    #endregion
-
-    #region cityCenterDictionary
-    public void AddCityCenter(ObjectIdentifier cityCenterID, DBCityCenterValue cityCenterValue)
-    {
-        if (cityCenterDictionary.ContainsKey(cityCenterID))
-        {
-            Debug.LogError($"DatabaseManager: City Center [{cityCenterID}] already exists in cityCenterDictionary! Count={cityCenterDictionary.Count}");
-            return;
-        }
-
-        cityCenterDictionary[cityCenterID] = cityCenterValue;
-        Debug.Log($"DatabaseManager: Added City Center [{cityCenterID}] to cityCenterDictionary. Count={cityCenterDictionary.Count}");
-    }
-
-    public void RemoveCityCenter(ObjectIdentifier cityCenterID)
-    {
-        if (!cityCenterDictionary.ContainsKey(cityCenterID))
-        {
-            Debug.LogError($"DatabaseManager: City Center [{cityCenterID}] does not exist in cityCenterDictionary! Count={cityCenterDictionary.Count}");
-            return;
-        }
-
-        cityCenterDictionary.Remove(cityCenterID);
-        Debug.Log($"DatabaseManager: Removed City Center [{cityCenterID}] from cityCenterDictionary. Count={cityCenterDictionary.Count}");
-    }
-
-    public ObjectIdentifier GetCityCenterIdByTileId(ObjectIdentifier tileId)
-    {
-        foreach (var kvp in cityCenterDictionary)
-        {
-            if (kvp.Value._parentTile == tileId)
-            {
-                return kvp.Key; // Gibt die buildingId zurück
-            }
-        }
-        return null; // Falls kein Gebäude gefunden wurde
-    }
-
-    public ObjectIdentifier GetParentTileIdByCityCenterId(ObjectIdentifier cityCenterId)
-    {
-        if (cityCenterDictionary.TryGetValue(cityCenterId, out DBCityCenterValue cityCenterValue))
-        {
-            return cityCenterValue._parentTile; // Gibt die tileId des Gebäudes zurück
-        }
-        return null; // Falls die buildingId nicht existiert
+        return Enum.TryParse<BuildingType>(typeName, true, out var parsedType) ? GetBuildingBlueprint(parsedType) : null;
     }
     #endregion
 }

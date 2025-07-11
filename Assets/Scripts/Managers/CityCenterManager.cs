@@ -61,6 +61,7 @@ public class CityCenterManager : MonoBehaviour
             // a) Ensure DBTileValue has a List<ObjectIdentifier> constructionClaims
             if (!neighborTile.ConstructionClaims.Contains(cityCenterId))
             {
+                neighborTile.TileObject.GetComponent<HexTile>().constructionClaims.Add(cityCenterId);
                 neighborTile.ConstructionClaims.Add(cityCenterId);
             }
 

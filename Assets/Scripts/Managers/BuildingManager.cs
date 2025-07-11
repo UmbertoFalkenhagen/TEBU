@@ -37,7 +37,9 @@ public class BuildingManager : MonoBehaviour
         if (building.Value != null)
         {
             // e.g. random tile
-            DatabaseManager.Instance.AddBuilding(building.Key, building.Value);
+            ObjectIdentifier parentCityCenterId = DatabaseManager.Instance.GetTileValue(tileToBuildOn.TileID).ConstructionClaims[0];
+
+            DatabaseManager.Instance.AddBuilding(building.Key, building.Value, parentCityCenterId);
             CreateActiveClaimsForBuilding(building.Key);
         }
         UIManager.Instance.tileClick(ActiveTile.Instance.GetActiveTileID());

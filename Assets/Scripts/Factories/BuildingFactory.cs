@@ -54,7 +54,7 @@ public class BuildingFactory : MonoBehaviour
         buildingComponent.buildingID = buildingID;
         buildingComponent.buildingType = buildingType;
         ObjectIdentifier parentCC = DatabaseManager.Instance.GetTileValue(parentTile.TileID).ConstructionClaims[0];
-        DBBuildingValue dBBuildingValue = new DBBuildingValue(parentTile.TileID, parentCC, buildingType, buildingObject);
+        DBBuildingValue dBBuildingValue = new DBBuildingValue(parentTile.TileID, buildingType, buildingObject);
         
 
         return new KeyValuePair<ObjectIdentifier, DBBuildingValue>(buildingID, dBBuildingValue);
