@@ -155,6 +155,11 @@ public class DatabaseManager : MonoBehaviour
         }
     }
 
+    public DBBuildingValue GetBuildingValue(ObjectIdentifier buildingID)
+    {
+        return buildingID.Type == ObjectType.Building && buildingDictionary.TryGetValue(buildingID, out var val) ? val : null;
+    }
+
     public ObjectIdentifier GetBuildingIdByTileId(ObjectIdentifier tileId)
     {
         return buildingDictionary.FirstOrDefault(kvp => kvp.Value._parentTile == tileId).Key;

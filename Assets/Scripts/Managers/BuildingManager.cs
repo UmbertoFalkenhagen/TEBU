@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class BuildingManager : MonoBehaviour
 {
+    private SDBBuildingBlueprintValue buildingBlueprint;
     public static BuildingManager Instance { get; private set; }
 
     private void Awake()
@@ -31,7 +32,7 @@ public class BuildingManager : MonoBehaviour
         HexTile tileToBuildOn = ActiveTile.Instance.GetActiveTile();
         BuildingType _buildingType = System.Enum.TryParse(inputString, true, out BuildingType parsed) ? parsed : default;
        // Debug.Log("Found building of type " + _buildingType.ToString());
-        SDBBuildingBlueprintValue buildingBlueprint = DatabaseManager.Instance.GetBuildingBlueprint(_buildingType);
+        buildingBlueprint = DatabaseManager.Instance.GetBuildingBlueprint(_buildingType);
         KeyValuePair<ObjectIdentifier, DBBuildingValue> building = BuildingFactory.Instance.CreateBuilding(_buildingType, buildingBlueprint, tileToBuildOn);
 
         if (building.Value != null)
@@ -90,7 +91,15 @@ public class BuildingManager : MonoBehaviour
         // 6) The building always claims its own tile (and is inserted at index 0)
         //    Remove it first if it was there already, then insert at 0.
         parentTileVal.ActiveClaims.Remove(buildingId);
+        
         parentTileVal.ActiveClaims.Insert(0, buildingId);
+        parentTileVal.TileObject.GetComponent<HexTile>().activeClaims.Insert(0,buildingId);
+        if (parentTileVal.ActiveClaims.Count > 1)
+        {
+            DatabaseManager.Instance.GetBuildingValue(parentTileVal.ActiveClaims[1])._object.GetComponent<Building>().PlaceModules();
+        }
+        
+
 
         List<DBTileValue> newlyClaimedTiles = new List<DBTileValue> { parentTileVal };
         List<ObjectIdentifier> claimedTileIds = new List<ObjectIdentifier> { parentTileId };
@@ -117,6 +126,7 @@ public class BuildingManager : MonoBehaviour
                     if (!neighborTile.ActiveClaims.Contains(buildingId))
                     {
                         neighborTile.ActiveClaims.Add(buildingId);
+                        neighborTile.TileObject.GetComponent<HexTile>().activeClaims.Add(buildingId);
                         newlyClaimedTiles.Add(neighborTile);
                         claimedTileIds.Add(db.GetTileIdByObject(neighborTile.TileObject));
                         claimsCreatedCount++;
@@ -146,7 +156,10 @@ public class BuildingManager : MonoBehaviour
             // Only place modules if building can assign workers dynamically
             if (!blueprint.isMaxWorkersFixed)
             {
-                buildingComponent.PlaceUnworkedModules();
+                buildingComponent.PlaceModules();
+            } else
+            {
+                buildingComponent.animalworkerlimit = buildingBlueprint.maxWorkers;
             }
         }
         else

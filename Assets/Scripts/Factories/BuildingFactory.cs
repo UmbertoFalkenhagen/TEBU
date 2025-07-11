@@ -31,6 +31,7 @@ public class BuildingFactory : MonoBehaviour
 
         //clear resource from tile
         parentTile.ClearTileResource();
+        parentTile.ClearTileBuilding();
 
         //generate new objectidentifier for the citycenter
         ObjectIdentifier buildingID = DatabaseManager.Instance.GenerateUniqueId(ObjectType.Building);
