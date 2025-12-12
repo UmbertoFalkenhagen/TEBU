@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd1988c35be13c04dac4a334cc8c6baf, type: 3}
+  m_Name: Cow
+  m_EditorClassIdentifier: 
+  animalName: 0
+  prefab: {fileID: 62352112138071845, guid: 6dbfb31d34ab83c41a9160257d348079, type: 3}
+  spawnLocation: 0
+  basicFood: 2
+  basicAbilityUnlockProduct1: 6
+  basicAbilityUnlockProduct2: 7
+  abilityImprovementProduct1: 4
+  abilityImprovementProduct2: 5

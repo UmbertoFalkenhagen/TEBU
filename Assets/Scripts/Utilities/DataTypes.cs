@@ -116,19 +116,25 @@ public class DBBuildingValue
 
 public class DBAnimalValue
 {
-    public ObjectIdentifier _parentBuilding;
+    public ObjectIdentifier _parentCityCenter;
+    public ObjectIdentifier _assignedBuilding;
+    public GameObject _object;
     public AnimalType _type;
     public string _animalName;
     public int priority;
 
-    public DBAnimalValue(ObjectIdentifier parentBuilding, AnimalType type, string animalName, int priority)
+    public DBAnimalValue(ObjectIdentifier parentCityCenter, AnimalType type, string animalName, int priority, GameObject obj)
     {
-        _parentBuilding = parentBuilding;
+        _parentCityCenter = parentCityCenter;
+        _assignedBuilding = null;
+        _object = obj;
         _type = type;
         this._animalName = animalName;
         this.priority = priority;
     }
 }
+
+
 
 public class SDBAnimalBlueprintValue
 {

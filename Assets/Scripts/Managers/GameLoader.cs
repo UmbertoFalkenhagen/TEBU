@@ -9,8 +9,8 @@ public class GameLoader : MonoBehaviour
     public GameObject uiPrefab;
     public List<ScriptableBuilding> buildingBlueprints;
     public List<ScriptableResource> resourceBlueprints;
+    public List<ScriptableAnimal> animalBlueprints;
 
-    // Start is called before the first frame update
     void Start()
     {
         if (databaseManager == null)
@@ -22,7 +22,6 @@ public class GameLoader : MonoBehaviour
             }
         }
 
-        // Loop through each ScriptableBuilding in the list
         foreach (ScriptableBuilding blueprint in buildingBlueprints)
         {
             if (blueprint == null)
@@ -31,7 +30,6 @@ public class GameLoader : MonoBehaviour
                 continue;
             }
 
-            // For each valid ScriptableBuilding, call the DatabaseManager's function
             DatabaseManager.Instance.AddBuildingBlueprint(blueprint);
         }
 
@@ -46,24 +44,27 @@ public class GameLoader : MonoBehaviour
             DatabaseManager.Instance.AddResourceBlueprint(blueprint);
         }
 
+        foreach (ScriptableAnimal blueprint in animalBlueprints)
+        {
+            if (blueprint == null)
+            {
+                Debug.LogWarning("Encountered a null ScriptableAnimal in animalBlueprints. Skipping.");
+                continue;
+            }
+
+            DatabaseManager.Instance.AddAnimalBlueprint(blueprint);
+        }
+
         Debug.Log("Finished populating buildingBlueprintDictionary from buildingBlueprints.");
+        Debug.Log($"Loaded {buildingBlueprints.Count} building blueprints, {resourceBlueprints.Count} resource blueprints, and {animalBlueprints.Count} animal blueprints.");
 
         databaseManager.initMapData.columns = 5;
         databaseManager.initMapData.rows = 5;
         databaseManager.initMapData.cellSize = 1.24f;
 
         loadUI();
-        //Run Generate Map
-        //TODO: Check if any is there
 
-        HexMapManager.Instance.GenerateMap();            
-
-
-        //Load UI
-
-
-        // ....
-
+        HexMapManager.Instance.GenerateMap();
     }
 
     public void loadUI()

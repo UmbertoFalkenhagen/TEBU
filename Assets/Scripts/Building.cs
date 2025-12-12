@@ -46,7 +46,7 @@ public class Building : MonoBehaviour
         int animalCount = 0;
         foreach (var animalEntry in DatabaseManager.Instance.AnimalDictionary)
         {
-            if (animalEntry.Value._parentBuilding == buildingID)
+            if (animalEntry.Value._assignedBuilding == buildingID)
             {
                 animalCount++;
             }
