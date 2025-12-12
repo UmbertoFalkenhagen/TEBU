@@ -10,7 +10,6 @@ public class BuildingPanel : MonoBehaviour
     public Transform buttonContainer;
     public static BuildingPanel Instance { get; private set; }
 
-    //TODO: Bug beheben, dass wenn auf tile mit gebäude geklickt wird und gebaut, auf das tile vorher ohne gebäude gebaut wird
     public Dictionary<string, string> buildingOptions = new Dictionary<string, string>(); //TODO: Implement to get real information to fill into database
     
     private void Awake()
