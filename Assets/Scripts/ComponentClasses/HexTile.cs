@@ -18,6 +18,7 @@ public class HexTile : MonoBehaviour
 
 
     public List<ObjectIdentifier> constructionClaims = new List<ObjectIdentifier>();
+    public List<ObjectIdentifier> activeClaims = new List<ObjectIdentifier>();
 
     // Because adjacency is stored as a list of Vector2Int in DBTileValue,
     // we remove the old "adjacentTiles" list. If you want to keep references
@@ -62,6 +63,15 @@ public class HexTile : MonoBehaviour
         if (heldResource != null)
         {
             heldResource.SetActive(false);
+        }
+    }
+
+    public void ClearTileBuilding()
+    {
+        if (heldBuilding != null)
+        {
+            Destroy(heldBuilding);
+            heldBuilding = null;
         }
     }
 
