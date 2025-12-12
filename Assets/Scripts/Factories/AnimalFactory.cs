@@ -5,6 +5,8 @@ public class AnimalFactory : MonoBehaviour
 {
     public static AnimalFactory Instance;
 
+    private const string SPAWN_POINT_NAME = "AnimalSpawnPoint";
+
     private List<string> animalNames = new List<string>
     {
         "Luna", "Max", "Bella", "Charlie", "Lucy", "Cooper", "Daisy", "Milo",
@@ -48,22 +50,42 @@ public class AnimalFactory : MonoBehaviour
             return default;
         }
 
+        DBTileValue parentTile = DatabaseManager.Instance.GetTileValue(cityCenter._parentTile);
+        if (parentTile == null || parentTile.TileObject == null)
+        {
+            Debug.LogError($"AnimalFactory: Parent tile not found for city center '{parentCityCenterId}'");
+            return default;
+        }
+
+        GameObject cityCenterInstance = parentTile.TileObject.GetComponent<HexTile>().heldBuilding;
+        if (cityCenterInstance == null)
+        {
+            Debug.LogError($"AnimalFactory: City center instance not found on tile");
+            return default;
+        }
+
+        Transform spawnPoint = cityCenterInstance.transform.Find(SPAWN_POINT_NAME);
+        Vector3 spawnPosition;
+        Transform parentTransform;
+
+        if (spawnPoint != null)
+        {
+            spawnPosition = spawnPoint.position;
+            parentTransform = spawnPoint;
+        }
+        else
+        {
+            Debug.LogWarning($"AnimalFactory: '{SPAWN_POINT_NAME}' not found in city center, using city center position");
+            spawnPosition = cityCenterInstance.transform.position;
+            parentTransform = cityCenterInstance.transform;
+        }
+
         ObjectIdentifier animalID = DatabaseManager.Instance.GenerateUniqueId(ObjectType.Animal);
 
         GameObject animalObject = null;
         if (animalBlueprint.prefab != null)
         {
-            DBTileValue parentTile = DatabaseManager.Instance.GetTileValue(cityCenter._parentTile);
-            if (parentTile == null || parentTile.TileObject == null)
-            {
-                Debug.LogError($"AnimalFactory: Parent tile not found for city center '{parentCityCenterId}'");
-                return default;
-            }
-
-            Vector3 spawnPosition = parentTile.TileObject.transform.position;
-            Transform parent = parentTile.TileObject.transform;
-
-            animalObject = Instantiate(animalBlueprint.prefab, spawnPosition, animalBlueprint.prefab.transform.rotation, parent);
+            animalObject = Instantiate(animalBlueprint.prefab, spawnPosition, animalBlueprint.prefab.transform.rotation, parentTransform);
 
             Animal animalComponent = animalObject.GetComponent<Animal>();
             if (animalComponent == null)

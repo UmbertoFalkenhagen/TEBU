@@ -140,7 +140,7 @@ public class CityCenterFactory : MonoBehaviour
         ObjectIdentifier cityCenterID = DatabaseManager.Instance.GenerateUniqueId(ObjectType.CityCenter);
 
         //instantiate citycenterprefab on the tile
-        GameObject cityCenterObject = Instantiate(cityCenterData.basicPrefab, worldPosition, Quaternion.identity, parent);
+        GameObject cityCenterObject = Instantiate(cityCenterData.basicPrefab, worldPosition, cityCenterData.basicPrefab.transform.rotation, parent);
         if (cityCenterObject == null)
         {
             Debug.LogError("CityCenterFactory: Failed to instantiate citycenter prefab.");
