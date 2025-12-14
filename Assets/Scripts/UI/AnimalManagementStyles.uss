@@ -1,20 +1,20 @@
-/* Main panel background - using panel sprite from atlas */
+/* Main panel background */
 .main-panel-background {
-    background-image: resource('3D Models/UI/Atlas_eyes_beyond_us_UI_1');
+    background-image: resource('UI/background');
     -unity-background-image-tint-color: rgb(255, 255, 255);
     -unity-background-scale-mode: stretch-to-fill;
 }
 
-/* Selection panel background - using same panel sprite */
+/* Selection panel background */
 .selection-panel-background {
-    background-image: resource('3D Models/UI/Atlas_eyes_beyond_us_UI_1');
+    background-image: resource('UI/background');
     -unity-background-image-tint-color: rgb(255, 255, 255);
     -unity-background-scale-mode: stretch-to-fill;
 }
 
 /* Green button - normal state */
 .green-button {
-    background-image: resource('3D Models/UI/Atlas_eyes_beyond_us_UI_5');
+    background-image: resource('UI/button');
     -unity-background-scale-mode: stretch-to-fill;
     border-width: 0;
     color: rgb(255, 255, 255);
@@ -28,12 +28,12 @@
 
 /* Green button - pressed state */
 .green-button:active {
-    background-image: resource('3D Models/UI/Atlas_eyes_beyond_us_UI_7');
+    background-image: resource('UI/button_pressed');
 }
 
 /* Red button - normal state */
 .red-button {
-    background-image: resource('3D Models/UI/Atlas_eyes_beyond_us_UI_8');
+    background-image: resource('UI/redbutton');
     -unity-background-scale-mode: stretch-to-fill;
     border-width: 0;
     color: rgb(255, 255, 255);
@@ -47,12 +47,12 @@
 
 /* Red button - pressed state */
 .red-button:active {
-    background-image: resource('3D Models/UI/Atlas_eyes_beyond_us_UI_9');
+    background-image: resource('UI/redbutton_pressed');
 }
 
 /* Tab button - normal state */
 .tab-button {
-    background-image: resource('3D Models/UI/Atlas_eyes_beyond_us_UI_5');
+    background-image: resource('UI/button');
     -unity-background-scale-mode: stretch-to-fill;
     border-width: 0;
     color: rgb(255, 255, 255);
@@ -68,7 +68,21 @@
 
 /* Tab button - active/selected state */
 .tab-button-active {
-    background-image: resource('3D Models/UI/Atlas_eyes_beyond_us_UI_7');
+    background-image: resource('UI/button_pressed');
+}
+
+/* Exit/Close button - uses round exit button sprite */
+.exit-button {
+    background-image: resource('UI/exitbutton');
+    -unity-background-scale-mode: stretch-to-fill;
+    border-width: 0;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+}
+
+.exit-button:hover {
+    -unity-background-image-tint-color: rgb(220, 220, 220);
 }
 
 /* Animal slot - hover effect */

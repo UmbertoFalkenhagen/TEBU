@@ -1,35 +1,21 @@
-<?xml version="1.0" encoding="utf-8"?>
-<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
-    <ui:VisualElement name="RootContainer" class="main-panel-background" style="position: absolute; right: 20px; top: 20px; bottom: 20px; width: 400px; padding: 20px; border-radius: 10px;">
-        
-        <!-- Tab Buttons Container -->
-        <ui:VisualElement name="TabButtonsContainer" style="flex-direction: row; justify-content: center; margin-bottom: 10px; display: none;">
-            <ui:Button name="TileInfoTabButton" text="Tile Info" class="tab-button tab-button-active"/>
-            <ui:Button name="ManagementTabButton" text="Management" class="tab-button"/>
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <ui:VisualElement name="RootContainer" class="main-panel-background" style="width: 400px; height: 600px; padding: 20px; background-color: rgba(30, 30, 30, 0.95); background-image: resource(&apos;UI/background&apos;);">
+        <ui:VisualElement name="TabButtonsContainer" style="flex-direction: row; justify-content: center; margin-bottom: 15px;">
+            <ui:Button name="TileInfoTabButton" text="Tile Info" class="tab-button tab-button-active" style="background-image: resource(&apos;UI/button&apos;);" />
+            <ui:Button name="ManagementTabButton" text="Management" class="tab-button" style="background-image: resource(&apos;UI/button&apos;);" />
         </ui:VisualElement>
-
-        <!-- Title Label -->
-        <ui:Label name="TitleLabel" text="Tile Information" style="font-size: 24px; -unity-font-style: bold; margin-bottom: 10px; color: rgb(255, 255, 255); -unity-text-align: upper-center;"/>
-        
-        <!-- Tile Info Tab Content -->
-        <ui:VisualElement name="TileInfoTab" style="flex-grow: 1; display: flex;">
+        <ui:Label name="TitleLabel" text="Tile Information" style="font-size: 24px; -unity-font-style: bold; margin-bottom: 15px; color: rgb(255, 255, 255); -unity-text-align: upper-center; background-image: resource(&apos;UI/redbutton_pressed&apos;);" />
+        <ui:VisualElement name="TileInfoTab" style="flex-grow: 1;">
             <ui:ScrollView name="TileInfoScrollView" style="flex-grow: 1;">
-                <ui:VisualElement name="TileInfoContainer" style="flex-grow: 1;">
-                    <!-- Content populated dynamically -->
-                </ui:VisualElement>
+                <ui:VisualElement name="TileInfoContainer" style="flex-grow: 1; padding: 5px;" />
             </ui:ScrollView>
         </ui:VisualElement>
-
-        <!-- Management Tab Content -->
         <ui:VisualElement name="ManagementTab" style="flex-grow: 1; display: none;">
             <ui:ScrollView name="AnimalListScrollView" style="flex-grow: 1;">
-                <ui:VisualElement name="AnimalListContainer" style="flex-grow: 1;"/>
+                <ui:VisualElement name="AnimalListContainer" style="flex-grow: 1; padding: 5px;" />
             </ui:ScrollView>
-            <ui:Button name="AddAnimalButton" text="+ Import Animal" class="green-button" style="margin-top: 10px; padding: 10px;"/>
+            <ui:Button name="AddAnimalButton" text="+ Import Animal" class="green-button" style="margin-top: 10px; padding: 10px; font-size: 14px; min-height: 40px; background-image: resource(&apos;UI/button&apos;);" />
         </ui:VisualElement>
-        
-        <!-- Close Button -->
-        <ui:Button name="CloseButton" text="Close" class="red-button" style="margin-top: 10px; padding: 10px;"/>
+        <ui:Button name="CloseButton" text="Close" class="red-button" style="margin-top: 10px; padding: 10px; font-size: 14px; min-height: 40px; background-image: resource(&apos;UI/redbutton&apos;);" />
     </ui:VisualElement>
 </ui:UXML>
-

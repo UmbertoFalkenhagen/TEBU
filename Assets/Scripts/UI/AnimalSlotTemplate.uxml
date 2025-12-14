@@ -1,11 +1,10 @@
-<?xml version="1.0" encoding="utf-8"?>
-<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
     <ui:VisualElement name="AnimalSlot" style="flex-direction: row; background-color: rgba(50, 50, 50, 0.9); padding: 10px; margin-bottom: 5px; border-radius: 5px; justify-content: space-between;">
         <ui:VisualElement name="InfoContainer" style="flex-direction: column; flex-grow: 1;">
-            <ui:Label name="NameLabel" text="Animal Name" style="font-size: 16px; -unity-font-style: bold; color: rgb(255, 255, 255);"/>
-            <ui:Label name="TypeLabel" text="Type: Cow" style="font-size: 12px; color: rgb(200, 200, 200);"/>
-            <ui:Label name="StatusLabel" text="Status: Unemployed" style="font-size: 12px; color: rgb(200, 200, 200);"/>
+            <ui:Label name="NameLabel" text="Animal Name" style="font-size: 16px; -unity-font-style: bold; color: rgb(255, 255, 255);" />
+            <ui:Label name="TypeLabel" text="Type: Cow" style="font-size: 12px; color: rgb(200, 200, 200);" />
+            <ui:Label name="StatusLabel" text="Status: Unemployed" style="font-size: 12px; color: rgb(200, 200, 200);" />
         </ui:VisualElement>
-        <ui:Button name="ActionButton" text="Unassign" style="width: 100px; align-self: center;"/>
+        <ui:Button name="ActionButton" text="Unassign" style="width: 100px; align-self: center; background-image: resource(&apos;UI/redbutton&apos;);" />
     </ui:VisualElement>
 </ui:UXML>
