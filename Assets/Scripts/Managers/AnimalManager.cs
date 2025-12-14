@@ -94,13 +94,21 @@ public class AnimalManager : MonoBehaviour
             return;
         }
 
-        if (!DatabaseManager.Instance.BuildingDictionary.ContainsKey(buildingId))
+        if (!DatabaseManager.Instance.BuildingDictionary.TryGetValue(buildingId, out var buildingValue))
         {
             Debug.LogError($"AnimalManager: Building {buildingId} not found");
             return;
         }
 
+        ObjectIdentifier previousBuilding = animalValue._assignedBuilding;
+
+        if (previousBuilding != null && DatabaseManager.Instance.BuildingDictionary.TryGetValue(previousBuilding, out var prevBuildingValue))
+        {
+            prevBuildingValue._workers.Remove(animalId);
+        }
+
         animalValue._assignedBuilding = buildingId;
+        buildingValue._workers.Add(animalId);
 
         if (animalValue._object != null)
         {
@@ -109,8 +117,203 @@ public class AnimalManager : MonoBehaviour
             {
                 animalComponent.assignedBuilding = buildingId;
             }
+
+            if (buildingValue._object != null)
+            {
+                Transform spawnPoint = buildingValue._object.transform.Find("AnimalSpawnPoint");
+                if (spawnPoint == null)
+                {
+                    spawnPoint = buildingValue._object.transform;
+                }
+
+                animalValue._object.transform.SetParent(spawnPoint);
+                animalValue._object.transform.position = spawnPoint.position;
+            }
         }
 
-        Debug.Log($"AnimalManager: Assigned animal {animalId} to building {buildingId}");
+        Debug.Log($"AnimalManager: Assigned animal {animalId} ({animalValue._animalName}) to building {buildingId}");
     }
+
+    public void UnassignAnimalFromBuilding(ObjectIdentifier animalId)
+    {
+        if (!DatabaseManager.Instance.AnimalDictionary.TryGetValue(animalId, out var animalValue))
+        {
+            Debug.LogError($"AnimalManager: Animal {animalId} not found");
+            return;
+        }
+
+        ObjectIdentifier previousBuilding = animalValue._assignedBuilding;
+        if (previousBuilding != null && DatabaseManager.Instance.BuildingDictionary.TryGetValue(previousBuilding, out var buildingValue))
+        {
+            buildingValue._workers.Remove(animalId);
+        }
+
+        animalValue._assignedBuilding = null;
+
+        if (animalValue._object != null)
+        {
+            Animal animalComponent = animalValue._object.GetComponent<Animal>();
+            if (animalComponent != null)
+            {
+                animalComponent.assignedBuilding = null;
+            }
+
+            MoveAnimalToCitySpawnPoint(animalId, animalValue._parentCityCenter);
+        }
+
+        Debug.Log($"AnimalManager: Unassigned animal {animalId} from building");
+    }
+
+    public void MoveAnimalToCity(ObjectIdentifier animalId, ObjectIdentifier targetCityCenterId)
+    {
+        if (!DatabaseManager.Instance.AnimalDictionary.TryGetValue(animalId, out var animalValue))
+        {
+            Debug.LogError($"AnimalManager: Animal {animalId} not found");
+            return;
+        }
+
+        if (!DatabaseManager.Instance.CityCenterDictionary.TryGetValue(targetCityCenterId, out var targetCityValue))
+        {
+            Debug.LogError($"AnimalManager: Target city center {targetCityCenterId} not found");
+            return;
+        }
+
+        ObjectIdentifier previousCityId = animalValue._parentCityCenter;
+
+        if (previousCityId != targetCityCenterId)
+        {
+            if (DatabaseManager.Instance.CityCenterDictionary.TryGetValue(previousCityId, out var previousCityValue))
+            {
+                previousCityValue._animals.Remove(animalId);
+            }
+
+            targetCityValue._animals.Add(animalId);
+            animalValue._parentCityCenter = targetCityCenterId;
+        }
+
+        if (animalValue._assignedBuilding != null)
+        {
+            UnassignAnimalFromBuilding(animalId);
+        }
+        else
+        {
+            MoveAnimalToCitySpawnPoint(animalId, targetCityCenterId);
+        }
+
+        Debug.Log($"AnimalManager: Moved animal {animalId} ({animalValue._animalName}) to city {targetCityCenterId}");
+    }
+
+    private void MoveAnimalToCitySpawnPoint(ObjectIdentifier animalId, ObjectIdentifier cityCenterId)
+    {
+        if (!DatabaseManager.Instance.AnimalDictionary.TryGetValue(animalId, out var animalValue))
+        {
+            return;
+        }
+
+        if (!DatabaseManager.Instance.CityCenterDictionary.TryGetValue(cityCenterId, out var cityValue))
+        {
+            return;
+        }
+
+        if (animalValue._object != null)
+        {
+            DBTileValue cityTile = DatabaseManager.Instance.GetTileValue(cityValue._parentTile);
+            if (cityTile != null && cityTile.TileObject != null)
+            {
+                HexTile hexTile = cityTile.TileObject.GetComponent<HexTile>();
+                if (hexTile != null && hexTile.heldBuilding != null)
+                {
+                    Transform spawnPoint = hexTile.heldBuilding.transform.Find("AnimalSpawnPoint");
+                    if (spawnPoint == null)
+                    {
+                        spawnPoint = hexTile.heldBuilding.transform;
+                    }
+
+                    animalValue._object.transform.SetParent(spawnPoint);
+                    animalValue._object.transform.position = spawnPoint.position;
+                }
+            }
+        }
+    }
+
+    public List<ObjectIdentifier> GetUnemployedAnimalsInCity(ObjectIdentifier cityCenterId)
+    {
+        List<ObjectIdentifier> unemployed = new List<ObjectIdentifier>();
+
+        if (!DatabaseManager.Instance.CityCenterDictionary.TryGetValue(cityCenterId, out var cityValue))
+        {
+            return unemployed;
+        }
+
+        foreach (ObjectIdentifier animalId in cityValue._animals)
+        {
+            if (DatabaseManager.Instance.AnimalDictionary.TryGetValue(animalId, out var animalValue))
+            {
+                if (animalValue._assignedBuilding == null)
+                {
+                    unemployed.Add(animalId);
+                }
+            }
+        }
+
+        return unemployed;
+    }
+
+    public List<ObjectIdentifier> GetUnemployedAnimalsInOtherCities(ObjectIdentifier excludeCityCenterId)
+    {
+        List<ObjectIdentifier> unemployed = new List<ObjectIdentifier>();
+
+        foreach (var cityEntry in DatabaseManager.Instance.CityCenterDictionary)
+        {
+            if (cityEntry.Key == excludeCityCenterId)
+            {
+                continue;
+            }
+
+            foreach (ObjectIdentifier animalId in cityEntry.Value._animals)
+            {
+                if (DatabaseManager.Instance.AnimalDictionary.TryGetValue(animalId, out var animalValue))
+                {
+                    if (animalValue._assignedBuilding == null)
+                    {
+                        unemployed.Add(animalId);
+                    }
+                }
+            }
+        }
+
+        return unemployed;
+    }
+
+    public bool CanAcceptAnimalInCity(ObjectIdentifier cityCenterId)
+    {
+        if (!DatabaseManager.Instance.CityCenterDictionary.TryGetValue(cityCenterId, out var cityValue))
+        {
+            return false;
+        }
+
+        int currentPopulation = cityValue._animals != null ? cityValue._animals.Count : 0;
+        return currentPopulation < cityValue._housingLimit;
+    }
+
+    public bool CanAcceptWorkerInBuilding(ObjectIdentifier buildingId)
+    {
+        if (!DatabaseManager.Instance.BuildingDictionary.TryGetValue(buildingId, out var buildingValue))
+        {
+            return false;
+        }
+
+        Building buildingComponent = buildingValue._object.GetComponent<Building>();
+        if (buildingComponent == null)
+        {
+            return false;
+        }
+
+        SDBBuildingBlueprintValue blueprint = DatabaseManager.Instance.GetBuildingBlueprint(buildingComponent.buildingType);
+        int maxWorkers = buildingComponent.isMaxWorkersFixed ? blueprint.maxWorkers : buildingComponent.animalworkerlimit;
+        int currentWorkers = buildingValue.GetCurrentWorkerCount();
+
+        return currentWorkers < maxWorkers;
+    }
+
 }

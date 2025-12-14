@@ -121,6 +121,11 @@ public class DatabaseManager : MonoBehaviour
         cityCenterDictionary.Remove(cityCenterID);
     }
 
+    public DBCityCenterValue GetCityCenterValue(ObjectIdentifier cityCenterID)
+    {
+        return cityCenterID.Type == ObjectType.CityCenter && cityCenterDictionary.TryGetValue(cityCenterID, out var val) ? val : null;
+    }
+
     public ObjectIdentifier GetCityCenterIdByTileId(ObjectIdentifier tileId)
     {
         return cityCenterDictionary.FirstOrDefault(kvp => kvp.Value._parentTile == tileId).Key;

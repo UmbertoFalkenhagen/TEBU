@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <ui:VisualElement name="RootContainer" class="main-panel-background" style="position: absolute; right: 20px; top: 20px; bottom: 20px; width: 400px; padding: 20px; border-radius: 10px;">
+        
+        <!-- Tab Buttons Container -->
+        <ui:VisualElement name="TabButtonsContainer" style="flex-direction: row; justify-content: center; margin-bottom: 10px; display: none;">
+            <ui:Button name="TileInfoTabButton" text="Tile Info" class="tab-button tab-button-active"/>
+            <ui:Button name="ManagementTabButton" text="Management" class="tab-button"/>
+        </ui:VisualElement>
+
+        <!-- Title Label -->
+        <ui:Label name="TitleLabel" text="Tile Information" style="font-size: 24px; -unity-font-style: bold; margin-bottom: 10px; color: rgb(255, 255, 255); -unity-text-align: upper-center;"/>
+        
+        <!-- Tile Info Tab Content -->
+        <ui:VisualElement name="TileInfoTab" style="flex-grow: 1; display: flex;">
+            <ui:ScrollView name="TileInfoScrollView" style="flex-grow: 1;">
+                <ui:VisualElement name="TileInfoContainer" style="flex-grow: 1;">
+                    <!-- Content populated dynamically -->
+                </ui:VisualElement>
+            </ui:ScrollView>
+        </ui:VisualElement>
+
+        <!-- Management Tab Content -->
+        <ui:VisualElement name="ManagementTab" style="flex-grow: 1; display: none;">
+            <ui:ScrollView name="AnimalListScrollView" style="flex-grow: 1;">
+                <ui:VisualElement name="AnimalListContainer" style="flex-grow: 1;"/>
+            </ui:ScrollView>
+            <ui:Button name="AddAnimalButton" text="+ Import Animal" class="green-button" style="margin-top: 10px; padding: 10px;"/>
+        </ui:VisualElement>
+        
+        <!-- Close Button -->
+        <ui:Button name="CloseButton" text="Close" class="red-button" style="margin-top: 10px; padding: 10px;"/>
+    </ui:VisualElement>
+</ui:UXML>
+

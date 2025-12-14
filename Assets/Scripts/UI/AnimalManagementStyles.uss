@@ -1,0 +1,111 @@
+/* Main panel background - using panel sprite from atlas */
+.main-panel-background {
+    background-image: resource('3D Models/UI/Atlas_eyes_beyond_us_UI_1');
+    -unity-background-image-tint-color: rgb(255, 255, 255);
+    -unity-background-scale-mode: stretch-to-fill;
+}
+
+/* Selection panel background - using same panel sprite */
+.selection-panel-background {
+    background-image: resource('3D Models/UI/Atlas_eyes_beyond_us_UI_1');
+    -unity-background-image-tint-color: rgb(255, 255, 255);
+    -unity-background-scale-mode: stretch-to-fill;
+}
+
+/* Green button - normal state */
+.green-button {
+    background-image: resource('3D Models/UI/Atlas_eyes_beyond_us_UI_5');
+    -unity-background-scale-mode: stretch-to-fill;
+    border-width: 0;
+    color: rgb(255, 255, 255);
+    -unity-font-style: bold;
+}
+
+/* Green button - hover state */
+.green-button:hover {
+    -unity-background-image-tint-color: rgb(220, 220, 220);
+}
+
+/* Green button - pressed state */
+.green-button:active {
+    background-image: resource('3D Models/UI/Atlas_eyes_beyond_us_UI_7');
+}
+
+/* Red button - normal state */
+.red-button {
+    background-image: resource('3D Models/UI/Atlas_eyes_beyond_us_UI_8');
+    -unity-background-scale-mode: stretch-to-fill;
+    border-width: 0;
+    color: rgb(255, 255, 255);
+    -unity-font-style: bold;
+}
+
+/* Red button - hover state */
+.red-button:hover {
+    -unity-background-image-tint-color: rgb(220, 220, 220);
+}
+
+/* Red button - pressed state */
+.red-button:active {
+    background-image: resource('3D Models/UI/Atlas_eyes_beyond_us_UI_9');
+}
+
+/* Tab button - normal state */
+.tab-button {
+    background-image: resource('3D Models/UI/Atlas_eyes_beyond_us_UI_5');
+    -unity-background-scale-mode: stretch-to-fill;
+    border-width: 0;
+    color: rgb(255, 255, 255);
+    padding: 8px 16px;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+/* Tab button - hover state */
+.tab-button:hover {
+    -unity-background-image-tint-color: rgb(220, 220, 220);
+}
+
+/* Tab button - active/selected state */
+.tab-button-active {
+    background-image: resource('3D Models/UI/Atlas_eyes_beyond_us_UI_7');
+}
+
+/* Animal slot - hover effect */
+.animal-slot-hover:hover {
+    background-color: rgba(70, 70, 70, 0.9);
+}
+
+/* Animal slot - selected state */
+.animal-slot-selected {
+    background-color: rgba(80, 120, 80, 0.9);
+    border-color: rgb(150, 200, 150);
+    border-width: 2px;
+}
+
+/* Selection item - default state */
+.selection-item {
+    padding: 8px;
+    margin-bottom: 3px;
+    background-color: rgba(40, 40, 40, 0.9);
+    border-radius: 3px;
+}
+
+/* Selection item - hover state */
+.selection-item:hover {
+    background-color: rgba(60, 100, 60, 0.9);
+}
+
+/* Info label styling */
+.info-label {
+    color: rgb(255, 255, 255);
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+/* Info value styling */
+.info-value {
+    color: rgb(200, 200, 200);
+    font-size: 12px;
+    margin-left: 10px;
+}

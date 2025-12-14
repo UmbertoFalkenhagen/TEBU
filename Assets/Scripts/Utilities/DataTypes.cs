@@ -105,12 +105,19 @@ public class DBBuildingValue
     public ObjectIdentifier _parentTile;
     public BuildingType _type;
     public GameObject _object;
+    public List<ObjectIdentifier> _workers;
 
     public DBBuildingValue(ObjectIdentifier parentTile, BuildingType buildingType, GameObject obj)
     {
         _parentTile = parentTile;
         _type = buildingType;
         _object = obj;
+        _workers = new List<ObjectIdentifier>();
+    }
+
+    public int GetCurrentWorkerCount()
+    {
+        return _workers != null ? _workers.Count : 0;
     }
 }
 
