@@ -100,14 +100,14 @@ public class AnimalManager : MonoBehaviour
             return;
         }
 
-        ObjectIdentifier previousBuilding = animalValue._assignedBuilding;
+        ObjectIdentifier previousBuilding = animalValue._parentBuilding;
 
         if (previousBuilding != null && DatabaseManager.Instance.BuildingDictionary.TryGetValue(previousBuilding, out var prevBuildingValue))
         {
             prevBuildingValue._workers.Remove(animalId);
         }
 
-        animalValue._assignedBuilding = buildingId;
+        animalValue._parentBuilding = buildingId;
         buildingValue._workers.Add(animalId);
 
         if (animalValue._object != null)
@@ -142,13 +142,13 @@ public class AnimalManager : MonoBehaviour
             return;
         }
 
-        ObjectIdentifier previousBuilding = animalValue._assignedBuilding;
+        ObjectIdentifier previousBuilding = animalValue._parentBuilding;
         if (previousBuilding != null && DatabaseManager.Instance.BuildingDictionary.TryGetValue(previousBuilding, out var buildingValue))
         {
             buildingValue._workers.Remove(animalId);
         }
 
-        animalValue._assignedBuilding = null;
+        animalValue._parentBuilding = null;
 
         if (animalValue._object != null)
         {
@@ -191,7 +191,7 @@ public class AnimalManager : MonoBehaviour
             animalValue._parentCityCenter = targetCityCenterId;
         }
 
-        if (animalValue._assignedBuilding != null)
+        if (animalValue._parentBuilding != null)
         {
             UnassignAnimalFromBuilding(animalId);
         }
@@ -249,7 +249,7 @@ public class AnimalManager : MonoBehaviour
         {
             if (DatabaseManager.Instance.AnimalDictionary.TryGetValue(animalId, out var animalValue))
             {
-                if (animalValue._assignedBuilding == null)
+                if (animalValue._parentBuilding == null)
                 {
                     unemployed.Add(animalId);
                 }
@@ -274,7 +274,7 @@ public class AnimalManager : MonoBehaviour
             {
                 if (DatabaseManager.Instance.AnimalDictionary.TryGetValue(animalId, out var animalValue))
                 {
-                    if (animalValue._assignedBuilding == null)
+                    if (animalValue._parentBuilding == null)
                     {
                         unemployed.Add(animalId);
                     }

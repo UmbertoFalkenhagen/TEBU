@@ -492,10 +492,10 @@ public class AnimalManagementUI : MonoBehaviour
                 // Display employment status
                 if (statusLabel != null)
                 {
-                    if (animalValue._assignedBuilding != null)
+                    if (animalValue._parentBuilding != null)
                     {
                         // Animal is employed - show which building
-                        DBBuildingValue buildingValue = DatabaseManager.Instance.GetBuildingValue(animalValue._assignedBuilding);
+                        DBBuildingValue buildingValue = DatabaseManager.Instance.GetBuildingValue(animalValue._parentBuilding);
                         statusLabel.text = buildingValue != null
                             ? $"Working at: {buildingValue._type}"
                             : "Employed";

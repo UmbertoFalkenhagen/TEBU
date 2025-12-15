@@ -103,9 +103,10 @@ public class DBCityCenterValue
 public class DBBuildingValue
 {
     public ObjectIdentifier _parentTile;
+    //public ObjectIdentifier _parentCityCenter; //According to the class diagram
     public BuildingType _type;
     public GameObject _object;
-    public List<ObjectIdentifier> _workers;
+    public List<ObjectIdentifier> _workers; //was not part of the class diagram so far
 
     public DBBuildingValue(ObjectIdentifier parentTile, BuildingType buildingType, GameObject obj)
     {
@@ -124,7 +125,7 @@ public class DBBuildingValue
 public class DBAnimalValue
 {
     public ObjectIdentifier _parentCityCenter;
-    public ObjectIdentifier _assignedBuilding;
+    public ObjectIdentifier _parentBuilding;
     public GameObject _object;
     public AnimalType _type;
     public string _animalName;
@@ -133,7 +134,7 @@ public class DBAnimalValue
     public DBAnimalValue(ObjectIdentifier parentCityCenter, AnimalType type, string animalName, int priority, GameObject obj)
     {
         _parentCityCenter = parentCityCenter;
-        _assignedBuilding = null;
+        _parentBuilding = null;
         _object = obj;
         _type = type;
         this._animalName = animalName;
