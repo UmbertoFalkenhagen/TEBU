@@ -182,6 +182,7 @@ public class TickManager : MonoBehaviour
             return;
         }
 
+        float oldDuration = CurrentTurnDuration;
         CurrentTurnDuration = Mathf.Max(MIN_TURN_DURATION, CurrentTurnDuration * 0.5f);
         UpdateSpeedMultiplier();
 
@@ -191,7 +192,7 @@ public class TickManager : MonoBehaviour
 
         if (IsAutomated)
         {
-            RestartAutomation();
+            AdjustRemainingTime(oldDuration, CurrentTurnDuration);
         }
     }
 
@@ -203,6 +204,7 @@ public class TickManager : MonoBehaviour
             return;
         }
 
+        float oldDuration = CurrentTurnDuration;
         CurrentTurnDuration = Mathf.Min(MAX_TURN_DURATION, CurrentTurnDuration * 2f);
         UpdateSpeedMultiplier();
 
@@ -212,12 +214,13 @@ public class TickManager : MonoBehaviour
 
         if (IsAutomated)
         {
-            RestartAutomation();
+            AdjustRemainingTime(oldDuration, CurrentTurnDuration);
         }
     }
 
     public void ResetTurnSpeed()
     {
+        float oldDuration = CurrentTurnDuration;
         CurrentTurnDuration = DEFAULT_TURN_DURATION;
         UpdateSpeedMultiplier();
 
@@ -227,7 +230,7 @@ public class TickManager : MonoBehaviour
 
         if (IsAutomated)
         {
-            RestartAutomation();
+            AdjustRemainingTime(oldDuration, CurrentTurnDuration);
         }
     }
 
@@ -236,10 +239,39 @@ public class TickManager : MonoBehaviour
         TurnSpeedMultiplier = DEFAULT_TURN_DURATION / CurrentTurnDuration;
     }
 
-    private void RestartAutomation()
+    private void AdjustRemainingTime(float oldDuration, float newDuration)
     {
-        StopAutomation();
-        StartAutomation();
+        float progressRatio = 1f - (TimeUntilNextTurn / oldDuration);
+        TimeUntilNextTurn = newDuration * (1f - progressRatio);
+
+        Debug.Log($"[TickManager] Adjusted remaining time from {TimeUntilNextTurn + (newDuration - oldDuration):F1}s to {TimeUntilNextTurn:F1}s");
+
+        RestartAutomationWithAdjustedTime();
+    }
+
+    private void RestartAutomationWithAdjustedTime()
+    {
+        if (automationCoroutine != null)
+        {
+            StopCoroutine(automationCoroutine);
+        }
+
+        automationCoroutine = StartCoroutine(AutomationLoopWithRemainingTime());
+    }
+
+    private IEnumerator AutomationLoopWithRemainingTime()
+    {
+        yield return new WaitForSeconds(TimeUntilNextTurn);
+
+        ExecuteTurn();
+        TimeUntilNextTurn = CurrentTurnDuration;
+
+        while (IsAutomated)
+        {
+            yield return new WaitForSeconds(CurrentTurnDuration);
+            ExecuteTurn();
+            TimeUntilNextTurn = CurrentTurnDuration;
+        }
     }
 
     #endregion

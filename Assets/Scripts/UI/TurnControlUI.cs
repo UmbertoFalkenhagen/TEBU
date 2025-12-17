@@ -10,18 +10,30 @@ public class TurnControlUI : MonoBehaviour
     [Header("UI Document References")]
     [SerializeField] private UIDocument uiDocument;
 
+    [Header("Animation Settings")]
+    [SerializeField] private float manualRotationDuration = 0.5f;
+
     #endregion
 
     #region UI Element References
 
     private VisualElement turnControlContainer;
+    private VisualElement rotatingBackground;
     private Label turnCounterLabel;
     private Label turnTimerLabel;
     private Button endTurnButton;
     private Button automateTurnsButton;
     private Button speedUpButton;
     private Button slowDownButton;
-    private VisualElement highlightCircle;
+
+    #endregion
+
+    #region Rotation State
+
+    private float currentRotation = 0f;
+    private bool isManualRotating = false;
+    private float manualRotationProgress = 0f;
+    private float manualRotationStartAngle = 0f;
 
     #endregion
 
@@ -55,11 +67,13 @@ public class TurnControlUI : MonoBehaviour
     private void OnDisable()
     {
         UnsubscribeFromTickManagerEvents();
+        UnregisterButtonEvents();
     }
 
     private void Update()
     {
         UpdateTimerDisplay();
+        UpdateBackgroundRotation();
     }
 
     #endregion
@@ -71,14 +85,27 @@ public class TurnControlUI : MonoBehaviour
         var root = uiDocument.rootVisualElement;
 
         turnControlContainer = root.Q<VisualElement>("TurnControlContainer");
+        rotatingBackground = root.Q<VisualElement>("RotatingBackground");
         turnCounterLabel = root.Q<Label>("TurnCounterLabel");
         turnTimerLabel = root.Q<Label>("TurnTimerLabel");
         endTurnButton = root.Q<Button>("EndTurnButton");
         automateTurnsButton = root.Q<Button>("AutomateTurnsButton");
         speedUpButton = root.Q<Button>("SpeedUpButton");
         slowDownButton = root.Q<Button>("SlowDownButton");
-        highlightCircle = root.Q<VisualElement>("HighlightCircle");
 
+        if (rotatingBackground != null)
+        {
+            rotatingBackground.style.transformOrigin = new TransformOrigin(Length.Percent(50), Length.Percent(50));
+        }
+
+        RegisterButtonEvents();
+
+        UpdateUIState(false);
+        UpdateTurnDisplay(0);
+    }
+
+    private void RegisterButtonEvents()
+    {
         if (endTurnButton != null)
         {
             endTurnButton.clicked += OnEndTurnClicked;
@@ -92,17 +119,35 @@ public class TurnControlUI : MonoBehaviour
         if (speedUpButton != null)
         {
             speedUpButton.clicked += OnSpeedUpClicked;
-            speedUpButton.SetEnabled(false);
         }
 
         if (slowDownButton != null)
         {
             slowDownButton.clicked += OnSlowDownClicked;
-            slowDownButton.SetEnabled(false);
+        }
+    }
+
+    private void UnregisterButtonEvents()
+    {
+        if (endTurnButton != null)
+        {
+            endTurnButton.clicked -= OnEndTurnClicked;
         }
 
-        UpdateUIState(false);
-        UpdateTurnDisplay(0);
+        if (automateTurnsButton != null)
+        {
+            automateTurnsButton.clicked -= OnAutomateToggled;
+        }
+
+        if (speedUpButton != null)
+        {
+            speedUpButton.clicked -= OnSpeedUpClicked;
+        }
+
+        if (slowDownButton != null)
+        {
+            slowDownButton.clicked -= OnSlowDownClicked;
+        }
     }
 
     #endregion
@@ -112,6 +157,7 @@ public class TurnControlUI : MonoBehaviour
     private void SubscribeToTickManagerEvents()
     {
         TickManager.OnTurnStarted += OnTurnStarted;
+        TickManager.OnTurnEnded += OnTurnEnded;
         TickManager.OnAutomationToggled += OnAutomationStateChanged;
         TickManager.OnTurnSpeedChanged += OnTurnSpeedChanged;
     }
@@ -119,6 +165,7 @@ public class TurnControlUI : MonoBehaviour
     private void UnsubscribeFromTickManagerEvents()
     {
         TickManager.OnTurnStarted -= OnTurnStarted;
+        TickManager.OnTurnEnded -= OnTurnEnded;
         TickManager.OnAutomationToggled -= OnAutomationStateChanged;
         TickManager.OnTurnSpeedChanged -= OnTurnSpeedChanged;
     }
@@ -131,6 +178,7 @@ public class TurnControlUI : MonoBehaviour
     {
         if (TickManager.Instance != null)
         {
+            Debug.Log("[TurnControlUI] End Turn button clicked");
             TickManager.Instance.AdvanceTurn();
         }
     }
@@ -139,6 +187,7 @@ public class TurnControlUI : MonoBehaviour
     {
         if (TickManager.Instance != null)
         {
+            Debug.Log("[TurnControlUI] Automate button clicked");
             TickManager.Instance.ToggleAutomation();
         }
     }
@@ -147,6 +196,7 @@ public class TurnControlUI : MonoBehaviour
     {
         if (TickManager.Instance != null)
         {
+            Debug.Log("[TurnControlUI] Speed Up button clicked");
             TickManager.Instance.SpeedUpTurns();
         }
     }
@@ -155,6 +205,7 @@ public class TurnControlUI : MonoBehaviour
     {
         if (TickManager.Instance != null)
         {
+            Debug.Log("[TurnControlUI] Slow Down button clicked");
             TickManager.Instance.SlowDownTurns();
         }
     }
@@ -168,9 +219,24 @@ public class TurnControlUI : MonoBehaviour
         UpdateTurnDisplay(turnNumber);
     }
 
+    private void OnTurnEnded()
+    {
+        if (TickManager.Instance != null && !TickManager.Instance.IsAutomated)
+        {
+            TriggerManualRotation();
+        }
+    }
+
     private void OnAutomationStateChanged(bool isAutomated)
     {
+        Debug.Log($"[TurnControlUI] Automation state changed to: {isAutomated}");
         UpdateUIState(isAutomated);
+
+        if (!isAutomated)
+        {
+            isManualRotating = false;
+            manualRotationProgress = 0f;
+        }
     }
 
     private void OnTurnSpeedChanged(float newDuration)
@@ -184,25 +250,36 @@ public class TurnControlUI : MonoBehaviour
 
     private void UpdateUIState(bool isAutomated)
     {
+        Debug.Log($"[TurnControlUI] UpdateUIState called with isAutomated={isAutomated}");
+
         if (endTurnButton != null)
         {
             endTurnButton.SetEnabled(!isAutomated);
         }
 
-        if (highlightCircle != null)
+        if (speedUpButton != null)
         {
-            highlightCircle.style.display = isAutomated ? DisplayStyle.Flex : DisplayStyle.None;
+            speedUpButton.SetEnabled(isAutomated);
+        }
+
+        if (slowDownButton != null)
+        {
+            slowDownButton.SetEnabled(isAutomated);
         }
 
         if (automateTurnsButton != null)
         {
+            automateTurnsButton.SetEnabled(true);
+
             if (isAutomated)
             {
                 automateTurnsButton.AddToClassList("automation-active");
+                automateTurnsButton.text = "Stop Auto";
             }
             else
             {
                 automateTurnsButton.RemoveFromClassList("automation-active");
+                automateTurnsButton.text = "Auto";
             }
         }
 
@@ -228,6 +305,70 @@ public class TurnControlUI : MonoBehaviour
         {
             float timeRemaining = TickManager.Instance.TimeUntilNextTurn;
             turnTimerLabel.text = $"Next turn in: {timeRemaining:F1}s";
+        }
+    }
+
+    #endregion
+
+    #region Background Rotation
+
+    private void UpdateBackgroundRotation()
+    {
+        if (rotatingBackground == null) return;
+
+        if (TickManager.Instance != null && TickManager.Instance.IsAutomated)
+        {
+            UpdateAutomatedRotation();
+        }
+        else if (isManualRotating)
+        {
+            UpdateManualRotation();
+        }
+
+        ApplyRotation();
+    }
+
+    private void UpdateAutomatedRotation()
+    {
+        float turnDuration = TickManager.Instance.CurrentTurnDuration;
+        float timeRemaining = TickManager.Instance.TimeUntilNextTurn;
+
+        if (turnDuration > 0)
+        {
+            float progress = 1f - (timeRemaining / turnDuration);
+            currentRotation = progress * 360f;
+        }
+    }
+
+    private void UpdateManualRotation()
+    {
+        manualRotationProgress += Time.deltaTime / manualRotationDuration;
+
+        if (manualRotationProgress >= 1f)
+        {
+            manualRotationProgress = 1f;
+            isManualRotating = false;
+            currentRotation = 0f;
+        }
+        else
+        {
+            currentRotation = manualRotationStartAngle + (manualRotationProgress * 360f);
+        }
+    }
+
+    private void TriggerManualRotation()
+    {
+        isManualRotating = true;
+        manualRotationProgress = 0f;
+        manualRotationStartAngle = currentRotation;
+    }
+
+    private void ApplyRotation()
+    {
+        if (rotatingBackground != null)
+        {
+            float normalizedRotation = currentRotation % 360f;
+            rotatingBackground.style.rotate = new Rotate(new Angle(-normalizedRotation, AngleUnit.Degree));
         }
     }
 
