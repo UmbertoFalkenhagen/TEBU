@@ -1,0 +1,21 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/Scripts/UI/TurnStyles.uss?fileID=7433441132597879392&amp;guid=ecac52cc5b84beb4b8d94919b671c7bf&amp;type=3#TurnStyles" />
+    <ui:VisualElement name="TurnControlContainer" class="turn-control-background" style="position: absolute; right: 15px; bottom: 61px; width: 320px; height: 280px; padding: 15px; background-color: rgba(30, 30, 30, 0.95);">
+        <ui:VisualElement name="TurnInfoPanel" style="margin-bottom: 15px; padding: 10px; background-color: rgba(50, 50, 50, 0); border-radius: 5px; height: 20px; width: 135px; position: absolute; top: 0; right: 0; left: 92px; bottom: 0; -unity-text-align: upper-center; justify-content: center;">
+            <ui:Label name="TurnCounterLabel" text="Turn: 0" style="font-size: 20px; -unity-font-style: bold; color: rgb(255, 255, 255); -unity-text-align: upper-center; margin-bottom: 5px;" />
+            <ui:Label name="TurnTimerLabel" style="font-size: 14px; color: rgb(200, 200, 200); -unity-text-align: upper-center; display: none;" />
+        </ui:VisualElement>
+        <ui:VisualElement name="ButtonLayoutContainer" style="flex-grow: 1; align-items: center; justify-content: center; position: absolute; right: 0; bottom: 0; left: 0; top: 70px;">
+            <ui:Button name="EndTurnButton" text="End Turn" class="turn-button turn-button-large" style="width: 120px; height: 120px; font-size: 18px; background-image: resource(&apos;UI/toggle circle&apos;); background-color: rgba(188, 188, 188, 0); position: absolute; top: 0;" />
+            <ui:VisualElement name="TopRow" style="flex-direction: row; justify-content: space-between; margin-bottom: 15px; width: 278px; top: 25px; position: absolute;">
+                <ui:Button name="SlowDownButton" text="0.5x" class="turn-button turn-button-small" style="width: 70px; height: 70px; font-size: 14px; margin-right: 10px; background-image: resource(&apos;UI/arrow down&apos;); background-color: rgba(188, 188, 188, 0);" />
+                <ui:Button name="SpeedUpButton" text="2x" class="turn-button turn-button-small" style="width: 70px; height: 70px; font-size: 14px; margin-left: 10px; background-image: resource(&apos;UI/arrow up&apos;); background-color: rgba(188, 188, 188, 0); -unity-background-scale-mode: stretch-to-fill; background-size: 100% 100%;" />
+                <ui:Button name="AutomateTurnsButton" text="Auto" class="turn-button turn-button-medium" style="width: 90px; height: 90px; font-size: 16px; background-image: resource(&apos;UI/icons restart&apos;); background-color: rgba(188, 188, 188, 0); -unity-background-scale-mode: scale-and-crop; position: absolute; top: 80px; left: 90px; background-size: 80% 80%; bottom: -100px; right: 90px; align-self: center; -unity-text-align: lower-center; background-position-y: top 0; color: rgb(0, 0, 0);" />
+            </ui:VisualElement>
+            <ui:VisualElement name="MiddleRow" style="flex-direction: row; justify-content: center; align-items: center; margin-bottom: 10px;">
+                <ui:VisualElement name="HighlightCircle" style="position: absolute; width: 140px; height: 140px; border-radius: 70px; border-width: 3px; border-color: rgb(100, 200, 100); background-color: rgba(100, 200, 100, 0.1); display: none;" />
+            </ui:VisualElement>
+            <ui:VisualElement name="BottomRow" style="flex-direction: row; justify-content: center;" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

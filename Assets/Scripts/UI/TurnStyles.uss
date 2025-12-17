@@ -1,0 +1,53 @@
+/* Turn control panel background */
+.turn-control-background {
+    background-image: resource('UI/background');
+    -unity-background-image-tint-color: rgb(255, 255, 255);
+    -unity-background-scale-mode: stretch-to-fill;
+}
+
+/* Base turn button styling */
+.turn-button {
+    background-image: resource('UI/button');
+    -unity-background-scale-mode: stretch-to-fill;
+    border-width: 0;
+    color: rgb(255, 255, 255);
+    -unity-font-style: bold;
+    border-radius: 10px;
+}
+
+/* Turn button - hover state */
+.turn-button:hover {
+    -unity-background-image-tint-color: rgb(220, 220, 220);
+}
+
+/* Turn button - pressed state */
+.turn-button:active {
+    background-image: resource('UI/button_pressed');
+}
+
+/* Turn button - disabled state (for End Turn when automated) */
+.turn-button:disabled {
+    -unity-background-image-tint-color: rgb(100, 100, 100);
+    color: rgb(150, 150, 150);
+}
+
+/* Large button variant (End Turn) */
+.turn-button-large {
+    font-size: 18px;
+}
+
+/* Medium button variant (Automation) */
+.turn-button-medium {
+    font-size: 16px;
+}
+
+/* Small button variant (Speed controls) */
+.turn-button-small {
+    font-size: 14px;
+}
+
+/* Automation button active state */
+.automation-active {
+    background-image: resource('UI/button_pressed');
+    -unity-background-image-tint-color: rgb(150, 255, 150);
+}
