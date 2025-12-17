@@ -43,7 +43,7 @@ public class BuildingManager : MonoBehaviour
             DatabaseManager.Instance.AddBuilding(building.Key, building.Value, parentCityCenterId);
             CreateActiveClaimsForBuilding(building.Key);
         }
-        UIManager.Instance.tileClick(ActiveTile.Instance.GetActiveTileID());
+        UIManager.Instance.TileClick(ActiveTile.Instance.GetActiveTileID());
     }
 
     public void CreateActiveClaimsForBuilding(ObjectIdentifier buildingId)

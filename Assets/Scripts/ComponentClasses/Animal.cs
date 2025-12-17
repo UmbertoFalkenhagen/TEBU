@@ -33,9 +33,9 @@ public class Animal : MonoBehaviour
         }
 
         string jobStatus = "Unemployed";
-        if (animalData._assignedBuilding != null)
+        if (animalData._parentBuilding != null)
         {
-            DBBuildingValue buildingData = DatabaseManager.Instance.GetBuildingValue(animalData._assignedBuilding);
+            DBBuildingValue buildingData = DatabaseManager.Instance.GetBuildingValue(animalData._parentBuilding);
             if (buildingData != null)
             {
                 jobStatus = $"Working at {buildingData._type}";

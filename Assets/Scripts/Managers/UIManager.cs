@@ -41,19 +41,19 @@ public class UIManager : MonoBehaviour
             Debug.LogError("DatabaseManager could not be found!");
         }
 
-        ActiveTile.OnActiveTileChanged += tileClick;
+        ActiveTile.OnActiveTileChanged += TileClick;
     }
 
     private void OnDestroy()
     {
-        ActiveTile.OnActiveTileChanged -= tileClick;
+        ActiveTile.OnActiveTileChanged -= TileClick;
     }
 
     #endregion
 
     #region Tile Click Handler
 
-    public void tileClick(ObjectIdentifier activeTileID)
+    public void TileClick(ObjectIdentifier activeTileID)
     {
         DBTileValue tileValue = databaseManager.GetTileValue(activeTileID);
         ObjectIdentifier structureID = databaseManager.GetStructureId(activeTileID);

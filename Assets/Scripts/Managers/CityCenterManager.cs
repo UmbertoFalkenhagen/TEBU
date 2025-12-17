@@ -26,7 +26,7 @@ public class CityCenterManager : MonoBehaviour
 
             SpawnInitialAnimal(citycenter.Key);
         }
-        UIManager.Instance.tileClick(ActiveTile.Instance.GetActiveTileID());
+        UIManager.Instance.TileClick(ActiveTile.Instance.GetActiveTileID());
     }
 
     private void SpawnInitialAnimal(ObjectIdentifier cityCenterId)
