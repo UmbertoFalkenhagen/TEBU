@@ -255,4 +255,33 @@ public class UIManager : MonoBehaviour
     }
 
     #endregion
+
+    #region Database Wrapper Methods for UI Components
+
+    public ObjectIdentifier GetStructureId(ObjectIdentifier tileId)
+    {
+        return DatabaseManager.Instance.GetStructureId(tileId);
+    }
+
+    public DBTileValue GetTileValue(ObjectIdentifier tileId)
+    {
+        return DatabaseManager.Instance.GetTileValue(tileId);
+    }
+
+    public DBCityCenterValue GetCityCenterValue(ObjectIdentifier cityCenterId)
+    {
+        return DatabaseManager.Instance.GetCityCenterValue(cityCenterId);
+    }
+
+    public DBBuildingValue GetBuildingValue(ObjectIdentifier buildingId)
+    {
+        return DatabaseManager.Instance.GetBuildingValue(buildingId);
+    }
+
+    public DBAnimalValue GetAnimalValue(ObjectIdentifier animalId)
+    {
+        return DatabaseManager.Instance.GetAnimalValue(animalId);
+    }
+
+    #endregion
 }

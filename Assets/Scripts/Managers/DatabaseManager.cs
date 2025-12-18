@@ -1,7 +1,3 @@
-// Full updated DatabaseManager.cs
-// Reflects the change where buildings and animals no longer store their city center
-// Instead, the DBCityCenterValue keeps track of its buildings and animals
-
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -40,6 +36,7 @@ public class DatabaseManager : MonoBehaviour
     }
 
     #region General Functions
+
     public ObjectIdentifier GenerateUniqueId(ObjectType type)
     {
         const int ID_LENGTH = 6;
@@ -79,9 +76,11 @@ public class DatabaseManager : MonoBehaviour
     {
         return GetCityCenterIdByTileId(tileId) ?? GetBuildingIdByTileId(tileId);
     }
+
     #endregion
 
     #region Tile Functions
+
     public void AddTile(ObjectIdentifier tileID, DBTileValue tileValue)
     {
         if (!tileDictionary.ContainsKey(tileID))
@@ -107,9 +106,11 @@ public class DatabaseManager : MonoBehaviour
         var val = GetTileValue(tileID);
         return val?.AdjacentTilesPosition.Select(pos => tileDictionary.Values.FirstOrDefault(t => t.Position == pos)).Where(n => n != null).ToList();
     }
+
     #endregion
 
-    #region City Center
+    #region City Center Functions
+
     public void AddCityCenter(ObjectIdentifier cityCenterID, DBCityCenterValue value)
     {
         if (!cityCenterDictionary.ContainsKey(cityCenterID))
@@ -145,9 +146,11 @@ public class DatabaseManager : MonoBehaviour
     {
         return cityCenterDictionary.TryGetValue(cityCenterId, out var cityCenter) ? new List<ObjectIdentifier>(cityCenter._animals) : new();
     }
+
     #endregion
 
-    #region Building
+    #region Building Functions
+
     public void AddBuilding(ObjectIdentifier buildingID, DBBuildingValue value, ObjectIdentifier parentCityCenterId)
     {
         if (!buildingDictionary.ContainsKey(buildingID))
@@ -179,9 +182,11 @@ public class DatabaseManager : MonoBehaviour
     {
         return cityCenterDictionary.FirstOrDefault(kvp => kvp.Value._buildings.Contains(buildingId)).Key;
     }
+
     #endregion
 
-    #region Animal
+    #region Animal Functions
+
     public void AddAnimal(ObjectIdentifier animalID, DBAnimalValue value, ObjectIdentifier parentCityCenterId)
     {
         if (!animalDictionary.ContainsKey(animalID))
@@ -194,9 +199,25 @@ public class DatabaseManager : MonoBehaviour
         }
     }
 
+    public DBAnimalValue GetAnimalValue(ObjectIdentifier animalID)
+    {
+        return animalID.Type == ObjectType.Animal && animalDictionary.TryGetValue(animalID, out var val) ? val : null;
+    }
+
+    public ObjectIdentifier GetCityCenterIdByAnimalId(ObjectIdentifier animalId)
+    {
+        return cityCenterDictionary.FirstOrDefault(kvp => kvp.Value._animals.Contains(animalId)).Key;
+    }
+
+    public ObjectIdentifier GetBuildingIdByAnimalId(ObjectIdentifier animalId)
+    {
+        return buildingDictionary.FirstOrDefault(kvp => kvp.Value._workers.Contains(animalId)).Key;
+    }
+
     #endregion
 
     #region Static Blueprint DB
+
     public void AddBuildingBlueprint(ScriptableBuilding scriptableBuilding)
     {
         if (scriptableBuilding == null) return;
@@ -225,12 +246,12 @@ public class DatabaseManager : MonoBehaviour
         SDBAnimalBlueprintValue blueprint = new()
         {
             prefab = scriptableAnimal.prefab,
-            requiredTileTypes = new List<TileType> { scriptableAnimal.spawnLocation },
+            requiredTileTypes = new List<TileType>(scriptableAnimal.requiredTileTypes),
             basicFood = scriptableAnimal.basicFood,
-            ability1UnlockProduct = scriptableAnimal.basicAbilityUnlockProduct1,
-            ability2UnlockProduct = scriptableAnimal.basicAbilityUnlockProduct2,
-            ability1ImprovProduct = scriptableAnimal.abilityImprovementProduct1,
-            ability2ImprovProduct = scriptableAnimal.abilityImprovementProduct2
+            ability1UnlockProduct = scriptableAnimal.ability1UnlockProduct,
+            ability2UnlockProduct = scriptableAnimal.ability2UnlockProduct,
+            ability1ImprovProduct = scriptableAnimal.ability1ImprovProduct,
+            ability2ImprovProduct = scriptableAnimal.ability2ImprovProduct
         };
 
         animalBlueprintDictionary[scriptableAnimal.animalName] = blueprint;
@@ -256,5 +277,11 @@ public class DatabaseManager : MonoBehaviour
     {
         return Enum.TryParse<BuildingType>(typeName, true, out var parsedType) ? GetBuildingBlueprint(parsedType) : null;
     }
+
+    public SDBAnimalBlueprintValue GetAnimalBlueprint(AnimalType type)
+    {
+        return animalBlueprintDictionary.TryGetValue(type, out var blueprint) ? blueprint : null;
+    }
+
     #endregion
 }

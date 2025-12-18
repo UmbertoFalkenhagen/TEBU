@@ -4,8 +4,6 @@ using UnityEngine;
 using System.Linq;
 using System;
 
-//This class holds complex datatypes that are used across other scripts such as within the databasemanager
-
 [Serializable]
 public class ObjectIdentifier
 {
@@ -103,10 +101,11 @@ public class DBCityCenterValue
 public class DBBuildingValue
 {
     public ObjectIdentifier _parentTile;
-    //public ObjectIdentifier _parentCityCenter; //According to the class diagram
     public BuildingType _type;
     public GameObject _object;
-    public List<ObjectIdentifier> _workers; //was not part of the class diagram so far
+    public List<ObjectIdentifier> _workers;
+    public List<ObjectIdentifier> _claimedTiles;
+    public int _currentAnimalWorkerLimit;
 
     public DBBuildingValue(ObjectIdentifier parentTile, BuildingType buildingType, GameObject obj)
     {
@@ -114,6 +113,8 @@ public class DBBuildingValue
         _type = buildingType;
         _object = obj;
         _workers = new List<ObjectIdentifier>();
+        _claimedTiles = new List<ObjectIdentifier>();
+        _currentAnimalWorkerLimit = 0;
     }
 
     public int GetCurrentWorkerCount()
@@ -141,8 +142,6 @@ public class DBAnimalValue
         this.priority = priority;
     }
 }
-
-
 
 public class SDBAnimalBlueprintValue
 {
@@ -195,4 +194,15 @@ public class ProductRequirement
 
     [Tooltip("The quantity of the product required for production.")]
     public int quantity;
+}
+
+[System.Serializable]
+public class TileSpawnConfig
+{
+    [Tooltip("The ScriptableTile blueprint to spawn")]
+    public ScriptableTile tileBlueprint;
+
+    [Tooltip("Spawn probability (0-100). All probabilities in HexMapManager must sum to 100")]
+    [Range(0f, 100f)]
+    public float spawnProbability = 0f;
 }

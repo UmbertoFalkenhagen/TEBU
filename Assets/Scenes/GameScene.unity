@@ -260,6 +260,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2388fab526597244f80e3a8e7e5b8700, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hexPrefab: {fileID: 3023954715332156990, guid: bad0b8f9bcaba764db734ab87122811b, type: 3}
+  columns: 10
+  rows: 10
+  cellSize: 1.2
+  defaultTileType: 0
+  defaultResourceType: 0
 --- !u!1 &534278857
 GameObject:
   m_ObjectHideFlags: 0
@@ -506,6 +512,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   uiDocument: {fileID: 647717444}
+  manualRotationDuration: 0.5
 --- !u!114 &647717444
 MonoBehaviour:
   m_ObjectHideFlags: 0

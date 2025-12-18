@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   animalName: 0
   prefab: {fileID: 62352112138071845, guid: 6dbfb31d34ab83c41a9160257d348079, type: 3}
-  spawnLocation: 0
+  requiredTileTypes: 00000000
   basicFood: 2
-  basicAbilityUnlockProduct1: 6
-  basicAbilityUnlockProduct2: 7
-  abilityImprovementProduct1: 4
-  abilityImprovementProduct2: 5
+  ability1UnlockProduct: 0
+  ability2UnlockProduct: 0
+  ability1ImprovProduct: 0
+  ability2ImprovProduct: 0

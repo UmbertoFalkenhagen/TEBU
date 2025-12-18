@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class BuildingManager : MonoBehaviour
 {
-    private SDBBuildingBlueprintValue buildingBlueprint;
     public static BuildingManager Instance { get; private set; }
 
     private void Awake()
@@ -14,30 +13,18 @@ public class BuildingManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    #region Complex Building Operations
 
     public void Build(string inputString)
     {
-       // Debug.Log("Building " + inputString + "...");
         HexTile tileToBuildOn = ActiveTile.Instance.GetActiveTile();
         BuildingType _buildingType = System.Enum.TryParse(inputString, true, out BuildingType parsed) ? parsed : default;
-       // Debug.Log("Found building of type " + _buildingType.ToString());
-        buildingBlueprint = DatabaseManager.Instance.GetBuildingBlueprint(_buildingType);
+
+        SDBBuildingBlueprintValue buildingBlueprint = DatabaseManager.Instance.GetBuildingBlueprint(_buildingType);
         KeyValuePair<ObjectIdentifier, DBBuildingValue> building = BuildingFactory.Instance.CreateBuilding(_buildingType, buildingBlueprint, tileToBuildOn);
 
         if (building.Value != null)
         {
-            // e.g. random tile
             ObjectIdentifier parentCityCenterId = DatabaseManager.Instance.GetTileValue(tileToBuildOn.TileID).ConstructionClaims[0];
 
             DatabaseManager.Instance.AddBuilding(building.Key, building.Value, parentCityCenterId);
@@ -48,64 +35,55 @@ public class BuildingManager : MonoBehaviour
 
     public void CreateActiveClaimsForBuilding(ObjectIdentifier buildingId)
     {
-        // 1) Validate the ObjectIdentifier is for a Building
         if (buildingId.Type != ObjectType.Building)
         {
-            Debug.LogError($"CreateActiveClaimsForBuilding: Provided ID [{buildingId}] is not a Building.");
+            Debug.LogError($"BuildingManager: Provided ID [{buildingId}] is not a Building.");
             return;
         }
 
-        // 2) Look up the building’s data
         DatabaseManager db = DatabaseManager.Instance;
         if (!db.BuildingDictionary.TryGetValue(buildingId, out DBBuildingValue buildingValue))
         {
-            Debug.LogError($"CreateActiveClaimsForBuilding: Building [{buildingId}] not found in BuildingDictionary.");
+            Debug.LogError($"BuildingManager: Building [{buildingId}] not found in BuildingDictionary.");
             return;
         }
 
-        // 3) Determine the BuildingType
-        BuildingType buildingType = buildingValue._type; // adjust if needed
+        BuildingType buildingType = buildingValue._type;
 
-        // 4) Retrieve the corresponding blueprint
         if (!db.buildingBlueprintDictionary.TryGetValue(buildingType, out SDBBuildingBlueprintValue blueprint))
         {
-            Debug.LogError($"CreateActiveClaimsForBuilding: No blueprint found for BuildingType [{buildingType}].");
+            Debug.LogError($"BuildingManager: No blueprint found for BuildingType [{buildingType}].");
             return;
         }
 
-        // 5) Get the tile on which this building sits
         ObjectIdentifier parentTileId = db.GetParentTileIdByBuildingId(buildingId);
         if (parentTileId == null)
         {
-            Debug.LogError($"CreateActiveClaimsForBuilding: Building [{buildingId}] has no valid parent tile.");
+            Debug.LogError($"BuildingManager: Building [{buildingId}] has no valid parent tile.");
             return;
         }
 
         DBTileValue parentTileVal = db.GetTileValue(parentTileId);
         if (parentTileVal == null)
         {
-            Debug.LogError($"CreateActiveClaimsForBuilding: No DBTileValue found for parent tile [{parentTileId}].");
+            Debug.LogError($"BuildingManager: No DBTileValue found for parent tile [{parentTileId}].");
             return;
         }
 
-        // 6) The building always claims its own tile (and is inserted at index 0)
-        //    Remove it first if it was there already, then insert at 0.
         parentTileVal.ActiveClaims.Remove(buildingId);
-        
         parentTileVal.ActiveClaims.Insert(0, buildingId);
-        parentTileVal.TileObject.GetComponent<HexTile>().activeClaims.Insert(0,buildingId);
+        parentTileVal.TileObject.GetComponent<HexTile>().activeClaims.Insert(0, buildingId);
+
         if (parentTileVal.ActiveClaims.Count > 1)
         {
-            DatabaseManager.Instance.GetBuildingValue(parentTileVal.ActiveClaims[1])._object.GetComponent<Building>().PlaceModules();
+            PlaceModules(parentTileVal.ActiveClaims[1]);
         }
-        
 
+        buildingValue._claimedTiles.Clear();
+        buildingValue._claimedTiles.Add(parentTileId);
 
-        List<DBTileValue> newlyClaimedTiles = new List<DBTileValue> { parentTileVal };
-        List<ObjectIdentifier> claimedTileIds = new List<ObjectIdentifier> { parentTileId };
         int claimsCreatedCount = 1;
 
-        // 7) If max workers are not fixed, claim surrounding tiles
         if (!blueprint.isMaxWorkersFixed)
         {
             List<DBTileValue> adjacentTiles = db.GetTileNeighbors(parentTileId);
@@ -127,20 +105,13 @@ public class BuildingManager : MonoBehaviour
                     {
                         neighborTile.ActiveClaims.Add(buildingId);
                         neighborTile.TileObject.GetComponent<HexTile>().activeClaims.Add(buildingId);
-                        newlyClaimedTiles.Add(neighborTile);
-                        claimedTileIds.Add(db.GetTileIdByObject(neighborTile.TileObject));
+                        buildingValue._claimedTiles.Add(db.GetTileIdByObject(neighborTile.TileObject));
                         claimsCreatedCount++;
                     }
                 }
             }
         }
-        else
-        {
-            Debug.Log($"CreateActiveClaimsForBuilding: {buildingType} has isMaxWorkersFixed = true. " +
-                      $"Not claiming surrounding tiles, only the parent tile.");
-        }
 
-        // 8) Store claimed tile IDs in Building component
         if (buildingValue._object != null)
         {
             Building buildingComponent = buildingValue._object.GetComponent<Building>();
@@ -151,65 +122,134 @@ public class BuildingManager : MonoBehaviour
 
             buildingComponent.buildingID = buildingId;
             buildingComponent.buildingType = buildingType;
-            buildingComponent.claimedTiles = claimedTileIds;
 
-            // Only place modules if building can assign workers dynamically
             if (!blueprint.isMaxWorkersFixed)
             {
-                buildingComponent.PlaceModules();
-            } else
+                PlaceModules(buildingId);
+            }
+            else
             {
-                buildingComponent.animalworkerlimit = buildingBlueprint.maxWorkers;
+                buildingValue._currentAnimalWorkerLimit = blueprint.maxWorkers;
             }
         }
         else
         {
-            Debug.LogWarning($"CreateActiveClaimsForBuilding: No building GameObject found for {buildingId}.");
+            Debug.LogWarning($"BuildingManager: No building GameObject found for {buildingId}.");
         }
 
-        // 9) (Optional) Debug-color the newly claimed tiles, etc.
-
-        //DebugClaimedTilesColoring(buildingId, newlyClaimedTiles);
-
-        Debug.Log($"CreateActiveClaimsForBuilding: Added building [{buildingId}] as claimant on {claimsCreatedCount} tiles.");
+        Debug.Log($"BuildingManager: Added building [{buildingId}] as claimant on {claimsCreatedCount} tiles.");
     }
 
-
-    private void DebugClaimedTilesColoring(ObjectIdentifier buildingId, List<DBTileValue> claimedTiles)
+    public void PlaceModules(ObjectIdentifier buildingId)
     {
-        foreach (DBTileValue tileVal in claimedTiles)
+        if (!DatabaseManager.Instance.BuildingDictionary.TryGetValue(buildingId, out var buildingValue))
         {
-            // Only proceed if this building is among the tile's claims
-            if (!tileVal.ActiveClaims.Contains(buildingId))
-                continue;
-            if (tileVal.TileObject == null)
-                continue;
+            Debug.LogError($"BuildingManager: Building {buildingId} not found");
+            return;
+        }
 
-            // Grab the renderer
-            Renderer tileRenderer = tileVal.TileObject.GetComponent<Renderer>();
-            if (tileRenderer == null)
-                continue;
+        SDBBuildingBlueprintValue blueprint = GetBuildingBlueprint(buildingValue._type);
+        if (blueprint == null)
+        {
+            return;
+        }
 
-            // Check if the tile is actually empty of a building:
-            // e.g., if we store this via a 'HexTile' component
-            HexTile hexTile = tileVal.TileObject.GetComponent<HexTile>();
-            if (hexTile == null)
-                continue;
+        if (blueprint.isMaxWorkersFixed)
+        {
+            return;
+        }
 
-            // Debug color rules
-            if (hexTile.heldBuilding == null)
+        buildingValue._currentAnimalWorkerLimit = 1;
+
+        GameObject workedModulePrefab = blueprint.workedModulePrefab ?? blueprint.unworkedModulePrefab;
+        GameObject unworkedModulePrefab = blueprint.unworkedModulePrefab ?? blueprint.prefab;
+
+        if (buildingValue._object == null)
+        {
+            Debug.LogError($"BuildingManager: Building object is null for {buildingId}");
+            return;
+        }
+
+        Transform modulesParent = buildingValue._object.transform.Find("Modules");
+        if (modulesParent == null)
+        {
+            GameObject modulesContainer = new GameObject("Modules");
+            modulesContainer.transform.SetParent(buildingValue._object.transform);
+            modulesContainer.transform.localPosition = Vector3.zero;
+            modulesParent = modulesContainer.transform;
+        }
+        else
+        {
+            foreach (Transform child in modulesParent)
             {
-                // If the claiming building is the first in ActiveClaims => RED
-                if (tileVal.ActiveClaims.Count > 0 && tileVal.ActiveClaims[0] == buildingId)
-                {
-                    tileRenderer.material.color = Color.red;
-                }
-                else
-                {
-                    // Otherwise => YELLOW
-                    tileRenderer.material.color = Color.yellow;
-                }
+                Object.Destroy(child.gameObject);
             }
         }
+
+        int workerCount = buildingValue._workers?.Count ?? 0;
+
+        for (int i = 0; i < buildingValue._claimedTiles.Count; i++)
+        {
+            ObjectIdentifier claimedTileId = buildingValue._claimedTiles[i];
+            DBTileValue claimedTile = DatabaseManager.Instance.GetTileValue(claimedTileId);
+
+            if (claimedTile == null || claimedTile.TileObject == null)
+            {
+                continue;
+            }
+
+            bool isWorked = i < workerCount;
+            GameObject modulePrefab = isWorked ? workedModulePrefab : unworkedModulePrefab;
+
+            if (modulePrefab != null)
+            {
+                Vector3 tilePosition = claimedTile.TileObject.transform.position;
+                GameObject moduleInstance = Object.Instantiate(modulePrefab, tilePosition, Quaternion.identity, modulesParent);
+                moduleInstance.name = $"Module_{i}_{(isWorked ? "Worked" : "Unworked")}";
+            }
+
+            if (isWorked)
+            {
+                buildingValue._currentAnimalWorkerLimit++;
+            }
+        }
+
+        Debug.Log($"BuildingManager: Placed modules for building {buildingId}. Worker limit: {buildingValue._currentAnimalWorkerLimit}");
     }
+
+    #endregion
+
+    #region Database Wrapper Methods for Subordinate Components
+
+    public DBBuildingValue GetBuildingValue(ObjectIdentifier buildingId)
+    {
+        return DatabaseManager.Instance.GetBuildingValue(buildingId);
+    }
+
+    public ObjectIdentifier GetBuildingIdByTileId(ObjectIdentifier tileId)
+    {
+        return DatabaseManager.Instance.GetBuildingIdByTileId(tileId);
+    }
+
+    public ObjectIdentifier GetParentTileIdByBuildingId(ObjectIdentifier buildingId)
+    {
+        return DatabaseManager.Instance.GetParentTileIdByBuildingId(buildingId);
+    }
+
+    public ObjectIdentifier GetCityCenterIdByBuildingId(ObjectIdentifier buildingId)
+    {
+        return DatabaseManager.Instance.GetCityCenterIdByBuildingId(buildingId);
+    }
+
+    public SDBBuildingBlueprintValue GetBuildingBlueprint(BuildingType buildingType)
+    {
+        return DatabaseManager.Instance.GetBuildingBlueprint(buildingType);
+    }
+
+    public SDBBuildingBlueprintValue GetBuildingBlueprint(string typeName)
+    {
+        return DatabaseManager.Instance.GetBuildingBlueprint(typeName);
+    }
+
+    #endregion
 }

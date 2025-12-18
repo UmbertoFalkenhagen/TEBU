@@ -13,6 +13,8 @@ public class AnimalManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
+    #region Complex Animal Operations
+
     public Animal SpawnAnimal(AnimalType animalType, ObjectIdentifier cityCenterId, int priority = 0)
     {
         if (!DatabaseManager.Instance.CityCenterDictionary.ContainsKey(cityCenterId))
@@ -71,21 +73,6 @@ public class AnimalManager : MonoBehaviour
         return SpawnAnimal(randomAnimal, cityCenterId);
     }
 
-    private List<AnimalType> GetAvailableAnimalsForTileType(TileType tileType)
-    {
-        List<AnimalType> availableAnimals = new List<AnimalType>();
-
-        foreach (var kvp in DatabaseManager.Instance.animalBlueprintDictionary)
-        {
-            if (kvp.Value.requiredTileTypes.Contains(tileType))
-            {
-                availableAnimals.Add(kvp.Key);
-            }
-        }
-
-        return availableAnimals;
-    }
-
     public void AssignAnimalToBuilding(ObjectIdentifier animalId, ObjectIdentifier buildingId)
     {
         if (!DatabaseManager.Instance.AnimalDictionary.TryGetValue(animalId, out var animalValue))
@@ -112,12 +99,6 @@ public class AnimalManager : MonoBehaviour
 
         if (animalValue._object != null)
         {
-            Animal animalComponent = animalValue._object.GetComponent<Animal>();
-            if (animalComponent != null)
-            {
-                animalComponent.assignedBuilding = buildingId;
-            }
-
             if (buildingValue._object != null)
             {
                 Transform spawnPoint = buildingValue._object.transform.Find("AnimalSpawnPoint");
@@ -152,12 +133,6 @@ public class AnimalManager : MonoBehaviour
 
         if (animalValue._object != null)
         {
-            Animal animalComponent = animalValue._object.GetComponent<Animal>();
-            if (animalComponent != null)
-            {
-                animalComponent.assignedBuilding = null;
-            }
-
             MoveAnimalToCitySpawnPoint(animalId, animalValue._parentCityCenter);
         }
 
@@ -201,6 +176,25 @@ public class AnimalManager : MonoBehaviour
         }
 
         Debug.Log($"AnimalManager: Moved animal {animalId} ({animalValue._animalName}) to city {targetCityCenterId}");
+    }
+
+    #endregion
+
+    #region Helper Methods
+
+    private List<AnimalType> GetAvailableAnimalsForTileType(TileType tileType)
+    {
+        List<AnimalType> availableAnimals = new List<AnimalType>();
+
+        foreach (var kvp in DatabaseManager.Instance.animalBlueprintDictionary)
+        {
+            if (kvp.Value.requiredTileTypes.Contains(tileType))
+            {
+                availableAnimals.Add(kvp.Key);
+            }
+        }
+
+        return availableAnimals;
     }
 
     private void MoveAnimalToCitySpawnPoint(ObjectIdentifier animalId, ObjectIdentifier cityCenterId)
@@ -303,17 +297,73 @@ public class AnimalManager : MonoBehaviour
             return false;
         }
 
-        Building buildingComponent = buildingValue._object.GetComponent<Building>();
-        if (buildingComponent == null)
+        SDBBuildingBlueprintValue blueprint = DatabaseManager.Instance.GetBuildingBlueprint(buildingValue._type);
+        if (blueprint == null)
         {
             return false;
         }
 
-        SDBBuildingBlueprintValue blueprint = DatabaseManager.Instance.GetBuildingBlueprint(buildingComponent.buildingType);
-        int maxWorkers = buildingComponent.isMaxWorkersFixed ? blueprint.maxWorkers : buildingComponent.animalworkerlimit;
         int currentWorkers = buildingValue.GetCurrentWorkerCount();
-
-        return currentWorkers < maxWorkers;
+        return currentWorkers < blueprint.maxWorkers;
     }
 
+    public void PrintAnimalInfo(ObjectIdentifier animalID)
+    {
+        DBAnimalValue animalData = DatabaseManager.Instance.AnimalDictionary.TryGetValue(animalID, out var data)
+            ? data
+            : null;
+
+        if (animalData == null)
+        {
+            Debug.LogWarning($"AnimalManager: No database entry found for {animalID}");
+            return;
+        }
+
+        string parentCityName = "Unknown City";
+        if (DatabaseManager.Instance.CityCenterDictionary.TryGetValue(animalData._parentCityCenter, out var cityCenter))
+        {
+            parentCityName = cityCenter._cityName;
+        }
+
+        string jobStatus = "Unemployed";
+        if (animalData._parentBuilding != null)
+        {
+            DBBuildingValue buildingData = DatabaseManager.Instance.GetBuildingValue(animalData._parentBuilding);
+            if (buildingData != null)
+            {
+                jobStatus = $"Working at {buildingData._type}";
+            }
+        }
+
+        Debug.Log($"?? Hello! I'm {animalData._animalName}, a {animalData._type} (ID: {animalID})\n" +
+                  $"   ??? Living in: {parentCityName}\n" +
+                  $"   ?? Job: {jobStatus}\n" +
+                  $"   ? Priority: {animalData.priority}");
+    }
+
+    #endregion
+
+    #region Database Wrapper Methods for Subordinate Components
+
+    public DBAnimalValue GetAnimalValue(ObjectIdentifier animalId)
+    {
+        return DatabaseManager.Instance.GetAnimalValue(animalId);
+    }
+
+    public ObjectIdentifier GetCityCenterIdByAnimalId(ObjectIdentifier animalId)
+    {
+        return DatabaseManager.Instance.GetCityCenterIdByAnimalId(animalId);
+    }
+
+    public ObjectIdentifier GetBuildingIdByAnimalId(ObjectIdentifier animalId)
+    {
+        return DatabaseManager.Instance.GetBuildingIdByAnimalId(animalId);
+    }
+
+    public SDBAnimalBlueprintValue GetAnimalBlueprint(AnimalType animalType)
+    {
+        return DatabaseManager.Instance.GetAnimalBlueprint(animalType);
+    }
+
+    #endregion
 }

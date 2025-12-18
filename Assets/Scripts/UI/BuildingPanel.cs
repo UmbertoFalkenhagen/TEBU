@@ -1,73 +1,106 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+
 public class BuildingPanel : MonoBehaviour
 {
-    public GameObject buttonPrefab;
-    public Transform buttonContainer;
+    #region Singleton
+
     public static BuildingPanel Instance { get; private set; }
 
-    public Dictionary<string, string> buildingOptions = new Dictionary<string, string>(); //TODO: Implement to get real information to fill into database
-    
+    #endregion
+
+    #region Serialized Fields
+
+    [Header("UI References")]
+    public GameObject buttonPrefab;
+    public Transform buttonContainer;
+
+    #endregion
+
+    #region State
+
+    public Dictionary<string, string> buildingOptions = new Dictionary<string, string>();
+
+    #endregion
+
+    #region Unity Lifecycle
+
     private void Awake()
     {
-        if (Instance != null) { Destroy(gameObject); return; }
+        if (Instance != null)
+        {
+            Destroy(gameObject);
+            return;
+        }
         Instance = this;
         DontDestroyOnLoad(gameObject);
     }
 
+    #endregion
+
+    #region Public Methods
 
     public void UpdateBuildingOptions()
     {
-
         ClearButtons();
-        if (buildingOptions.Count <= 0) {
-            return;
-        }else
-        {
-            gameObject.SetActive(true);
-            foreach (var option in buildingOptions)
-            {
-                CreateButton(option.Key, option.Value);
 
-            }
+        if (buildingOptions.Count <= 0)
+        {
+            return;
         }
 
+        gameObject.SetActive(true);
 
+        foreach (var option in buildingOptions)
+        {
+            CreateButton(option.Key, option.Value);
+        }
     }
+
+    #endregion
+
+    #region Private Methods
+
     private void ClearButtons()
     {
         foreach (Transform child in buttonContainer)
         {
             Destroy(child.gameObject);
         }
-        this.gameObject.SetActive(false);
-
-    }
-    private void Build(String text)
-    {
-        //TODO: Dont build if already exist, or disable build menu after build
-        onBuildButtonClicked(text);
-       
+        gameObject.SetActive(false);
     }
 
-    private void CreateButton(string text, string value)
+    private void CreateButton(string buildingTypeKey, string displayText)
     {
-        //TODO: Add some kind of identifier for Buttons to know which one was klicked
         GameObject newButton = Instantiate(buttonPrefab, buttonContainer);
-        newButton.GetComponentInChildren<TextMeshProUGUI>().text = value;
-        newButton.GetComponent<Button>().onClick.AddListener(() => Build(text));
+        TextMeshProUGUI buttonText = newButton.GetComponentInChildren<TextMeshProUGUI>();
 
+        if (buttonText != null)
+        {
+            buttonText.text = displayText;
+        }
 
+        Button button = newButton.GetComponent<Button>();
+        if (button != null)
+        {
+            button.onClick.AddListener(() => OnBuildButtonClicked(buildingTypeKey));
+        }
     }
 
-    public void onBuildButtonClicked(String buildingType)
+    private void OnBuildButtonClicked(string buildingType)
     {
-        //BuildingButton was clicked > BuildingPanel -> here 
-        //check resources in buildingManager?
-        UIManager.Instance.RequestBuild(buildingType);
+        if (UIManager.Instance != null)
+        {
+            UIManager.Instance.RequestBuild(buildingType);
+        }
+        else
+        {
+            Debug.LogError("BuildingPanel: UIManager instance not found");
+        }
     }
+
+    #endregion
 }

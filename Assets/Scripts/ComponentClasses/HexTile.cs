@@ -1,52 +1,60 @@
 using UnityEngine;
 using System.Collections.Generic;
-using static UnityEngine.GraphicsBuffer;
 
 public class HexTile : MonoBehaviour
 {
-    // The unique ID in the database for this tile
+    #region Database Reference
+
     public ObjectIdentifier TileID;
 
-    // If we need to keep track of an actively placed resource object,
-    // we can keep that reference here. However, the resource TYPE
-    // is stored in the DB. This is purely for visuals/spawned GameObject.
-    public GameObject heldResource;
+    #endregion
 
-    // Similarly, a building's type can be stored in DB, but the actual
-    // building GameObject can remain here for easy access/visuals.
+    #region Visual References
+
+    public GameObject heldResource;
     public GameObject heldBuilding;
 
+    #endregion
+
+    #region Claim Lists
 
     public List<ObjectIdentifier> constructionClaims = new List<ObjectIdentifier>();
     public List<ObjectIdentifier> activeClaims = new List<ObjectIdentifier>();
 
-    // Because adjacency is stored as a list of Vector2Int in DBTileValue,
-    // we remove the old "adjacentTiles" list. If you want to keep references
-    // to neighbor GameObjects, you can do so, but it's often enough to
-    // query adjacency from the DB when needed.
+    #endregion
 
+    #region Database Query Helpers
 
-    // Example: Use DB queries to get tile data
     public DBTileValue GetMyTileValue()
     {
         if (TileID == null) return null;
-        // Use a typed function we created in DatabaseManager
         return DatabaseManager.Instance.GetTileValue(TileID);
     }
 
-
-    // Similarly for resource
     public ResourceType GetResourceType()
     {
         var val = GetMyTileValue();
         if (val != null)
         {
-            return val.Resource; // DBTileValue.Resource
+            return val.Resource;
         }
         return ResourceType.None;
     }
 
-    // Optionally adapt your resource-placing methods
+    public TileType GetTileType()
+    {
+        var val = GetMyTileValue();
+        if (val != null)
+        {
+            return val.Type;
+        }
+        return TileType.Grassland;
+    }
+
+    #endregion
+
+    #region Visual Object Management
+
     public void PlaceResourceOnTile(GameObject newObject)
     {
         if (heldResource != null)
@@ -75,31 +83,6 @@ public class HexTile : MonoBehaviour
         }
     }
 
-    // Example building placement
-    /*public void PlaceCityCenterOnTile(ScriptableCityCenter cityCenterData)
-    {
-        ClearTileResource();
-        if (CityCenterFactory.Instance == null)
-        {
-            Debug.LogError("CityCenterFactory instance is null.");
-            return;
-        }
-        if (heldBuilding != null) return;
-
-        heldBuilding = CityCenterFactory.Instance.CreateObject(cityCenterData, this.gameObject, Quaternion.identity, this.gameObject);
-    }
-
-    public void PlaceBuildingOnTile(ScriptableBuilding buildingData)
-    {
-        ClearTileResource();
-        if (BuildingFactory.Instance == null)
-        {
-            Debug.LogError("BuildingFactory instance is null.");
-            return;
-        }
-        heldBuilding = BuildingFactory.Instance.CreateObject(buildingData, this.gameObject, Quaternion.identity, this.gameObject);
-    }*/
-
     public void RemoveHeldBuildingFromTile()
     {
         if (heldBuilding != null)
@@ -115,16 +98,15 @@ public class HexTile : MonoBehaviour
 
     public void SelectTile(bool isSelected)
     {
-
         if (isSelected)
         {
-            this.transform.position += new Vector3(0, 1, 0); // Nach oben bewegen
+            this.transform.position += new Vector3(0, 1, 0);
         }
         else
-            this.transform.position -= new Vector3(0, 1, 0); // Zurücksetzen
+        {
+            this.transform.position -= new Vector3(0, 1, 0);
+        }
     }
-    // If you need adjacency references, either get them from DBTileValue:
-    //   var neighbors = GetMyTileValue()?.AdjacentTilesPosition;
-    // or create a function to convert those positions into actual GameObjects
-    // by looking up each neighbor in the dictionary and retrieving its GameObject.
+
+    #endregion
 }

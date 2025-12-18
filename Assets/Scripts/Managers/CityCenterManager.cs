@@ -13,6 +13,8 @@ public class CityCenterManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
+    #region Complex CityCenter Operations
+
     public void Build()
     {
         HexTile tileToBuildOn = ActiveTile.Instance.GetActiveTile();
@@ -28,6 +30,44 @@ public class CityCenterManager : MonoBehaviour
         }
         UIManager.Instance.TileClick(ActiveTile.Instance.GetActiveTileID());
     }
+
+    public void CreateConstructionClaimsForCityCenter(ObjectIdentifier cityCenterId)
+    {
+        if (cityCenterId.Type != ObjectType.CityCenter)
+        {
+            Debug.LogError($"CityCenterManager: Provided ID [{cityCenterId}] is not a CityCenter.");
+            return;
+        }
+
+        ObjectIdentifier parentTileId = DatabaseManager.Instance.GetParentTileIdByCityCenterId(cityCenterId);
+        if (parentTileId == null)
+        {
+            Debug.LogError($"CityCenterManager: CityCenter [{cityCenterId}] has no valid parent tile.");
+            return;
+        }
+
+        List<DBTileValue> adjacentTiles = DatabaseManager.Instance.GetTileNeighbors(parentTileId);
+        if (adjacentTiles == null || adjacentTiles.Count == 0)
+        {
+            Debug.Log($"CityCenterManager: No adjacent tiles found for CityCenter [{cityCenterId}].");
+            return;
+        }
+
+        foreach (DBTileValue neighborTile in adjacentTiles)
+        {
+            if (!neighborTile.ConstructionClaims.Contains(cityCenterId))
+            {
+                neighborTile.TileObject.GetComponent<HexTile>().constructionClaims.Add(cityCenterId);
+                neighborTile.ConstructionClaims.Add(cityCenterId);
+            }
+        }
+
+        Debug.Log($"CityCenterManager: Added CityCenter [{cityCenterId}] as a claimant to {adjacentTiles.Count} tiles.");
+    }
+
+    #endregion
+
+    #region Helper Methods
 
     private void SpawnInitialAnimal(ObjectIdentifier cityCenterId)
     {
@@ -49,37 +89,34 @@ public class CityCenterManager : MonoBehaviour
         }
     }
 
-    public void CreateConstructionClaimsForCityCenter(ObjectIdentifier cityCenterId)
+    #endregion
+
+    #region Database Wrapper Methods for Subordinate Components
+
+    public DBCityCenterValue GetCityCenterValue(ObjectIdentifier cityCenterId)
     {
-        if (cityCenterId.Type != ObjectType.CityCenter)
-        {
-            Debug.LogError($"CreateConstructionClaimsForCityCenter: Provided ID [{cityCenterId}] is not a CityCenter.");
-            return;
-        }
-
-        ObjectIdentifier parentTileId = DatabaseManager.Instance.GetParentTileIdByCityCenterId(cityCenterId);
-        if (parentTileId == null)
-        {
-            Debug.LogError($"CreateConstructionClaimsForCityCenter: CityCenter [{cityCenterId}] has no valid parent tile.");
-            return;
-        }
-
-        List<DBTileValue> adjacentTiles = DatabaseManager.Instance.GetTileNeighbors(parentTileId);
-        if (adjacentTiles == null || adjacentTiles.Count == 0)
-        {
-            Debug.Log($"CreateConstructionClaimsForCityCenter: No adjacent tiles found for CityCenter [{cityCenterId}].");
-            return;
-        }
-
-        foreach (DBTileValue neighborTile in adjacentTiles)
-        {
-            if (!neighborTile.ConstructionClaims.Contains(cityCenterId))
-            {
-                neighborTile.TileObject.GetComponent<HexTile>().constructionClaims.Add(cityCenterId);
-                neighborTile.ConstructionClaims.Add(cityCenterId);
-            }
-        }
-
-        Debug.Log($"CreateConstructionClaimsForCityCenter: Added CityCenter [{cityCenterId}] as a claimant to {adjacentTiles.Count} tiles.");
+        return DatabaseManager.Instance.GetCityCenterValue(cityCenterId);
     }
+
+    public ObjectIdentifier GetCityCenterIdByTileId(ObjectIdentifier tileId)
+    {
+        return DatabaseManager.Instance.GetCityCenterIdByTileId(tileId);
+    }
+
+    public ObjectIdentifier GetParentTileIdByCityCenterId(ObjectIdentifier cityCenterId)
+    {
+        return DatabaseManager.Instance.GetParentTileIdByCityCenterId(cityCenterId);
+    }
+
+    public List<ObjectIdentifier> GetBuildingIdsByCityCenterId(ObjectIdentifier cityCenterId)
+    {
+        return DatabaseManager.Instance.GetBuildingIdsByCityCenterId(cityCenterId);
+    }
+
+    public List<ObjectIdentifier> GetAnimalIdsByCityCenterId(ObjectIdentifier cityCenterId)
+    {
+        return DatabaseManager.Instance.GetAnimalIdsByCityCenterId(cityCenterId);
+    }
+
+    #endregion
 }
