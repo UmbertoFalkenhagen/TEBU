@@ -67,7 +67,7 @@ public class HexMapManager : MonoBehaviour
         databaseManager.initMapData.rows = rows;
         databaseManager.initMapData.cellSize = cellSize;
 
-        GenerateMap();
+        //GenerateMap();
     }
 
     #endregion
